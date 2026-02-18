@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Escala Plantão • Motoristas</title>
+
+  <!-- html2canvas (para gerar print do calendário) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <style>
+    :root{
+      --bg0:#070A10;
+      --bg1:#0B1020;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.08);
+      --border:rgba(255,255,255,.12);
+      --text:#EAF0FF;
+      --muted:#A7B0C6;
+      --muted2:#7E8AAA;
+
+      --c1:#00E5FF; /* ciano */
+      --c2:#B100FF; /* roxo */
+      --c3:#00FF88; /* verde */
+      --warn:#FFCE3A;
+      --danger:#FF4D6D;
+
+      --radius:18px;
+      --shadow: 0 12px 30px rgba(0,0,0,.45);
+      --shadow2: 0 10px 26px rgba(0,0,0,.35);
+      --glow1: 0 0 22px rgba(0,229,255,.28);
+      --glow2: 0 0 26px rgba(177,0,255,.22);
+      --glow3: 0 0 20px rgba(0,255,136,.18);
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{ box-sizing: border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 15%, rgba(177,0,255,.16), transparent 55%),
+        radial-gradient(900px 520px at 75% 20%, rgba(0,229,255,.14), transparent 55%),
+        radial-gradient(900px 520px at 60% 90%, rgba(0,255,136,.08), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    .hidden{ display:none !important; }
+
+    .neon-ring{
+      position: fixed;
+      top: -180px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 680px;
+      height: 680px;
+      border-radius: 50%;
+      pointer-events:none;
+      opacity:.9;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 58%, rgba(0,0,0,.0) 58%),
+        conic-gradient(from 0deg, var(--c2), var(--c1), var(--c3), var(--c2));
+      -webkit-mask: radial-gradient(circle, transparent 58%, #000 61%);
+      mask: radial-gradient(circle, transparent 58%, #000 61%);
+      box-shadow: var(--glow1), var(--glow2), var(--glow3);
+    }
+
+    .wrap{
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 26px 18px 40px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+    }
+    .dot{
+      width:12px;height:12px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.15));
+      box-shadow: 0 0 18px rgba(0,229,255,.35), 0 0 24px rgba(177,0,255,.22);
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .brand h1{ margin:0; font-size: 14px; letter-spacing:.4px; font-weight: 700; }
+    .brand span{ display:block; font-size:12px; color: var(--muted); margin-top: 2px; letter-spacing:.2px; font-weight: 500; }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      margin-left:auto;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 650;
+      letter-spacing: .2px;
+      transition: transform .06s ease, border-color .15s ease, filter .15s ease;
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{ border-color: rgba(255,255,255,.22); filter: brightness(1.06); }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn.primary{ border-color: rgba(0,229,255,.30); box-shadow: var(--shadow2), var(--glow1); }
+    .btn.purple{ border-color: rgba(177,0,255,.26); box-shadow: var(--shadow2), var(--glow2); }
+    .btn.green{ border-color: rgba(0,255,136,.24); box-shadow: var(--shadow2), var(--glow3); }
+    .btn.danger{ border-color: rgba(255,77,109,.30); box-shadow: var(--shadow2); color: #FFE8EE; }
+
+    .pill{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .input, .select{
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(8,12,20,.55);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline:none;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+      min-width: 220px;
+    }
+    .input::placeholder{ color: rgba(167,176,198,.65); }
+    .select{ min-width: 160px; cursor:pointer; }
+
+    .muted{ color: var(--muted); }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+    .card{
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      overflow:hidden;
+    }
+    .card .head{
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      flex-wrap: wrap;
+    }
+    .card .head h2{ margin:0; font-size: 14px; letter-spacing:.3px; }
+    .card .body{ padding: 14px 16px; }
+
+    .table-wrap{
+      overflow:auto;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+    }
+    table{
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      min-width: 980px;
+      font-size: 12.5px;
+    }
+    thead th{
+      position: sticky;
+      top:0;
+      z-index: 2;
+      background: rgba(10,14,24,.92);
+      border-bottom:1px solid rgba(255,255,255,.10);
+      color: #DCE6FF;
+      text-align:left;
+      padding: 10px 10px;
+      white-space:nowrap;
+      font-weight: 750;
+      letter-spacing:.2px;
+    }
+    tbody td{
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      padding: 8px 10px;
+      vertical-align: middle;
+      white-space:nowrap;
+    }
+    tbody tr:hover{ background: rgba(255,255,255,.04); }
+
+    .col-driver{
+      min-width: 340px;
+      position: sticky;
+      left:0;
+      z-index: 1;
+      background: rgba(10,14,24,.92);
+      border-right:1px solid rgba(255,255,255,.10);
+    }
+    thead .col-driver{ z-index: 3; border-right:1px solid rgba(255,255,255,.12); }
+
+    .driver-title{ display:flex; flex-direction:column; gap:3px; }
+    .driver-title .name{ font-weight: 820; letter-spacing:.2px; font-size: 13px; }
+    .driver-title .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .kbd{
+      font-family: var(--mono);
+      padding: 2px 6px;
+      border-radius: 8px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:#EAF0FF;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 10px;
+      padding: 6px 8px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      min-width: 66px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .06s ease, filter .15s ease;
+    }
+    .chip:hover{ filter: brightness(1.08); }
+    .chip:active{ transform: translateY(1px); }
+
+    .chip.empty{
+      color: rgba(167,176,198,.65);
+      border-style:dashed;
+      background: rgba(255,255,255,.03);
+    }
+    .chip.plantao{
+      border-color: rgba(0,229,255,.28);
+      box-shadow: 0 0 18px rgba(0,229,255,.12);
+    }
+    .chip.cod{
+      border-color: rgba(177,0,255,.24);
+      box-shadow: 0 0 18px rgba(177,0,255,.10);
+    }
+    .chip.off{
+      border-color: rgba(255,206,58,.24);
+      box-shadow: 0 0 18px rgba(255,206,58,.08);
+      color:#FFE9A6;
+    }
+
+    /* Drawer */
+    .drawer{
+      position: fixed;
+      top:0; right:0;
+      width: min(620px, 94vw); /* aumentei pra não cortar */
+      height: 100%;
+      background: linear-gradient(180deg, rgba(10,14,24,.92), rgba(10,14,24,.86));
+      border-left: 1px solid rgba(255,255,255,.12);
+      box-shadow: -18px 0 40px rgba(0,0,0,.55);
+      backdrop-filter: blur(14px);
+      transform: translateX(105%);
+      transition: transform .22s ease;
+      z-index: 50;
+      display:flex;
+      flex-direction:column;
+    }
+    .drawer.open{ transform: translateX(0); }
+
+    /* Tela cheia do calendário (drawer vira modal central grande) */
+    .drawer.fullscreen{
+      right: 50%;
+      transform: translateX(50%); /* centraliza */
+      width: min(1080px, 96vw);
+      border-left: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px 18px 18px 18px;
+      top: 18px;
+      height: calc(100% - 36px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.65);
+    }
+
+    .drawer .d-head{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .drawer .d-title{ display:flex; flex-direction:column; gap:6px; }
+    .drawer .d-title .big{ font-weight: 900; letter-spacing:.2px; font-size: 14px; line-height: 1.2; }
+    .drawer .d-title .sub{
+      color: var(--muted);
+      font-size: 12.5px;
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+    }
+    .drawer .d-body{ padding: 14px 16px 18px; overflow:auto; flex:1; }
+
+    .calendar{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      overflow:hidden;
+      background: rgba(0,0,0,.18);
+    }
+    .cal-head{
+      display:grid;
+      grid-template-columns: repeat(7,1fr);
+      background: rgba(255,255,255,.05);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .cal-head div{
+      padding: 10px 10px;
+      font-weight: 800;
+      font-size: 12px;
+      color:#DCE6FF;
+      text-align:center;
+    }
+    .cal-grid{
+      display:grid;
+      grid-template-columns: repeat(7,1fr);
+    }
+    .day{
+      min-height: 92px; /* maior */
+      border-right:1px solid rgba(255,255,255,.06);
+      border-bottom:1px solid rgba(255,255,255,.06);
+      padding: 10px 10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .day:nth-child(7n){ border-right:none; }
+    .day .num{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted2);
+      font-weight: 700;
+    }
+    .day .val{
+      display:inline-flex;
+      align-self:flex-start;
+      border-radius: 10px;
+      padding: 7px 9px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      font-size: 12.5px;
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .day .val.empty{
+      border-style:dashed;
+      background: rgba(255,255,255,.03);
+      color: rgba(167,176,198,.65);
+    }
+    .day:hover{ background: rgba(255,255,255,.04); }
+    .day.muted{ opacity:.35; cursor: default; }
+    .day.muted:hover{ background: transparent; }
+
+    /* Modal */
+    .overlay{
+      position: fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(6px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 100;
+      padding: 18px;
+    }
+    .overlay.show{ display:flex; }
+    .modal{
+      width: min(520px, 96vw);
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(12,16,30,.95), rgba(10,14,24,.90));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modal .m-head{
+      padding: 14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .modal .m-head h3{ margin:0; font-size: 14px; letter-spacing:.25px; }
+    .modal .m-body{ padding: 14px 16px; }
+    .modal .m-actions{
+      padding: 14px 16px;
+      border-top:1px solid rgba(255,255,255,.10);
+      display:flex;
+      justify-content:flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .row .full{ grid-column: 1 / -1; }
+    label{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 6px;
+      letter-spacing:.15px;
+      font-weight: 650;
+    }
+    .help{
+      margin-top: 8px;
+      font-size: 12px;
+      color: rgba(167,176,198,.82);
+      line-height: 1.35;
+    }
+
+    /* Login */
+    .login{
+      min-height: calc(100vh - 40px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 28px 18px;
+    }
+    .login-card{
+      width: min(520px, 96vw);
+      border-radius: 20px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      overflow:hidden;
+    }
+    .login-head{
+      padding: 18px 18px 14px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      display:flex;
+      gap: 12px;
+      align-items:center;
+    }
+    .badge{
+      width: 46px; height: 46px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 45%),
+        linear-gradient(135deg, rgba(0,229,255,.18), rgba(177,0,255,.16));
+      box-shadow: var(--glow1), var(--glow2);
+    }
+    .login-head h2{ margin:0; font-size: 15px; letter-spacing:.25px; font-weight: 900; }
+    .login-head p{ margin: 4px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+    .login-body{ padding: 16px 18px 18px; }
+    .login-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap: 10px;
+      flex-wrap:wrap;
+      padding: 0 18px 18px;
+    }
+    .err{ margin-top: 10px; color: #FFD6DE; font-size: 12.5px; display:none; }
+
+    @media (max-width: 720px){
+      .row{ grid-template-columns: 1fr; }
+      .input{ min-width: 180px; }
+      table{ min-width: 920px; }
+      .drawer{ width: 96vw; }
+      .day{ min-height: 86px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="neon-ring" aria-hidden="true"></div>
+
+  <!-- LOGIN -->
+  <section id="loginView" class="login">
+    <div class="login-card">
+      <div class="login-head">
+        <div class="badge" aria-hidden="true"></div>
+        <div>
+          <h2>Escala Plantão • Motoristas</h2>
+          <p>Login básico para acesso interno. Dados salvos no seu navegador (LocalStorage).</p>
+        </div>
+      </div>
+      <div class="login-body">
+        <div class="row">
+          <div class="full">
+            <label>Login</label>
+            <input id="loginUser" class="input" placeholder="ex: rafael.plantao" autocomplete="username"/>
+          </div>
+          <div class="full">
+            <label>Senha</label>
+            <input id="loginPass" class="input" type="password" placeholder="••••••••" autocomplete="current-password"/>
+          </div>
+        </div>
+        <div id="loginErr" class="err">Usuário ou senha inválidos.</div>
+        <div class="help">
+          Dica: depois que você logar, você pode <b>clicar em qualquer dia</b> na lista ou no calendário para registrar/editar a escala.
+        </div>
+      </div>
+      <div class="login-actions">
+        <button id="btnLogin" class="btn primary">Entrar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP -->
+  <main id="appView" class="hidden">
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <div class="dot" aria-hidden="true"></div>
+          <div>
+            <h1>Escala Plantão</h1>
+            <span>Cadastro + escala mensal • tema neon</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="pill">
+            <span class="muted" style="font-weight:750;">Mês</span>
+            <input id="monthPicker" class="input" type="month" style="min-width:160px"/>
+          </div>
+
+          <div class="pill">
+            <span class="muted" style="font-weight:750;">Período</span>
+            <select id="periodFilter" class="select" style="min-width:160px">
+              <option value="todos">Todos</option>
+              <option value="manhã">manhã</option>
+              <option value="tarde">tarde</option>
+              <option value="noite">noite</option>
+            </select>
+          </div>
+
+          <div class="pill">
+            <span class="muted" style="font-weight:750;">Buscar</span>
+            <input id="searchMat" class="input" placeholder="matrícula ou nome" style="min-width:220px"/>
+          </div>
+
+          <button id="btnAddDriver" class="btn green">+ Cadastrar motorista</button>
+          <button id="btnLogout" class="btn danger">Sair</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section class="card">
+          <div class="head">
+            <h2>Visualização 1 • Lista do mês (todos os motoristas)</h2>
+            <div class="muted" style="font-size:12px;">
+              Clique no <b>nome</b> para abrir o calendário • clique em um <b>dia</b> para editar
+            </div>
+          </div>
+          <div class="body">
+            <div class="table-wrap">
+              <table id="monthTable">
+                <thead id="monthThead"></thead>
+                <tbody id="monthTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="muted" style="margin-top:12px;font-size:12px;">
+        ✅ Dados ficam salvos localmente neste navegador. (Compartilhar real com outra pessoa: Firebase/Supabase)
+      </div>
+    </div>
+  </main>
+
+  <!-- DRAWER -->
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="d-head">
+      <div class="d-title">
+        <div id="dName" class="big">Motorista</div>
+        <div id="dSub" class="sub"></div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+        <button id="btnWhats" class="btn primary">📲 Imagem + WhatsApp</button>
+        <button id="btnFull" class="btn purple">🖥️ Tela cheia</button>
+        <button id="btnRemoveDriver" class="btn danger">Remover</button>
+        <button id="btnCloseDrawer" class="btn">Fechar</button>
+      </div>
+    </div>
+
+    <div class="d-body">
+      <!-- isso aqui é o que vira imagem -->
+      <div id="calCapture">
+        <div class="card" style="border-radius:16px; margin-bottom:12px;">
+          <div class="head">
+            <h2>Visualização 2 • Calendário do mês</h2>
+            <div class="muted" style="font-size:12px;">Clique em um dia para editar</div>
+          </div>
+          <div class="body">
+            <div class="calendar">
+              <div class="cal-head">
+                <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SÁB</div>
+              </div>
+              <div id="calGrid" class="cal-grid"></div>
+            </div>
+
+            <div class="help">
+              Sugestão: códigos <span class="kbd">3013-10</span> / <span class="kbd">3020-10</span> ou <span class="kbd">Plantão</span>.
+              Vazio = “Disponível”.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="help" style="margin-top:10px;">
+        ✅ Ao clicar em <b>Imagem + WhatsApp</b>: o site gera o print do mês inteiro, baixa o PNG, tenta copiar a imagem e abre o WhatsApp com a mensagem pronta.
+        <br/>👉 No WhatsApp, cole (Ctrl+V) ou anexe o PNG e envie.
+      </div>
+    </div>
+  </aside>
+
+  <!-- MODAL: Add Driver -->
+  <div id="addOverlay" class="overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="m-head">
+        <h3>Cadastrar novo motorista</h3>
+        <button id="btnCloseAdd" class="btn">Fechar</button>
+      </div>
+      <div class="m-body">
+        <div class="row">
+          <div>
+            <label>Matrícula</label>
+            <input id="inMat" class="input" placeholder="ex: 33002" />
+          </div>
+          <div>
+            <label>Período</label>
+            <select id="inPeriod" class="select">
+              <option value="manhã">manhã</option>
+              <option value="tarde">tarde</option>
+              <option value="noite">noite</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Nome</label>
+            <input id="inName" class="input" placeholder="Nome completo" />
+          </div>
+          <div class="full">
+            <label>Telefone (WhatsApp)</label>
+            <input id="inPhone" class="input" placeholder="ex: 11 98767-4890 (ou +55 11 98767-4890)" />
+          </div>
+          <div class="full">
+            <label>Status (opcional)</label>
+            <input id="inStatus" class="input" placeholder="ex: Cobrindo Férias / Disponível" />
+          </div>
+        </div>
+      </div>
+      <div class="m-actions">
+        <button id="btnSaveDriver" class="btn green">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Edit Day -->
+  <div id="editOverlay" class="overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="m-head">
+        <h3>Editar dia</h3>
+        <button id="btnCloseEdit" class="btn">Fechar</button>
+      </div>
+      <div class="m-body">
+        <div class="row">
+          <div class="full">
+            <div class="muted" style="font-size:12px; margin-bottom:10px;">
+              Motorista: <b id="eDriver"></b><br/>
+              Data: <b id="eDate"></b>
+            </div>
+            <label>Valor do dia</label>
+            <input id="eValue" class="input" placeholder="ex: 3013-10 / Plantão / Folga / (vazio = disponível)" />
+          </div>
+        </div>
+      </div>
+      <div class="m-actions">
+        <button id="btnClearDay" class="btn">Limpar</button>
+        <button id="btnSaveDay" class="btn primary">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     * Config / Auth
+     ***********************/
+    const AUTH_USER = "rafael.plantao";
+    const AUTH_PASS = "Ignis1212@";
+    const LS_KEY = "escala_plantao_data_v2";
+    const LS_AUTH = "escala_plantao_auth_v1";
+
+    /***********************
+     * State
+     ***********************/
+    let state = {
+      drivers: [],
+      schedule: {},
+      selectedMonth: null,
+      selectedDriverId: null,
+      searchText: "",
+      periodFilter: "todos"
+    };
+
+    /***********************
+     * Helpers
+     ***********************/
+    const pad2 = n => String(n).padStart(2,"0");
+    const ymd = (y,m,d) => `${y}-${pad2(m)}-${pad2(d)}`;
+    const monthKey = (y,m) => `${y}-${pad2(m)}`;
+    const parseMonthKey = (mk) => {
+      const [y,m] = mk.split("-").map(Number);
+      return new Date(y, m-1, 1);
+    };
+    const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
+    const dowShort = ["DOM","SEG","TER","QUA","QUI","SEX","SAB"];
+
+    function escapeHtml(str){
+      return String(str || "")
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+
+    function fmtNiceDate(dateStr){
+      const [y,m,d] = dateStr.split("-");
+      return `${d}/${m}/${y}`;
+    }
+
+    function save(){
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        drivers: state.drivers,
+        schedule: state.schedule
+      }));
+    }
+
+    function seedExample(){
+      const d1 = { id: crypto.randomUUID(), mat:"30556", name:"VICTOR HUGO TOLEDO PANUCCI", phone:"11 94853-1972", period:"manhã", status:"Cobrindo Férias" };
+      const d2 = { id: crypto.randomUUID(), mat:"32002", name:"WILLIANS DOS SANTOS MENDES", phone:"11 96034-2883", period:"tarde", status:"Cobrindo Férias" };
+      const d3 = { id: crypto.randomUUID(), mat:"33002", name:"PAULO HENRIQUE OLIVEIRA DOS ANJOS", phone:"+55 11 98767-4890", period:"manhã", status:"Disponível" };
+
+      state.drivers = [d1,d2,d3];
+      state.schedule[d1.id] = {};
+      state.schedule[d2.id] = {};
+      state.schedule[d3.id] = {};
+
+      for(let day=1; day<=25; day++){
+        state.schedule[d1.id][ymd(2026,2,day)] = "3013-10";
+      }
+      state.schedule[d1.id][ymd(2026,2,26)] = "Plantão";
+      state.schedule[d1.id][ymd(2026,2,27)] = "Plantão";
+
+      for(let day=1; day<=28; day++){
+        state.schedule[d2.id][ymd(2026,2,day)] = "3020-10";
+        state.schedule[d3.id][ymd(2026,2,day)] = "plantão";
+      }
+    }
+
+    function load(){
+      const raw = localStorage.getItem(LS_KEY);
+      if(raw){
+        try{
+          const parsed = JSON.parse(raw);
+          state.drivers = Array.isArray(parsed.drivers) ? parsed.drivers : [];
+          state.schedule = parsed.schedule && typeof parsed.schedule === "object" ? parsed.schedule : {};
+        }catch(e){}
+      }
+      if(state.drivers.length === 0){
+        seedExample();
+        save();
+      }
+    }
+
+    function getDayValue(driverId, dateStr){
+      return (state.schedule[driverId] && state.schedule[driverId][dateStr]) ? state.schedule[driverId][dateStr] : "";
+    }
+
+    function setDayValue(driverId, dateStr, value){
+      if(!state.schedule[driverId]) state.schedule[driverId] = {};
+      const v = (value || "").trim();
+      if(v === ""){
+        delete state.schedule[driverId][dateStr];
+      }else{
+        state.schedule[driverId][dateStr] = v;
+      }
+      save();
+    }
+
+    function chipClass(val){
+      const v = (val || "").toLowerCase().trim();
+      if(!v) return "chip empty";
+      if(v === "plantão" || v === "plantao") return "chip plantao";
+      if(v === "folga" || v === "férias" || v === "ferias") return "chip off";
+      return "chip cod";
+    }
+
+    function normalizePhoneBR(phone){
+      // remove tudo que não for número
+      const digits = String(phone || "").replace(/\D/g, "");
+      if(!digits) return "";
+      // se já vier com 55...
+      if(digits.startsWith("55")) return digits;
+      // se vier com 11... (DDD + número), adiciona 55
+      if(digits.length >= 10) return "55" + digits;
+      // se for curto demais, retorna como está
+      return digits;
+    }
+
+    function buildWhatsappText(driver, monthDate){
+      const y = monthDate.getFullYear();
+      const m = monthDate.getMonth() + 1;
+      const mes = pad2(m);
+      // mensagem curta (recomendado)
+      return `Olá ${driver.name}! Segue sua escala mensal do mês ${mes}/${y}. (Imagem em anexo)`;
+    }
+
+    function openWhatsApp(phoneDigits, text){
+      const encoded = encodeURIComponent(text);
+      // Tenta abrir wa.me (funciona no mobile e geralmente no desktop também)
+      const url = `https://wa.me/${phoneDigits}?text=${encoded}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    async function captureCalendarImage(){
+      const el = document.getElementById("calCapture");
+      if(!el) throw new Error("Elemento do calendário não encontrado.");
+
+      // renderiza em maior qualidade
+      const canvas = await html2canvas(el, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true
+      });
+
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), "image/png", 1.0);
+      });
+    }
+
+    async function tryCopyImageToClipboard(blob){
+      try{
+        if(!navigator.clipboard || !window.ClipboardItem) return false;
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        return true;
+      }catch(e){
+        return false;
+      }
+    }
+
+    function downloadBlob(blob, filename){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 6000);
+    }
+
+    function show(el){ el.classList.remove("hidden"); }
+    function hide(el){ el.classList.add("hidden"); }
+
+    /***********************
+     * DOM
+     ***********************/
+    const loginView = document.getElementById("loginView");
+    const appView = document.getElementById("appView");
+    const loginUser = document.getElementById("loginUser");
+    const loginPass = document.getElementById("loginPass");
+    const loginErr = document.getElementById("loginErr");
+    const btnLogin = document.getElementById("btnLogin");
+
+    const btnLogout = document.getElementById("btnLogout");
+    const monthPicker = document.getElementById("monthPicker");
+    const searchMat = document.getElementById("searchMat");
+    const periodFilter = document.getElementById("periodFilter");
+    const btnAddDriver = document.getElementById("btnAddDriver");
+
+    const monthThead = document.getElementById("monthThead");
+    const monthTbody = document.getElementById("monthTbody");
+
+    const drawer = document.getElementById("drawer");
+    const btnCloseDrawer = document.getElementById("btnCloseDrawer");
+    const btnRemoveDriver = document.getElementById("btnRemoveDriver");
+    const btnFull = document.getElementById("btnFull");
+    const btnWhats = document.getElementById("btnWhats");
+    const dName = document.getElementById("dName");
+    const dSub = document.getElementById("dSub");
+    const calGrid = document.getElementById("calGrid");
+
+    const addOverlay = document.getElementById("addOverlay");
+    const btnCloseAdd = document.getElementById("btnCloseAdd");
+    const btnSaveDriver = document.getElementById("btnSaveDriver");
+    const inMat = document.getElementById("inMat");
+    const inName = document.getElementById("inName");
+    const inPhone = document.getElementById("inPhone");
+    const inPeriod = document.getElementById("inPeriod");
+    const inStatus = document.getElementById("inStatus");
+
+    const editOverlay = document.getElementById("editOverlay");
+    const btnCloseEdit = document.getElementById("btnCloseEdit");
+    const btnSaveDay = document.getElementById("btnSaveDay");
+    const btnClearDay = document.getElementById("btnClearDay");
+    const eDriver = document.getElementById("eDriver");
+    const eDate = document.getElementById("eDate");
+    const eValue = document.getElementById("eValue");
+
+    let editCtx = { driverId:null, dateStr:null };
+
+    /***********************
+     * Auth
+     ***********************/
+    function isAuthed(){
+      return localStorage.getItem(LS_AUTH) === "1";
+    }
+    function setAuthed(v){
+      if(v) localStorage.setItem(LS_AUTH,"1");
+      else localStorage.removeItem(LS_AUTH);
+    }
+    function renderAuth(){
+      if(isAuthed()){
+        hide(loginView);
+        show(appView);
+      }else{
+        show(loginView);
+        hide(appView);
+      }
+    }
+
+    btnLogin.addEventListener("click", () => {
+      const u = (loginUser.value || "").trim();
+      const p = (loginPass.value || "").trim();
+      if(u === AUTH_USER && p === AUTH_PASS){
+        loginErr.style.display = "none";
+        setAuthed(true);
+        renderAuth();
+        renderAll();
+      }else{
+        loginErr.style.display = "block";
+      }
+    });
+
+    loginPass.addEventListener("keydown", (e) => { if(e.key === "Enter") btnLogin.click(); });
+    loginUser.addEventListener("keydown", (e) => { if(e.key === "Enter") btnLogin.click(); });
+
+    btnLogout.addEventListener("click", () => {
+      setAuthed(false);
+      closeDrawer();
+      renderAuth();
+    });
+
+    /***********************
+     * Overlays
+     ***********************/
+    function openAdd(){
+      addOverlay.classList.add("show");
+      inMat.value = "";
+      inName.value = "";
+      inPhone.value = "";
+      inStatus.value = "";
+      inPeriod.value = "manhã";
+      setTimeout(() => inMat.focus(), 50);
+    }
+    function closeAdd(){ addOverlay.classList.remove("show"); }
+
+    function openEdit(driverId, dateStr){
+      editCtx = { driverId, dateStr };
+      const drv = state.drivers.find(d => d.id === driverId);
+      eDriver.textContent = drv ? `${drv.mat} • ${drv.name}` : "";
+      eDate.textContent = fmtNiceDate(dateStr);
+      eValue.value = getDayValue(driverId, dateStr);
+      editOverlay.classList.add("show");
+      setTimeout(() => eValue.focus(), 50);
+    }
+    function closeEdit(){
+      editOverlay.classList.remove("show");
+      editCtx = { driverId:null, dateStr:null };
+    }
+
+    btnAddDriver.addEventListener("click", openAdd);
+    btnCloseAdd.addEventListener("click", closeAdd);
+    addOverlay.addEventListener("click", (e)=>{ if(e.target === addOverlay) closeAdd(); });
+
+    btnCloseEdit.addEventListener("click", closeEdit);
+    editOverlay.addEventListener("click", (e)=>{ if(e.target === editOverlay) closeEdit(); });
+
+    btnSaveDay.addEventListener("click", () => {
+      if(!editCtx.driverId || !editCtx.dateStr) return;
+      setDayValue(editCtx.driverId, editCtx.dateStr, eValue.value);
+      closeEdit();
+      renderAll();
+    });
+    btnClearDay.addEventListener("click", () => {
+      if(!editCtx.driverId || !editCtx.dateStr) return;
+      setDayValue(editCtx.driverId, editCtx.dateStr, "");
+      closeEdit();
+      renderAll();
+    });
+
+    btnSaveDriver.addEventListener("click", () => {
+      const mat = (inMat.value || "").trim();
+      const name = (inName.value || "").trim();
+      const phone = (inPhone.value || "").trim();
+      const period = (inPeriod.value || "").trim();
+      const status = (inStatus.value || "").trim();
+
+      if(!mat || !name){
+        alert("Preencha pelo menos Matrícula e Nome.");
+        return;
+      }
+      const exists = state.drivers.some(d => d.mat === mat);
+      if(exists){
+        alert("Já existe um motorista com essa matrícula.");
+        return;
+      }
+
+      const driver = { id: crypto.randomUUID(), mat, name, phone, period, status };
+      state.drivers.push(driver);
+      state.schedule[driver.id] = {};
+      save();
+      closeAdd();
+      renderAll();
+    });
+
+    /***********************
+     * Drawer
+     ***********************/
+    function openDrawer(driverId){
+      state.selectedDriverId = driverId;
+      const drv = state.drivers.find(d => d.id === driverId);
+      if(!drv) return;
+
+      dName.textContent = `${drv.mat} • ${drv.name}`;
+      const meta = [
+        drv.phone ? `📞 ${drv.phone}` : null,
+        drv.period ? `⏱️ ${drv.period}` : null,
+        drv.status ? `🏷️ ${drv.status}` : null,
+      ].filter(Boolean);
+
+      dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
+
+      drawer.classList.add("open");
+      drawer.setAttribute("aria-hidden","false");
+      renderCalendar();
+    }
+
+    function closeDrawer(){
+      state.selectedDriverId = null;
+      drawer.classList.remove("open");
+      drawer.classList.remove("fullscreen");
+      drawer.setAttribute("aria-hidden","true");
+    }
+
+    btnCloseDrawer.addEventListener("click", closeDrawer);
+
+    btnFull.addEventListener("click", () => {
+      if(!drawer.classList.contains("open")) return;
+      drawer.classList.toggle("fullscreen");
+      btnFull.textContent = drawer.classList.contains("fullscreen") ? "🧩 Voltar" : "🖥️ Tela cheia";
+    });
+
+    btnRemoveDriver.addEventListener("click", () => {
+      const id = state.selectedDriverId;
+      if(!id) return;
+      const drv = state.drivers.find(d => d.id === id);
+      if(!drv) return;
+
+      const ok = confirm(`Remover o motorista ${drv.mat} • ${drv.name}?`);
+      if(!ok) return;
+
+      state.drivers = state.drivers.filter(d => d.id !== id);
+      delete state.schedule[id];
+      save();
+      closeDrawer();
+      renderAll();
+    });
+
+    btnWhats.addEventListener("click", async () => {
+      const id = state.selectedDriverId;
+      if(!id) return;
+      const drv = state.drivers.find(d => d.id === id);
+      if(!drv) return;
+
+      const phoneDigits = normalizePhoneBR(drv.phone);
+      if(!phoneDigits || phoneDigits.length < 10){
+        alert("Esse motorista está sem telefone válido. Cadastre o WhatsApp no cadastro.");
+        return;
+      }
+
+      btnWhats.disabled = true;
+      btnWhats.textContent = "⏳ Gerando imagem...";
+
+      try{
+        const blob = await captureCalendarImage();
+        const y = state.selectedMonth.getFullYear();
+        const m = pad2(state.selectedMonth.getMonth()+1);
+        const filename = `escala-${drv.mat}-${y}-${m}.png`;
+
+        // baixa automático
+        downloadBlob(blob, filename);
+
+        // tenta copiar a imagem (quando permitido)
+        const copied = await tryCopyImageToClipboard(blob);
+
+        // abre whatsapp com texto pronto
+        const text = buildWhatsappText(drv, state.selectedMonth);
+        openWhatsApp(phoneDigits, text);
+
+        // aviso
+        setTimeout(() => {
+          alert(
+            copied
+              ? "Imagem copiada ✅\nNo WhatsApp: cole (Ctrl+V) e envie.\n(O PNG também foi baixado.)"
+              : "PNG baixado ✅\nNo WhatsApp: anexe o PNG (ou tente colar Ctrl+V) e envie."
+          );
+        }, 300);
+
+      }catch(e){
+        alert("Erro ao gerar imagem: " + (e?.message || e));
+      }finally{
+        btnWhats.disabled = false;
+        btnWhats.textContent = "📲 Imagem + WhatsApp";
+      }
+    });
+
+    /***********************
+     * Filters & month
+     ***********************/
+    searchMat.addEventListener("input", () => {
+      state.searchText = (searchMat.value || "").trim().toLowerCase();
+      renderTable();
+    });
+
+    periodFilter.addEventListener("change", () => {
+      state.periodFilter = periodFilter.value;
+      renderTable();
+    });
+
+    monthPicker.addEventListener("change", () => {
+      if(!monthPicker.value) return;
+      state.selectedMonth = parseMonthKey(monthPicker.value);
+      renderAll();
+    });
+
+    /***********************
+     * Rendering
+     ***********************/
+    function ensureMonthInit(){
+      if(!state.selectedMonth){
+        const now = new Date();
+        state.selectedMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const hasFeb2026 = state.drivers.some(d => state.schedule[d.id] && Object.keys(state.schedule[d.id]).some(k => k.startsWith("2026-02-")));
+        if(hasFeb2026) state.selectedMonth = new Date(2026, 1, 1);
+      }
+      monthPicker.value = monthKey(state.selectedMonth.getFullYear(), state.selectedMonth.getMonth()+1);
+    }
+
+    function renderAll(){
+      ensureMonthInit();
+      renderTable();
+      if(drawer.classList.contains("open")){
+        renderCalendar();
+      }
+    }
+
+    function renderTable(){
+      const monthDate = state.selectedMonth;
+      const y = monthDate.getFullYear();
+      const m = monthDate.getMonth()+1;
+      const nDays = daysInMonth(monthDate);
+
+      // Header
+      const th = [];
+      th.push(`<tr>`);
+      th.push(`<th class="col-driver">Matrícula • Nome • Telefone • Período • Status</th>`);
+      for(let d=1; d<=nDays; d++){
+        const dt = new Date(y, m-1, d);
+        const dow = dowShort[dt.getDay()];
+        th.push(`<th title="${dow}">${pad2(d)}<div style="color:rgba(167,176,198,.8);font-weight:700;font-size:11px;margin-top:2px;">${dow}</div></th>`);
+      }
+      th.push(`</tr>`);
+      monthThead.innerHTML = th.join("");
+
+      // Filtragem
+      const filtered = state.drivers
+        .slice()
+        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}))
+        .filter(d => {
+          // filtro período
+          if(state.periodFilter !== "todos"){
+            const p = (d.period || "").toLowerCase().trim();
+            if(p !== state.periodFilter) return false;
+          }
+          // busca por matrícula OU nome
+          if(state.searchText){
+            const mat = (d.mat || "").toLowerCase();
+            const name = (d.name || "").toLowerCase();
+            if(!mat.includes(state.searchText) && !name.includes(state.searchText)) return false;
+          }
+          return true;
+        });
+
+      const rows = [];
+      if(filtered.length === 0){
+        rows.push(`<tr><td class="col-driver"><span class="muted">Nenhum motorista encontrado.</span></td>${"<td></td>".repeat(nDays)}</tr>`);
+        monthTbody.innerHTML = rows.join("");
+        return;
+      }
+
+      for(const drv of filtered){
+        const title = `
+          <div class="driver-title">
+            <div class="name">${escapeHtml(drv.mat)} • ${escapeHtml(drv.name)}</div>
+            <div class="meta">
+              ${drv.phone ? `<span class="kbd">📞 ${escapeHtml(drv.phone)}</span>` : `<span class="kbd">📞 (sem telefone)</span>`}
+              ${drv.period ? `<span class="kbd">⏱️ ${escapeHtml(drv.period)}</span>` : `<span class="kbd">⏱️ (sem período)</span>`}
+              ${drv.status ? `<span class="kbd">🏷️ ${escapeHtml(drv.status)}</span>` : `<span class="kbd">🏷️ (sem status)</span>`}
+              <span class="kbd">Clique no nome → calendário</span>
+            </div>
+          </div>
+        `;
+
+        rows.push(`<tr>`);
+        rows.push(`<td class="col-driver" style="cursor:pointer;" data-open="${drv.id}">${title}</td>`);
+
+        for(let d=1; d<=nDays; d++){
+          const dateStr = ymd(y,m,d);
+          const val = getDayValue(drv.id, dateStr);
+          const cls = chipClass(val);
+          const showTxt = val ? escapeHtml(val) : "—";
+          rows.push(`
+            <td>
+              <span class="${cls}" data-edit="${drv.id}" data-date="${dateStr}" title="Clique para editar">
+                ${showTxt}
+              </span>
+            </td>
+          `);
+        }
+        rows.push(`</tr>`);
+      }
+
+      monthTbody.innerHTML = rows.join("");
+
+      monthTbody.querySelectorAll("[data-open]").forEach(el => {
+        el.addEventListener("click", () => openDrawer(el.getAttribute("data-open")));
+      });
+
+      monthTbody.querySelectorAll("[data-edit]").forEach(el => {
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openEdit(el.getAttribute("data-edit"), el.getAttribute("data-date"));
+        });
+      });
+    }
+
+    function renderCalendar(){
+      const id = state.selectedDriverId;
+      const drv = state.drivers.find(d => d.id === id);
+      if(!drv) return;
+
+      const monthDate = state.selectedMonth;
+      const y = monthDate.getFullYear();
+      const m = monthDate.getMonth()+1;
+      const nDays = daysInMonth(monthDate);
+
+      const firstDow = new Date(y, m-1, 1).getDay();
+      const cells = [];
+
+      for(let i=0; i<firstDow; i++){
+        cells.push(`<div class="day muted" aria-hidden="true"></div>`);
+      }
+
+      for(let d=1; d<=nDays; d++){
+        const dateStr = ymd(y,m,d);
+        const val = getDayValue(id, dateStr);
+        const cls = val ? "" : "empty";
+        const showTxt = val ? escapeHtml(val) : "Disponível";
+
+        cells.push(`
+          <div class="day" data-editcal="${dateStr}">
+            <div class="num">${pad2(d)}</div>
+            <div class="val ${cls}">${showTxt}</div>
+          </div>
+        `);
+      }
+
+      const totalCells = firstDow + nDays;
+      const tail = (7 - (totalCells % 7)) % 7;
+      for(let i=0; i<tail; i++){
+        cells.push(`<div class="day muted" aria-hidden="true"></div>`);
+      }
+
+      calGrid.innerHTML = cells.join("");
+
+      calGrid.querySelectorAll("[data-editcal]").forEach(el => {
+        el.addEventListener("click", () => openEdit(id, el.getAttribute("data-editcal")));
+      });
+    }
+
+    /***********************
+     * Init
+     ***********************/
+    load();
+    renderAuth();
+    ensureMonthInit();
+
+    // binds
+    btnLogout.addEventListener("click", () => {});
+    periodFilter.value = state.periodFilter;
+
+    if(isAuthed()){
+      renderAll();
+    }else{
+      loginUser.value = AUTH_USER;
+      setTimeout(() => loginPass.focus(), 50);
+    }
+
+    // overlay binds
+    document.getElementById("btnCloseDrawer").addEventListener("click", closeDrawer);
+  </script>
+</body>
+</html>
