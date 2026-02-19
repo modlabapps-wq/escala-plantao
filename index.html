@@ -5,39 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Escala Plantão • Fiscais</title>
 
-  <!-- html2canvas (para gerar print do calendário) -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
     :root{
-      /* TEMA CLARO (verde suave) */
       --bg0:#ecfff2;
       --bg1:#dfffe9;
       --panel: rgba(255,255,255,.72);
-      --panel2: rgba(255,255,255,.84);
       --border: rgba(0,0,0,.10);
       --text: #0b1a10;
       --muted: rgba(11,26,16,.65);
       --muted2: rgba(11,26,16,.50);
 
-      /* Acentos (neon sutil) */
-      --c1:#00d4ff; /* ciano */
-      --c2:#a100ff; /* roxo */
-      --c3:#00d67a; /* verde */
-      --warn:#ffb300;
-      --danger:#ff2f5d;
+      --c1:#00d4ff;
+      --c2:#a100ff;
+      --c3:#00d67a;
 
       --radius:18px;
       --shadow: 0 14px 34px rgba(0,0,0,.12);
       --shadow2: 0 10px 26px rgba(0,0,0,.10);
       --glow1: 0 0 18px rgba(0,212,255,.26);
-      --glow2: 0 0 20px rgba(161,0,255,.20);
       --glow3: 0 0 18px rgba(0,214,122,.18);
 
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
 
-      /* Cores por tipo (chips) */
       --chip-trabalho-bg: rgba(0, 214, 122, .14);
       --chip-trabalho-bd: rgba(0, 214, 122, .55);
 
@@ -89,7 +81,7 @@
     }
 
     .wrap{
-      max-width: 1400px;
+      max-width: 1480px;
       margin: 0 auto;
       padding: 18px 14px 28px;
       min-height: 100vh;
@@ -219,7 +211,7 @@
       border-collapse: separate;
       border-spacing: 0;
       width: 100%;
-      min-width: 1060px;
+      min-width: 1120px;
       font-size: 12.5px;
     }
     thead th{
@@ -238,13 +230,13 @@
     tbody td{
       border-bottom: 1px solid rgba(0,0,0,.06);
       padding: 8px 10px;
-      vertical-align: middle;
+      vertical-align: top;
       white-space: normal;
     }
     tbody tr:hover{ background: rgba(0,214,122,.06); }
 
     .col-driver{
-      min-width: 380px;
+      min-width: 390px;
       position: sticky;
       left:0;
       z-index: 1;
@@ -271,31 +263,28 @@
       color: var(--text);
     }
 
+    /* ✅ CHIP multilinha: sem ellipsis, sem cortar */
     .chip{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
+      display:block;
       border-radius: 10px;
       padding: 6px 8px;
       border:1px solid rgba(0,0,0,.10);
       background: rgba(255,255,255,.80);
-      min-width: 70px;
+      min-width: 110px;
+      width: 100%;
+      max-width: 260px;         /* <<< expandiu */
       cursor:pointer;
       user-select:none;
       transition: transform .06s ease, filter .15s ease;
-      max-width: 190px;
-      overflow:hidden;
-      text-overflow: ellipsis;
-
-      white-space: normal;
-      line-height: 1.15;
-      display: -webkit-inline-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-
       font-weight: 900;
       letter-spacing: .1px;
+
+      /* >>> remove "..." e permite quebra */
+      overflow: visible;
+      text-overflow: unset;
+      white-space: pre-line;   /* mostra \n */
       word-break: break-word;
+      line-height: 1.15;
     }
     .chip:hover{ filter: brightness(1.01); }
     .chip:active{ transform: translateY(1px); }
@@ -305,6 +294,8 @@
       border-style:dashed;
       background: rgba(255,255,255,.55);
       font-weight: 800;
+      text-align:center;
+      padding: 10px 8px;
     }
     .chip.trabalho{ border-color: var(--chip-trabalho-bd); background: var(--chip-trabalho-bg); box-shadow: 0 0 16px rgba(0,214,122,.10); }
     .chip.plantao{ border-color: var(--chip-plantao-bd); background: var(--chip-plantao-bg); box-shadow: 0 0 16px rgba(0,212,255,.10); }
@@ -386,7 +377,7 @@
       grid-template-columns: repeat(7,1fr);
     }
     .day{
-      min-height: 112px;
+      min-height: 118px;
       border-right:1px solid rgba(0,0,0,.06);
       border-bottom:1px solid rgba(0,0,0,.06);
       padding: 10px 10px;
@@ -414,13 +405,8 @@
       font-size: 12.5px;
       max-width: 100%;
       font-weight: 900;
-
-      white-space: normal;
+      white-space: pre-line;
       word-break: break-word;
-      overflow:hidden;
-      display:-webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
       line-height: 1.15;
     }
     .day .val.empty{
@@ -432,14 +418,6 @@
     .day:hover{ background: rgba(0,214,122,.08); }
     .day.muted{ opacity:.35; cursor: default; background: transparent; }
     .day.muted:hover{ background: transparent; }
-
-    /* Modo de captura */
-    .captureMode{ background: #ffffff !important; color: #0b1a10 !important; }
-    .captureMode .card{ box-shadow: none !important; border: 1px solid rgba(0,0,0,.14) !important; background: #fff !important; }
-    .captureMode .cal-head{ background: rgba(0,214,122,.18) !important; }
-    .captureMode .calendar{ background: #fff !important; border-color: rgba(0,0,0,.16) !important; }
-    .captureMode .day{ background: #fff !important; border-color: rgba(0,0,0,.12) !important; }
-    .captureMode .day:hover{ background:#fff !important; }
 
     /* Modal */
     .overlay{
@@ -455,7 +433,7 @@
     }
     .overlay.show{ display:flex; }
     .modal{
-      width: min(640px, 96vw);
+      width: min(760px, 96vw);
       border-radius: 18px;
       border:1px solid rgba(0,0,0,.14);
       background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(245,255,250,.96));
@@ -562,8 +540,8 @@
       .input{ min-width: 180px; }
       table{ min-width: 980px; }
       .drawer{ width: 96vw; }
-      .day{ min-height: 106px; }
-      .chip{ max-width: 160px; }
+      .day{ min-height: 110px; }
+      .chip{ max-width: 280px; }
     }
   </style>
 </head>
@@ -594,9 +572,7 @@
           </div>
         </div>
         <div id="loginErr" class="err">Email ou senha inválidos.</div>
-        <div class="help">
-          ✅ Somente o admin acessa os dados (RLS + Policy).
-        </div>
+        <div class="help">✅ Somente o admin acessa os dados (RLS + Policy).</div>
       </div>
 
       <div class="login-actions">
@@ -632,14 +608,6 @@
             </select>
           </div>
 
-          <!-- Filtro por LINHA -->
-          <div class="pill">
-            <span class="muted" style="font-weight:950;">Linha</span>
-            <select id="lineFilter" class="select" style="min-width:190px">
-              <option value="todas">Todas</option>
-            </select>
-          </div>
-
           <div class="pill">
             <span class="muted" style="font-weight:950;">Buscar</span>
             <input id="searchMat" class="input" placeholder="matrícula ou nome" style="min-width:240px"/>
@@ -656,7 +624,7 @@
           <div class="head">
             <h2>Visualização 1 • Lista do mês (todos os fiscais)</h2>
             <div class="muted" style="font-size:12px;">
-              Clique no <b>nome</b> → calendário • clique em um <b>dia</b> → editar (tipo, linha, hora, cobertura)
+              Clique no <b>nome</b> → calendário • clique em um <b>dia</b> → editar (dia ou período)
             </div>
           </div>
           <div class="body">
@@ -696,7 +664,7 @@
         <div class="card" style="border-radius:16px; margin-bottom:12px;">
           <div class="head">
             <h2>Visualização 2 • Calendário do mês</h2>
-            <div class="muted" style="font-size:12px;">Clique em um dia para editar</div>
+            <div class="muted" style="font-size:12px;">Clique em um dia para editar (dia ou período)</div>
           </div>
           <div class="body">
             <div class="calendar">
@@ -708,15 +676,14 @@
 
             <div class="help">
               Tipos: <b>Trabalho</b>, <b>Plantão</b>, <b>Férias</b>, <b>Folga</b>, <b>Cobertura</b>.
-              <br/>Formato recomendado: linha + hora (ex: <span class="kbd">3013-10</span> • <span class="kbd">14:00</span>)
+              <br/>Regra: <b>7 dias seguidos</b> trabalhando exige <b>código 50001 a 50040</b> na observação.
             </div>
           </div>
         </div>
       </div>
 
       <div class="help" style="margin-top:10px;">
-        ✅ PNG do calendário sai com cores bem visíveis e sem cortar (modo “captura”).<br/>
-        👉 Observação: no PNG <b>não aparece</b> “quem cobriu” (controle interno).
+        ✅ PNG do calendário sai com cores bem visíveis e sem cortar.
       </div>
     </div>
   </aside>
@@ -753,7 +720,7 @@
           </div>
 
           <div>
-            <label>Linha base (linha principal)</label>
+            <label>Linha base (opcional)</label>
             <input id="inLine" class="input" placeholder="ex: 3013-10" />
           </div>
 
@@ -768,14 +735,13 @@
                 <option value="Férias">Férias</option>
                 <option value="Ativo">Ativo</option>
               </select>
-              <input id="inStatus" class="input" placeholder="ou digite livre (ex: cobrindo folga / treinamento)" style="min-width: 280px;" />
+              <input id="inStatus" class="input" placeholder="ou digite livre" style="min-width: 280px;" />
             </div>
           </div>
         </div>
 
         <div class="help">
-          ✅ Linha base ajuda no filtro e na sugestão de cobridores (plantonistas da mesma linha).<br/>
-          ✅ Status você pode trocar quando quiser (Editar).
+          ✅ Linha base ajuda no controle e na escolha de cobridores por linha.
         </div>
       </div>
       <div class="m-actions">
@@ -784,20 +750,36 @@
     </div>
   </div>
 
-  <!-- MODAL: Edit Day -->
+  <!-- MODAL: Edit Day/Range -->
   <div id="editOverlay" class="overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="m-head">
-        <h3>Editar dia</h3>
+        <h3>Editar</h3>
         <button id="btnCloseEdit" class="btn">Fechar</button>
       </div>
+
       <div class="m-body">
         <div class="muted" style="font-size:12px; margin-bottom:10px;">
           Fiscal: <b id="eDriver"></b><br/>
-          Data: <b id="eDate"></b>
+          Data selecionada: <b id="eDate"></b>
         </div>
 
         <div class="row3">
+          <div class="full" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <label style="margin:0;">Aplicar em:</label>
+            <select id="eApplyMode" class="select" style="min-width:240px;">
+              <option value="day">Somente este dia</option>
+              <option value="range">Período (data inicial/final)</option>
+            </select>
+
+            <div id="rangeBox" class="pill" style="display:none; padding:8px 10px;">
+              <span class="muted" style="font-weight:950;">De</span>
+              <input id="eStart" class="input" type="date" style="min-width:160px; padding:8px 10px;">
+              <span class="muted" style="font-weight:950;">Até</span>
+              <input id="eEnd" class="input" type="date" style="min-width:160px; padding:8px 10px;">
+            </div>
+          </div>
+
           <div>
             <label>Tipo</label>
             <select id="eKind" class="select">
@@ -819,24 +801,36 @@
             <input id="eTime" class="input" placeholder="ex: 14:00" />
           </div>
 
+          <div>
+            <label>TP/TS</label>
+            <select id="ePonta" class="select">
+              <option value="">(nenhum)</option>
+              <option value="TP">TP</option>
+              <option value="TS">TS</option>
+            </select>
+          </div>
+
           <div class="full" id="coverBox" style="display:none;">
-            <label>Quem irá cobrir (prioridade mesma linha)</label>
+            <label>Plantonista cobridor (para Férias/Folga)</label>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
               <select id="eCoverSelect" class="select" style="min-width: 330px;"></select>
-              <button id="btnClearCover" class="btn">Limpar cobertura</button>
+              <button id="btnClearCover" class="btn">Limpar</button>
             </div>
             <div class="help" style="margin-top:8px;">
-              ✅ Ao salvar uma <b>Folga</b> com cobridor: o sistema grava automaticamente no plantonista como <b>Cobertura</b> com linha e hora.<br/>
-              ✅ Na cobertura do plantonista, o texto exibido será: <b>linha • hora • observação</b> (sem escrever “Cobertura”).
+              ✅ Se você marcar <b>Férias</b> ou <b>Folga</b> com cobridor, o sistema cria automaticamente no plantonista a <b>Cobertura</b> no mesmo período.
             </div>
           </div>
 
           <div class="full">
-            <label>Observação (opcional)</label>
-            <input id="eNotes" class="input" placeholder="ex: falta / troca / ajuste" />
+            <label>Observação (opcional) / Código (50001-50040)</label>
+            <input id="eNotes" class="input" placeholder="ex: 50012 / troca / falta" />
+            <div class="help">
+              ⚠️ Regra: se cair no <b>7° dia seguido</b> trabalhando, é obrigatório um código <b>50001–50040</b>.
+            </div>
           </div>
         </div>
       </div>
+
       <div class="m-actions">
         <button id="btnClearDay" class="btn">Limpar</button>
         <button id="btnSaveDay" class="btn primary">Salvar</button>
@@ -847,9 +841,6 @@
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    /***********************
-     * Supabase
-     ***********************/
     const SUPABASE_URL = "https://cwqwugdiksfodeoksofp.supabase.co";
     const SUPABASE_ANON = "sb_publishable_XkISoiXR_cHRWdeKvtb7HA_ceYFTnPR";
     const ADMIN_EMAIL = "darlene.plantao@pessegotransportes.com.br";
@@ -858,9 +849,6 @@
       auth: { persistSession: true, autoRefreshToken: true }
     });
 
-    /***********************
-     * State
-     ***********************/
     let state = {
       drivers: [],
       entriesByDriver: {},
@@ -868,14 +856,10 @@
       selectedDriverId: null,
       searchText: "",
       roleFilter: "todos",
-      lineFilter: "todas",
     };
 
     let isBusy = false;
 
-    /***********************
-     * Helpers
-     ***********************/
     const pad2 = n => String(n).padStart(2,"0");
     const ymd = (y,m,d) => `${y}-${pad2(m)}-${pad2(d)}`;
     const monthKey = (y,m) => `${y}-${pad2(m)}`;
@@ -908,44 +892,116 @@
       return `${drv.mat} ${firstName(drv.name)}`.trim();
     }
 
-    function normalizeLine(s){
-      return String(s || "").trim();
+    function parseNotes(notes){
+      const s = String(notes || "").trim();
+      let ponta = "";
+      let rest = s;
+      const m = rest.match(/^(TP|TS)\s*(?:[|•-]\s*)?(.*)$/i);
+      if(m){
+        ponta = m[1].toUpperCase();
+        rest = (m[2] || "").trim();
+      }
+      return { ponta, rest };
     }
 
-    function entryToLabel(entry, hideCoverInfo=false){
+    function composeNotes(ponta, notes){
+      const p = (ponta || "").trim().toUpperCase();
+      const n = String(notes || "").trim();
+      if(p && n) return `${p} • ${n}`;
+      if(p) return p;
+      return n || null;
+    }
+
+    function isWorkingKind(kind){
+      const k = String(kind||"").toLowerCase().trim();
+      return (k === "trabalho" || k === "plantao" || k === "cobertura");
+    }
+
+    function hasValidCode(text){
+      const s = String(text || "");
+      return /\b500(0[1-9]|[1-3][0-9]|40)\b/.test(s);
+    }
+
+    function toDateObj(ymdStr){
+      const [y,m,d] = ymdStr.split("-").map(Number);
+      return new Date(y, m-1, d);
+    }
+    function addDays(dateObj, n){
+      const d = new Date(dateObj);
+      d.setDate(d.getDate()+n);
+      return d;
+    }
+
+    function getEntry(driverId, dateStr){
+      return state.entriesByDriver[driverId]?.[dateStr] || null;
+    }
+
+    function getKindForChain(driverId, dateStr, pendingMap){
+      const p = pendingMap?.[dateStr];
+      if(p) return p.kind || null;
+      const e = getEntry(driverId, dateStr);
+      return e?.kind || null;
+    }
+
+    function validate7thDayRule(driverId, dateStr, newKind, notesText, pendingMap){
+      if(!isWorkingKind(newKind)) return { ok:true };
+
+      let count = 1;
+      const cur = toDateObj(dateStr);
+
+      for(let i=1;i<=6;i++){
+        const prev = addDays(cur, -i);
+        const prevStr = ymd(prev.getFullYear(), prev.getMonth()+1, prev.getDate());
+        const k = getKindForChain(driverId, prevStr, pendingMap);
+        if(isWorkingKind(k)) count++;
+        else break;
+      }
+
+      if(count >= 7 && !hasValidCode(notesText)){
+        return { ok:false, msg:`⚠️ Este é o ${count}° dia seguido trabalhando.\nInforme um código entre 50001 e 50040 na observação.` };
+      }
+      return { ok:true };
+    }
+
+    function entryToMultilineLabel(entry){
       if(!entry) return "";
 
       const kind = (entry.kind || "trabalho").toLowerCase().trim();
-      const line = normalizeLine(entry.line);
+      const line = String(entry.line || "").trim();
       const time = String(entry.time_hhmm || "").trim();
-      const notes = String(entry.notes || "").trim();
+      const parsed = parseNotes(entry.notes || "");
+      const ponta = parsed.ponta;
+      const obs = parsed.rest;
 
       if(kind === "folga") return "Folga";
       if(kind === "ferias") return "Férias";
 
-      if(kind === "plantao"){
-        const parts = [];
-        parts.push("Plantão");
-        if(line) parts.push(line);
-        if(time) parts.push(time);
-        if(notes) parts.push(notes);
-        return parts.join(" • ");
-      }
-
+      // Cobertura sem escrever "Cobertura"
       if(kind === "cobertura"){
-        // NÃO escrever "Cobertura"
-        const parts = [];
-        if(line) parts.push(line);
-        if(time) parts.push(time);
-        if(notes && !hideCoverInfo) parts.push(notes);
-        return parts.join(" • ") || "Cobertura";
+        const out = [];
+        if(line) out.push(line);
+        if(time) out.push(time);
+        if(ponta) out.push(ponta);
+        if(obs) out.push(obs);
+        return out.join("\n") || "";
       }
 
-      const parts = [];
-      if(line) parts.push(line);
-      if(time) parts.push(time);
-      if(notes) parts.push(notes);
-      return parts.join(" • ") || "Trabalho";
+      if(kind === "plantao"){
+        const out = ["Plantão"];
+        if(line) out.push(line);
+        if(time) out.push(time);
+        if(ponta) out.push(ponta);
+        if(obs) out.push(obs);
+        return out.join("\n");
+      }
+
+      // trabalho
+      const out = [];
+      if(line) out.push(line);
+      if(time) out.push(time);
+      if(ponta) out.push(ponta);
+      if(obs) out.push(obs);
+      return out.join("\n") || "Trabalho";
     }
 
     function chipClass(entry){
@@ -982,27 +1038,8 @@
 
     async function captureCalendarImage(){
       const el = document.getElementById("calCapture");
-      if(!el) throw new Error("Elemento do calendário não encontrado.");
-
-      drawer.classList.add("fullscreen");
-      drawer.scrollTop = 0;
-
-      el.classList.add("captureMode");
-      await new Promise(r => setTimeout(r, 120));
-
-      const canvas = await html2canvas(el, {
-        backgroundColor: "#ffffff",
-        scale: 2.2,
-        useCORS: true,
-        windowWidth: document.documentElement.clientWidth,
-        windowHeight: document.documentElement.clientHeight
-      });
-
-      el.classList.remove("captureMode");
-
-      return new Promise((resolve) => {
-        canvas.toBlob((blob) => resolve(blob), "image/png", 1.0);
-      });
+      const canvas = await html2canvas(el, { backgroundColor:"#fff", scale:2.2, useCORS:true });
+      return new Promise((resolve) => canvas.toBlob((b)=>resolve(b), "image/png", 1.0));
     }
 
     async function tryCopyImageToClipboard(blob){
@@ -1010,9 +1047,7 @@
         if(!navigator.clipboard || !window.ClipboardItem) return false;
         await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
         return true;
-      }catch(e){
-        return false;
-      }
+      }catch{ return false; }
     }
 
     function downloadBlob(blob, filename){
@@ -1023,70 +1058,26 @@
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 6000);
+      setTimeout(()=>URL.revokeObjectURL(url), 6000);
     }
 
     function show(el){ el.classList.remove("hidden"); }
     function hide(el){ el.classList.add("hidden"); }
 
-    // blindagem: não quebra se algum botão não existir
-    function safeDisable(el, v){ if(el) el.disabled = v; }
-
     function setBusy(v){
       isBusy = v;
-      safeDisable(btnLogin, v);
-      safeDisable(btnAddDriver, v);
-      safeDisable(btnLogout, v);
-      safeDisable(btnSaveDriver, v);
-      safeDisable(btnSaveDay, v);
-      safeDisable(btnClearDay, v);
-      safeDisable(btnRemoveDriver, v);
-      safeDisable(btnWhats, v);
-      safeDisable(btnExportExcel, v);
-      safeDisable(btnEditDriver, v);
+      btnLogin.disabled = v;
+      btnAddDriver.disabled = v;
+      btnLogout.disabled = v;
+      btnSaveDriver.disabled = v;
+      btnSaveDay.disabled = v;
+      btnClearDay.disabled = v;
+      btnRemoveDriver.disabled = v;
+      btnWhats.disabled = v;
+      btnExportExcel.disabled = v;
+      btnEditDriver.disabled = v;
     }
 
-    function uniqueLinesFromDrivers(){
-      const set = new Set();
-      for(const d of state.drivers){
-        const l = normalizeLine(d.line_default);
-        if(l) set.add(l);
-      }
-      return Array.from(set).sort((a,b)=> a.localeCompare(b, "pt-BR", {numeric:true}));
-    }
-
-    function driverMatchesFilters(drv){
-      if(state.roleFilter !== "todos"){
-        const r = (drv.role || "").toLowerCase().trim();
-        if(r !== state.roleFilter) return false;
-      }
-
-      if(state.searchText){
-        const mat = (drv.mat || "").toLowerCase();
-        const name = (drv.name || "").toLowerCase();
-        if(!mat.includes(state.searchText) && !name.includes(state.searchText)) return false;
-      }
-
-      if(state.lineFilter && state.lineFilter !== "todas"){
-        const want = normalizeLine(state.lineFilter);
-        const base = normalizeLine(drv.line_default);
-
-        if(base === want) return true;
-
-        const entries = state.entriesByDriver[drv.id] || {};
-        for(const k in entries){
-          const line = normalizeLine(entries[k]?.line);
-          if(line === want) return true;
-        }
-        return false;
-      }
-
-      return true;
-    }
-
-    /***********************
-     * DOM
-     ***********************/
     const loginView = document.getElementById("loginView");
     const appView = document.getElementById("appView");
     const loginEmail = document.getElementById("loginEmail");
@@ -1098,7 +1089,6 @@
     const monthPicker = document.getElementById("monthPicker");
     const searchMat = document.getElementById("searchMat");
     const roleFilter = document.getElementById("roleFilter");
-    const lineFilter = document.getElementById("lineFilter");
     const btnAddDriver = document.getElementById("btnAddDriver");
     const btnExportExcel = document.getElementById("btnExportExcel");
 
@@ -1132,9 +1122,14 @@
     const btnClearDay = document.getElementById("btnClearDay");
     const eDriver = document.getElementById("eDriver");
     const eDate = document.getElementById("eDate");
+    const eApplyMode = document.getElementById("eApplyMode");
+    const rangeBox = document.getElementById("rangeBox");
+    const eStart = document.getElementById("eStart");
+    const eEnd = document.getElementById("eEnd");
     const eKind = document.getElementById("eKind");
     const eLine = document.getElementById("eLine");
     const eTime = document.getElementById("eTime");
+    const ePonta = document.getElementById("ePonta");
     const eNotes = document.getElementById("eNotes");
     const coverBox = document.getElementById("coverBox");
     const eCoverSelect = document.getElementById("eCoverSelect");
@@ -1143,44 +1138,26 @@
     let editCtx = { driverId:null, dateStr:null };
     let driverFormMode = { mode:"create", driverId:null };
 
-    /***********************
-     * DB functions
-     ***********************/
     async function dbGetDrivers(){
-      const { data, error } = await supabase
-        .from("drivers")
-        .select("*")
-        .order("mat", { ascending: true });
+      const { data, error } = await supabase.from("drivers").select("*").order("mat", { ascending: true });
       if(error) throw error;
       return data || [];
     }
 
     async function dbInsertDriver(driver){
-      const { data, error } = await supabase
-        .from("drivers")
-        .insert(driver)
-        .select("*")
-        .single();
+      const { data, error } = await supabase.from("drivers").insert(driver).select("*").single();
       if(error) throw error;
       return data;
     }
 
     async function dbUpdateDriver(driverId, patch){
-      const { data, error } = await supabase
-        .from("drivers")
-        .update(patch)
-        .eq("id", driverId)
-        .select("*")
-        .single();
+      const { data, error } = await supabase.from("drivers").update(patch).eq("id", driverId).select("*").single();
       if(error) throw error;
       return data;
     }
 
     async function dbDeleteDriver(driverId){
-      const { error } = await supabase
-        .from("drivers")
-        .delete()
-        .eq("id", driverId);
+      const { error } = await supabase.from("drivers").delete().eq("id", driverId);
       if(error) throw error;
     }
 
@@ -1221,23 +1198,13 @@
     }
 
     async function dbUpsertEntry(payload){
-      const { error } = await supabase
-        .from("schedule_entries")
-        .upsert(payload, { onConflict: "driver_id,work_date" });
+      const { error } = await supabase.from("schedule_entries").upsert(payload, { onConflict: "driver_id,work_date" });
       if(error) throw error;
     }
 
-    /***********************
-     * Auth
-     ***********************/
     function renderAuth(isAuthed){
-      if(isAuthed){
-        hide(loginView);
-        show(appView);
-      }else{
-        show(loginView);
-        hide(appView);
-      }
+      if(isAuthed){ hide(loginView); show(appView); }
+      else{ show(loginView); hide(appView); }
     }
 
     async function refreshSessionAndRender(){
@@ -1254,10 +1221,7 @@
       try{
         setBusy(true);
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if(error){
-          loginErr.style.display = "block";
-          return;
-        }
+        if(error){ loginErr.style.display = "block"; return; }
         await refreshSessionAndRender();
         await loadFromDBAndRender();
       }finally{
@@ -1279,9 +1243,6 @@
       }
     });
 
-    /***********************
-     * Filters & month
-     ***********************/
     searchMat.addEventListener("input", () => {
       state.searchText = (searchMat.value || "").trim().toLowerCase();
       renderTable();
@@ -1292,18 +1253,12 @@
       renderTable();
     });
 
-    lineFilter.addEventListener("change", () => {
-      state.lineFilter = lineFilter.value;
-      renderTable();
-    });
-
     monthPicker.addEventListener("change", async () => {
       if(!monthPicker.value) return;
       state.selectedMonth = parseMonthKey(monthPicker.value);
       try{
         setBusy(true);
         await loadMonthEntriesIntoState();
-        refreshLineFilterOptions();
         renderAll();
       }catch(err){
         alert("Erro ao carregar mês: " + (err?.message || err));
@@ -1312,9 +1267,6 @@
       }
     });
 
-    /***********************
-     * Driver modal (create/edit)
-     ***********************/
     function openDriverModalCreate(){
       driverFormMode = { mode:"create", driverId:null };
       driverModalTitle.textContent = "Cadastrar fiscal";
@@ -1363,56 +1315,30 @@
       const line_default = (inLine.value || "").trim() || null;
       const status = (inStatus.value || "").trim() || null;
 
-      if(!mat || !name){
-        alert("Preencha pelo menos Matrícula e Nome.");
-        return;
-      }
+      if(!mat || !name){ alert("Preencha Matrícula e Nome."); return; }
 
       try{
         setBusy(true);
 
         if(driverFormMode.mode === "create"){
           const exists = state.drivers.some(d => String(d.mat).trim() === mat);
-          if(exists){
-            alert("Já existe um fiscal com essa matrícula.");
-            return;
-          }
+          if(exists){ alert("Já existe um fiscal com essa matrícula."); return; }
 
-          const inserted = await dbInsertDriver({
-            mat, name, phone,
-            role,
-            line_default,
-            status
-          });
-
+          const inserted = await dbInsertDriver({ mat, name, phone, role, line_default, status });
           state.drivers.push(inserted);
           state.drivers.sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
           closeAdd();
           await loadMonthEntriesIntoState();
-          refreshLineFilterOptions();
           renderAll();
           return;
         }
 
         const id = driverFormMode.driverId;
         const updated = await dbUpdateDriver(id, { mat, name, phone, role, line_default, status });
-
         state.drivers = state.drivers.map(d => d.id === id ? updated : d);
         state.drivers.sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
 
-        if(state.selectedDriverId === id && drawer.classList.contains("open")){
-          dName.textContent = `${updated.mat} • ${updated.name}`;
-          const meta = [
-            updated.phone ? `📞 ${updated.phone}` : null,
-            updated.role ? `👤 ${updated.role}` : null,
-            updated.line_default ? `🚌 ${updated.line_default}` : null,
-            updated.status ? `🏷️ ${updated.status}` : null,
-          ].filter(Boolean);
-          dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
-        }
-
         closeAdd();
-        refreshLineFilterOptions();
         renderTable();
       }catch(err){
         alert("Erro ao salvar fiscal: " + (err?.message || err));
@@ -1421,9 +1347,37 @@
       }
     });
 
-    /***********************
-     * Day modal
-     ***********************/
+    function syncRangeBox(){
+      rangeBox.style.display = (eApplyMode.value === "range") ? "flex" : "none";
+    }
+    eApplyMode.addEventListener("change", syncRangeBox);
+
+    function syncCoverBoxVisibility(){
+      const k = (eKind.value || "").toLowerCase();
+      coverBox.style.display = (k === "ferias" || k === "folga") ? "block" : "none";
+    }
+
+    function fillCoverSelectOptions(){
+      const plantonistas = state.drivers
+        .filter(d => (d.role || "").toLowerCase().trim() === "plantonista")
+        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
+
+      const options = [];
+      options.push(`<option value="">(sem cobridor)</option>`);
+      for(const p of plantonistas){
+        options.push(`<option value="${p.id}">${escapeHtml(p.mat)} • ${escapeHtml(firstName(p.name))}</option>`);
+      }
+      eCoverSelect.innerHTML = options.join("");
+    }
+
+    eKind.addEventListener("change", () => {
+      syncCoverBoxVisibility();
+      fillCoverSelectOptions();
+      if(eKind.value !== "ferias" && eKind.value !== "folga") eCoverSelect.value = "";
+    });
+
+    btnClearCover.addEventListener("click", () => { eCoverSelect.value = ""; });
+
     function openEdit(driverId, dateStr){
       editCtx = { driverId, dateStr };
       const drv = state.drivers.find(d => d.id === driverId);
@@ -1431,20 +1385,28 @@
       eDriver.textContent = drv ? `${drv.mat} • ${drv.name}` : "";
       eDate.textContent = fmtNiceDate(dateStr);
 
+      eApplyMode.value = "day";
+      syncRangeBox();
+      eStart.value = dateStr;
+      eEnd.value = dateStr;
+
       const entry = state.entriesByDriver[driverId]?.[dateStr] || null;
 
-      eKind.value = entry?.kind || "trabalho";
+      const kind = entry?.kind || "trabalho";
+      eKind.value = kind;
       eLine.value = entry?.line || (drv?.line_default || "");
       eTime.value = entry?.time_hhmm || "";
-      eNotes.value = entry?.notes || "";
+
+      const parsed = parseNotes(entry?.notes || "");
+      ePonta.value = parsed.ponta || "";
+      eNotes.value = parsed.rest || "";
 
       syncCoverBoxVisibility();
       fillCoverSelectOptions();
-
       eCoverSelect.value = entry?.covered_by_driver_id || "";
 
       editOverlay.classList.add("show");
-      setTimeout(() => eLine.focus(), 60);
+      setTimeout(()=> eLine.focus(), 60);
     }
 
     function closeEdit(){
@@ -1455,86 +1417,35 @@
     btnCloseEdit.addEventListener("click", closeEdit);
     editOverlay.addEventListener("click", (e)=>{ if(e.target === editOverlay) closeEdit(); });
 
-    function syncCoverBoxVisibility(){
-      coverBox.style.display = (eKind.value === "folga") ? "block" : "none";
-    }
-
-    eKind.addEventListener("change", () => {
-      syncCoverBoxVisibility();
-      const drv = state.drivers.find(d => d.id === editCtx.driverId);
-      if(eKind.value === "trabalho" && drv?.line_default && !eLine.value.trim()){
-        eLine.value = drv.line_default;
-      }
-      if(eKind.value !== "folga"){
-        eCoverSelect.value = "";
-      }else{
-        fillCoverSelectOptions();
-      }
-    });
-
-    eLine.addEventListener("input", () => {
-      if(eKind.value === "folga") fillCoverSelectOptions();
-    });
-
-    function fillCoverSelectOptions(){
-      const drv = state.drivers.find(d => d.id === editCtx.driverId);
-      const lineWanted = normalizeLine(eLine.value) || normalizeLine(drv?.line_default);
-
-      const plantonistasAll = state.drivers
-        .filter(d => (d.role || "").toLowerCase().trim() === "plantonista")
-        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
-
-      const sameLine = [];
-      const otherLine = [];
-
-      for(const p of plantonistasAll){
-        const pl = normalizeLine(p.line_default);
-        if(lineWanted && pl === lineWanted) sameLine.push(p);
-        else otherLine.push(p);
-      }
-
-      const options = [];
-      options.push(`<option value="">(sem cobridor)</option>`);
-
-      if(sameLine.length){
-        options.push(`<option value="" disabled>— Plantonistas da linha ${escapeHtml(lineWanted)} —</option>`);
-        for(const p of sameLine){
-          const extra = p.line_default ? ` (${escapeHtml(p.line_default)})` : "";
-          options.push(`<option value="${p.id}">${escapeHtml(p.mat)} • ${escapeHtml(firstName(p.name))}${extra}</option>`);
-        }
-      }
-
-      if(otherLine.length){
-        options.push(`<option value="" disabled>— Outros plantonistas —</option>`);
-        for(const p of otherLine){
-          const extra = p.line_default ? ` (${escapeHtml(p.line_default)})` : "";
-          options.push(`<option value="${p.id}">${escapeHtml(p.mat)} • ${escapeHtml(firstName(p.name))}${extra}</option>`);
-        }
-      }
-
-      eCoverSelect.innerHTML = options.join("");
-    }
-
-    btnClearCover.addEventListener("click", () => { eCoverSelect.value = ""; });
-
     btnClearDay.addEventListener("click", async () => {
       if(!editCtx.driverId || !editCtx.dateStr) return;
+
+      const mode = eApplyMode.value;
+      const startStr = (mode === "range") ? (eStart.value || "") : editCtx.dateStr;
+      const endStr = (mode === "range") ? (eEnd.value || "") : editCtx.dateStr;
+      if(!startStr || !endStr) return;
+
+      const start = toDateObj(startStr);
+      const end = toDateObj(endStr);
+      if(end < start){ alert("Data final menor que a inicial."); return; }
 
       try{
         setBusy(true);
 
-        const existing = await dbGetEntry(editCtx.driverId, editCtx.dateStr);
-        if(existing?.kind === "folga" && existing?.covered_by_driver_id){
-          await dbDeleteEntry(existing.covered_by_driver_id, editCtx.dateStr);
+        for(let d = new Date(start); d <= end; d = addDays(d,1)){
+          const ds = ymd(d.getFullYear(), d.getMonth()+1, d.getDate());
+          const existing = await dbGetEntry(editCtx.driverId, ds);
+          if(existing?.covered_by_driver_id){
+            await dbDeleteEntry(existing.covered_by_driver_id, ds);
+          }
+          await dbDeleteEntry(editCtx.driverId, ds);
         }
 
-        await dbDeleteEntry(editCtx.driverId, editCtx.dateStr);
         closeEdit();
         await loadMonthEntriesIntoState();
-        refreshLineFilterOptions();
         renderAll();
       }catch(err){
-        alert("Erro ao limpar dia: " + (err?.message || err));
+        alert("Erro ao limpar: " + (err?.message || err));
       }finally{
         setBusy(false);
       }
@@ -1543,70 +1454,91 @@
     btnSaveDay.addEventListener("click", async () => {
       if(!editCtx.driverId || !editCtx.dateStr) return;
 
+      const mode = eApplyMode.value;
+      const startStr = (mode === "range") ? (eStart.value || "") : editCtx.dateStr;
+      const endStr = (mode === "range") ? (eEnd.value || "") : editCtx.dateStr;
+      if(!startStr || !endStr){ alert("Selecione as datas."); return; }
+
+      const start = toDateObj(startStr);
+      const end = toDateObj(endStr);
+      if(end < start){ alert("Data final menor que a inicial."); return; }
+
+      const driverId = editCtx.driverId;
+      const drv = state.drivers.find(d => d.id === driverId);
+
+      const kind = eKind.value;
+      const line = (eLine.value || "").trim() || null;
+      const time_hhmm = (eTime.value || "").trim() || null;
+      const ponta = (ePonta.value || "").trim().toUpperCase();
+      const notesRaw = (eNotes.value || "").trim();
+      const notes = composeNotes(ponta, notesRaw);
+
+      let covered_by_driver_id = null;
+      if(kind === "ferias" || kind === "folga"){
+        covered_by_driver_id = eCoverSelect.value || null;
+      }
+
+      // valida regra 7 dias (bloqueia salvar se não tiver código)
+      const pendingMap = {};
+      for(let d = new Date(start); d <= end; d = addDays(d,1)){
+        const ds = ymd(d.getFullYear(), d.getMonth()+1, d.getDate());
+        pendingMap[ds] = { kind };
+      }
+      for(let d = new Date(start); d <= end; d = addDays(d,1)){
+        const ds = ymd(d.getFullYear(), d.getMonth()+1, d.getDate());
+        const v = validate7thDayRule(driverId, ds, kind, notesRaw, pendingMap);
+        if(!v.ok){ alert(v.msg); return; }
+      }
+
       try{
         setBusy(true);
 
-        const driverId = editCtx.driverId;
-        const dateStr = editCtx.dateStr;
+        for(let d = new Date(start); d <= end; d = addDays(d,1)){
+          const dateStr = ymd(d.getFullYear(), d.getMonth()+1, d.getDate());
 
-        const drv = state.drivers.find(d => d.id === driverId);
-
-        const kind = eKind.value;
-        const line = (eLine.value || "").trim() || null;
-        const time_hhmm = (eTime.value || "").trim() || null;
-        const notes = (eNotes.value || "").trim() || null;
-
-        const existing = await dbGetEntry(driverId, dateStr);
-        const previousCoveredBy = existing?.covered_by_driver_id || null;
-
-        let covered_by_driver_id = null;
-        if(kind === "folga"){
-          covered_by_driver_id = eCoverSelect.value || null;
-        }
-
-        await dbUpsertEntry({
-          driver_id: driverId,
-          work_date: dateStr,
-          kind,
-          line,
-          time_hhmm,
-          covered_by_driver_id,
-          notes
-        });
-
-        if(previousCoveredBy && previousCoveredBy !== covered_by_driver_id){
-          await dbDeleteEntry(previousCoveredBy, dateStr);
-        }
-
-        if(kind === "folga" && covered_by_driver_id){
-          const auto = drv ? shortPerson(drv) : "";
-          const coverNotes = notes ? `${auto} • ${notes}`.trim() : (auto || null);
+          const existing = await dbGetEntry(driverId, dateStr);
+          const previousCoveredBy = existing?.covered_by_driver_id || null;
 
           await dbUpsertEntry({
-            driver_id: covered_by_driver_id,
+            driver_id: driverId,
             work_date: dateStr,
-            kind: "cobertura",
+            kind,
             line,
             time_hhmm,
-            covered_by_driver_id: null,
-            notes: coverNotes
+            covered_by_driver_id,
+            notes
           });
+
+          if(previousCoveredBy && previousCoveredBy !== covered_by_driver_id){
+            await dbDeleteEntry(previousCoveredBy, dateStr);
+          }
+
+          if((kind === "ferias" || kind === "folga") && covered_by_driver_id){
+            const auto = drv ? shortPerson(drv) : "";
+            const obs = notesRaw ? `${auto} • ${notesRaw}`.trim() : (auto || null);
+
+            await dbUpsertEntry({
+              driver_id: covered_by_driver_id,
+              work_date: dateStr,
+              kind: "cobertura",
+              line,
+              time_hhmm,
+              covered_by_driver_id: null,
+              notes: composeNotes(ponta, obs)
+            });
+          }
         }
 
         closeEdit();
         await loadMonthEntriesIntoState();
-        refreshLineFilterOptions();
         renderAll();
       }catch(err){
-        alert("Erro ao salvar dia: " + (err?.message || err));
+        alert("Erro ao salvar: " + (err?.message || err));
       }finally{
         setBusy(false);
       }
     });
 
-    /***********************
-     * Drawer
-     ***********************/
     function openDrawer(driverId){
       state.selectedDriverId = driverId;
       const drv = state.drivers.find(d => d.id === driverId);
@@ -1619,11 +1551,10 @@
         drv.line_default ? `🚌 ${drv.line_default}` : null,
         drv.status ? `🏷️ ${drv.status}` : null,
       ].filter(Boolean);
-
       dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
 
       drawer.classList.add("open");
-      drawer.classList.add("fullscreen");
+      drawer.classList.add("fullscreen"); // abre grande pra ficar confortável
       drawer.setAttribute("aria-hidden","false");
       drawer.scrollTop = 0;
       renderCalendar();
@@ -1658,7 +1589,6 @@
         state.drivers = state.drivers.filter(d => d.id !== id);
         delete state.entriesByDriver[id];
         closeDrawer();
-        refreshLineFilterOptions();
         renderAll();
       }catch(err){
         alert("Erro ao remover: " + (err?.message || err));
@@ -1707,60 +1637,47 @@
       }
     });
 
-    /***********************
-     * Export Excel (CSV) - formato listagem
-     ***********************/
-    function getFilteredDriversSorted(){
-      return state.drivers
-        .slice()
-        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}))
-        .filter(driverMatchesFilters);
-    }
-
     function buildCSVForMonth_Listagem(){
       const monthDate = state.selectedMonth;
       const y = monthDate.getFullYear();
       const m = monthDate.getMonth()+1;
       const nDays = daysInMonth(monthDate);
 
-      const filtered = getFilteredDriversSorted();
+      const filtered = state.drivers
+        .slice()
+        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}))
+        .filter(d => {
+          if(state.roleFilter !== "todos"){
+            const r = (d.role || "").toLowerCase().trim();
+            if(r !== state.roleFilter) return false;
+          }
+          if(state.searchText){
+            const mat = (d.mat || "").toLowerCase();
+            const name = (d.name || "").toLowerCase();
+            if(!mat.includes(state.searchText) && !name.includes(state.searchText)) return false;
+          }
+          return true;
+        });
 
       const header = ["matricula","nome","tipo_fiscal","linha_base","status"];
       for(let d=1; d<=nDays; d++){
         const dt = new Date(y, m-1, d);
-        const dow = dowShort[dt.getDay()];
-        header.push(`${pad2(d)}_${dow}`);
+        header.push(`${pad2(d)}_${dowShort[dt.getDay()]}`);
       }
 
       const rows = [header];
 
       for(const drv of filtered){
-        const row = [
-          drv.mat||"",
-          drv.name||"",
-          drv.role||"",
-          drv.line_default||"",
-          drv.status||""
-        ];
-
+        const row = [drv.mat||"", drv.name||"", drv.role||"", drv.line_default||"", drv.status||""];
         for(let d=1; d<=nDays; d++){
           const dateStr = ymd(y,m,d);
           const entry = state.entriesByDriver[drv.id]?.[dateStr] || null;
-          row.push(entry ? entryToLabel(entry, false) : "");
+          row.push(entry ? entryToMultilineLabel(entry).replaceAll("\n"," | ") : "");
         }
-
         rows.push(row);
       }
 
-      const csv = rows
-        .map(r => r.map(v => {
-          const s = String(v ?? "");
-          const escaped = s.replaceAll('"','""');
-          return `"${escaped}"`;
-        }).join(";"))
-        .join("\n");
-
-      return csv;
+      return rows.map(r => r.map(v => `"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\n");
     }
 
     btnExportExcel.addEventListener("click", () => {
@@ -1771,9 +1688,6 @@
       downloadBlob(blob, `escala-listagem-${y}-${m}.csv`);
     });
 
-    /***********************
-     * Rendering
-     ***********************/
     function ensureMonthInit(){
       if(!state.selectedMonth){
         const now = new Date();
@@ -1782,30 +1696,10 @@
       monthPicker.value = monthKey(state.selectedMonth.getFullYear(), state.selectedMonth.getMonth()+1);
     }
 
-    function refreshLineFilterOptions(){
-      const current = state.lineFilter || "todas";
-      const lines = uniqueLinesFromDrivers();
-
-      const opts = [`<option value="todas">Todas</option>`]
-        .concat(lines.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`));
-
-      lineFilter.innerHTML = opts.join("");
-
-      if(current !== "todas" && !lines.includes(current)){
-        state.lineFilter = "todas";
-        lineFilter.value = "todas";
-      }else{
-        lineFilter.value = current;
-      }
-    }
-
     function renderAll(){
       ensureMonthInit();
-      refreshLineFilterOptions();
       renderTable();
-      if(drawer.classList.contains("open")){
-        renderCalendar();
-      }
+      if(drawer.classList.contains("open")) renderCalendar();
     }
 
     function renderTable(){
@@ -1825,7 +1719,21 @@
       th.push(`</tr>`);
       monthThead.innerHTML = th.join("");
 
-      const filtered = getFilteredDriversSorted();
+      const filtered = state.drivers
+        .slice()
+        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}))
+        .filter(d => {
+          if(state.roleFilter !== "todos"){
+            const r = (d.role || "").toLowerCase().trim();
+            if(r !== state.roleFilter) return false;
+          }
+          if(state.searchText){
+            const mat = (d.mat || "").toLowerCase();
+            const name = (d.name || "").toLowerCase();
+            if(!mat.includes(state.searchText) && !name.includes(state.searchText)) return false;
+          }
+          return true;
+        });
 
       const rows = [];
       if(filtered.length === 0){
@@ -1855,16 +1763,14 @@
           const entry = state.entriesByDriver[drv.id]?.[dateStr] || null;
 
           const cls = chipClass(entry);
-          const showTxt = entry ? escapeHtml(entryToLabel(entry, false)) : "—";
+          const showTxt = entry ? escapeHtml(entryToMultilineLabel(entry)) : "—";
 
-          rows.push(`
-            <td>
-              <span class="${cls}" data-edit="${drv.id}" data-date="${dateStr}" title="Clique para editar">
-                ${showTxt}
-              </span>
-            </td>
-          `);
+          // ✅ sem indentação dentro do span (evita espaços/lixo no começo)
+          rows.push(`<td style="min-width:120px;">
+<span class="${cls}" data-edit="${drv.id}" data-date="${dateStr}" title="Clique para editar">${showTxt}</span>
+</td>`);
         }
+
         rows.push(`</tr>`);
       }
 
@@ -1903,7 +1809,7 @@
         const dateStr = ymd(y,m,d);
         const entry = state.entriesByDriver[id]?.[dateStr] || null;
 
-        const label = entry ? entryToLabel(entry, true) : "Disponível";
+        const label = entry ? entryToMultilineLabel(entry) : "Disponível";
         const cls = entry ? "" : "empty";
 
         cells.push(`
@@ -1927,17 +1833,12 @@
       });
     }
 
-    /***********************
-     * Load data from DB
-     ***********************/
     async function loadMonthEntriesIntoState(){
       ensureMonthInit();
       const entries = await dbGetEntriesForMonth(state.selectedMonth);
 
       const map = {};
-      for(const d of state.drivers){
-        map[d.id] = {};
-      }
+      for(const d of state.drivers) map[d.id] = {};
 
       for(const it of entries){
         if(!map[it.driver_id]) map[it.driver_id] = {};
@@ -1961,7 +1862,6 @@
       try{
         state.drivers = await dbGetDrivers();
         await loadMonthEntriesIntoState();
-        refreshLineFilterOptions();
         renderAll();
       }catch(err){
         alert("Erro ao carregar dados do Supabase: " + (err?.message || err));
@@ -1970,13 +1870,9 @@
       }
     }
 
-    /***********************
-     * Init
-     ***********************/
     (async function init(){
       loginEmail.value = ADMIN_EMAIL;
       roleFilter.value = state.roleFilter;
-      lineFilter.value = state.lineFilter;
 
       const session = await refreshSessionAndRender();
       ensureMonthInit();
@@ -1986,7 +1882,7 @@
       }else{
         show(loginView);
         hide(appView);
-        setTimeout(() => loginPass.focus(), 50);
+        setTimeout(()=> loginPass.focus(), 50);
       }
     })();
   </script>
