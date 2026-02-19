@@ -3,52 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Escala Plantão • Motoristas</title>
+  <title>Escala Plantão • Fiscais</title>
 
   <!-- html2canvas (para gerar print do calendário) -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
     :root{
-      --bg0:#070A10;
-      --bg1:#0B1020;
-      --panel:rgba(255,255,255,.06);
-      --panel2:rgba(255,255,255,.08);
-      --border:rgba(255,255,255,.12);
-      --text:#EAF0FF;
-      --muted:#A7B0C6;
-      --muted2:#7E8AAA;
+      /* TEMA CLARO (verde suave) */
+      --bg0:#ecfff2;
+      --bg1:#dfffe9;
+      --panel: rgba(255,255,255,.72);
+      --panel2: rgba(255,255,255,.84);
+      --border: rgba(0,0,0,.10);
+      --text: #0b1a10;
+      --muted: rgba(11,26,16,.65);
+      --muted2: rgba(11,26,16,.50);
 
-      --c1:#00E5FF; /* ciano */
-      --c2:#B100FF; /* roxo */
-      --c3:#00FF88; /* verde */
-
-      --warn:#FFCE3A;
-      --danger:#FF4D6D;
+      /* Acentos (neon sutil) */
+      --c1:#00d4ff; /* ciano */
+      --c2:#a100ff; /* roxo */
+      --c3:#00d67a; /* verde */
+      --warn:#ffb300;
+      --danger:#ff2f5d;
 
       --radius:18px;
-      --shadow: 0 12px 30px rgba(0,0,0,.45);
-      --shadow2: 0 10px 26px rgba(0,0,0,.35);
-
-      --glow1: 0 0 22px rgba(0,229,255,.28);
-      --glow2: 0 0 26px rgba(177,0,255,.22);
-      --glow3: 0 0 20px rgba(0,255,136,.18);
+      --shadow: 0 14px 34px rgba(0,0,0,.12);
+      --shadow2: 0 10px 26px rgba(0,0,0,.10);
+      --glow1: 0 0 18px rgba(0,212,255,.26);
+      --glow2: 0 0 20px rgba(161,0,255,.20);
+      --glow3: 0 0 18px rgba(0,214,122,.18);
 
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+
+      /* Cores por tipo (chips) */
+      --chip-trabalho-bg: rgba(0, 214, 122, .14);
+      --chip-trabalho-bd: rgba(0, 214, 122, .55);
+
+      --chip-plantao-bg: rgba(0, 212, 255, .14);
+      --chip-plantao-bd: rgba(0, 212, 255, .55);
+
+      --chip-ferias-bg: rgba(161, 0, 255, .10);
+      --chip-ferias-bd: rgba(161, 0, 255, .50);
+
+      --chip-folga-bg: rgba(255, 179, 0, .16);
+      --chip-folga-bd: rgba(255, 179, 0, .55);
+
+      --chip-cobertura-bg: rgba(255, 47, 93, .12);
+      --chip-cobertura-bd: rgba(255, 47, 93, .55);
     }
 
     *{ box-sizing: border-box; }
     html,body{ height:100%; }
-
     body{
       margin:0;
       font-family: var(--sans);
       color: var(--text);
       background:
-        radial-gradient(1200px 700px at 20% 15%, rgba(177,0,255,.16), transparent 55%),
-        radial-gradient(900px 520px at 75% 20%, rgba(0,229,255,.14), transparent 55%),
-        radial-gradient(900px 520px at 60% 90%, rgba(0,255,136,.08), transparent 55%),
+        radial-gradient(1200px 700px at 20% 15%, rgba(161,0,255,.10), transparent 55%),
+        radial-gradient(900px 520px at 75% 20%, rgba(0,212,255,.12), transparent 55%),
+        radial-gradient(900px 520px at 60% 90%, rgba(0,214,122,.10), transparent 55%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
     }
@@ -57,34 +72,35 @@
 
     .neon-ring{
       position: fixed;
-      top: -180px;
+      top: -220px;
       left: 50%;
       transform: translateX(-50%);
-      width: 680px;
-      height: 680px;
+      width: 720px;
+      height: 720px;
       border-radius: 50%;
       pointer-events:none;
-      opacity:.9;
+      opacity:.65;
       background:
         radial-gradient(circle at 50% 50%, transparent 58%, rgba(0,0,0,.0) 58%),
         conic-gradient(from 0deg, var(--c2), var(--c1), var(--c3), var(--c2));
       -webkit-mask: radial-gradient(circle, transparent 58%, #000 61%);
       mask: radial-gradient(circle, transparent 58%, #000 61%);
-      box-shadow: var(--glow1), var(--glow2), var(--glow3);
+      filter: blur(.2px);
     }
 
     .wrap{
-      max-width: 1280px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 26px 18px 40px;
+      padding: 18px 14px 28px;
+      min-height: 100vh;
     }
 
     .topbar{
       display:flex;
       align-items:center;
       justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 14px;
+      gap: 12px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
     }
 
@@ -95,20 +111,18 @@
       padding: 10px 12px;
       border-radius: 999px;
       border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.58));
       box-shadow: var(--shadow2);
       backdrop-filter: blur(10px);
     }
-
     .dot{
       width:12px;height:12px;border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.15));
-      box-shadow: 0 0 18px rgba(0,229,255,.35), 0 0 24px rgba(177,0,255,.22);
-      border:1px solid rgba(255,255,255,.18);
+      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.35));
+      box-shadow: 0 0 16px rgba(0,212,255,.30), 0 0 18px rgba(161,0,255,.18);
+      border:1px solid rgba(0,0,0,.10);
     }
-
-    .brand h1{ margin:0; font-size: 14px; letter-spacing:.4px; font-weight: 700; }
-    .brand span{ display:block; font-size:12px; color: var(--muted); margin-top: 2px; letter-spacing:.2px; font-weight: 500; }
+    .brand h1{ margin:0; font-size: 14px; letter-spacing:.3px; font-weight: 850; }
+    .brand span{ display:block; font-size:12px; color: var(--muted); margin-top: 2px; letter-spacing:.15px; font-weight: 650; }
 
     .actions{
       display:flex;
@@ -122,13 +136,13 @@
     .btn{
       appearance:none;
       border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.62));
       color: var(--text);
       padding: 10px 12px;
       border-radius: 12px;
       cursor:pointer;
-      font-weight: 650;
-      letter-spacing: .2px;
+      font-weight: 800;
+      letter-spacing: .15px;
       transition: transform .06s ease, border-color .15s ease, filter .15s ease;
       box-shadow: var(--shadow2);
       backdrop-filter: blur(10px);
@@ -138,18 +152,20 @@
       user-select:none;
       white-space:nowrap;
     }
-    .btn:hover{ border-color: rgba(255,255,255,.22); filter: brightness(1.06); }
+    .btn:hover{ border-color: rgba(0,0,0,.18); filter: brightness(1.02); }
     .btn:active{ transform: translateY(1px); }
-    .btn.primary{ border-color: rgba(0,229,255,.30); box-shadow: var(--shadow2), var(--glow1); }
-    .btn.purple{ border-color: rgba(177,0,255,.26); box-shadow: var(--shadow2), var(--glow2); }
-    .btn.green{ border-color: rgba(0,255,136,.24); box-shadow: var(--shadow2), var(--glow3); }
-    .btn.danger{ border-color: rgba(255,77,109,.30); box-shadow: var(--shadow2); color: #FFE8EE; }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+    .btn.primary{ border-color: rgba(0,212,255,.42); box-shadow: var(--shadow2), var(--glow1); }
+    .btn.purple{ border-color: rgba(161,0,255,.32); box-shadow: var(--shadow2), var(--glow2); }
+    .btn.green{ border-color: rgba(0,214,122,.36); box-shadow: var(--shadow2), var(--glow3); }
+    .btn.danger{ border-color: rgba(255,47,93,.35); box-shadow: var(--shadow2); }
 
     .pill{
       padding: 10px 12px;
       border-radius: 14px;
       border:1px solid var(--border);
-      background: rgba(255,255,255,.05);
+      background: rgba(255,255,255,.66);
       box-shadow: var(--shadow2);
       backdrop-filter: blur(10px);
       display:flex;
@@ -158,106 +174,102 @@
     }
 
     .input, .select{
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(8,12,20,.55);
+      border:1px solid rgba(0,0,0,.14);
+      background: rgba(255,255,255,.85);
       color: var(--text);
       border-radius: 12px;
       padding: 10px 12px;
       outline:none;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
       min-width: 220px;
     }
-    .input::placeholder{ color: rgba(167,176,198,.65); }
+    .input::placeholder{ color: rgba(11,26,16,.45); }
     .select{ min-width: 160px; cursor:pointer; }
 
     .muted{ color: var(--muted); }
 
-    .grid{ display:grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
-
+    .grid{ display:grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
     .card{
       border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.62));
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       overflow:hidden;
     }
-
     .card .head{
-      padding: 14px 16px;
+      padding: 12px 14px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border-bottom:1px solid rgba(0,0,0,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.58));
       flex-wrap: wrap;
     }
-
-    .card .head h2{ margin:0; font-size: 14px; letter-spacing:.3px; }
-    .card .body{ padding: 14px 16px; }
+    .card .head h2{ margin:0; font-size: 13.5px; letter-spacing:.2px; }
+    .card .body{ padding: 12px 14px; }
 
     .table-wrap{
       overflow:auto;
       border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
+      border:1px solid rgba(0,0,0,.10);
+      background: rgba(255,255,255,.55);
     }
-
     table{
       border-collapse: separate;
       border-spacing: 0;
       width: 100%;
-      min-width: 980px;
+      min-width: 1060px;
       font-size: 12.5px;
     }
-
     thead th{
       position: sticky;
       top:0;
       z-index: 2;
-      background: rgba(10,14,24,.92);
-      border-bottom:1px solid rgba(255,255,255,.10);
-      color: #DCE6FF;
+      background: rgba(244,255,248,.98);
+      border-bottom:1px solid rgba(0,0,0,.10);
+      color: var(--text);
       text-align:left;
       padding: 10px 10px;
       white-space:nowrap;
-      font-weight: 750;
-      letter-spacing:.2px;
+      font-weight: 900;
+      letter-spacing:.12px;
     }
-
     tbody td{
-      border-bottom: 1px solid rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(0,0,0,.06);
       padding: 8px 10px;
       vertical-align: middle;
       white-space:nowrap;
     }
-    tbody tr:hover{ background: rgba(255,255,255,.04); }
+    tbody tr:hover{ background: rgba(0,214,122,.06); }
 
     .col-driver{
-      min-width: 340px;
+      min-width: 380px;
       position: sticky;
       left:0;
       z-index: 1;
-      background: rgba(10,14,24,.92);
-      border-right:1px solid rgba(255,255,255,.10);
+      background: rgba(244,255,248,.98);
+      border-right:1px solid rgba(0,0,0,.10);
     }
-    thead .col-driver{ z-index: 3; border-right:1px solid rgba(255,255,255,.12); }
+    thead .col-driver{ z-index: 3; border-right:1px solid rgba(0,0,0,.12); }
 
-    .driver-title{ display:flex; flex-direction:column; gap:3px; }
-    .driver-title .name{ font-weight: 820; letter-spacing:.2px; font-size: 13px; }
+    .driver-title{ display:flex; flex-direction:column; gap:4px; }
+    .driver-title .name{ font-weight: 950; letter-spacing:.15px; font-size: 13px; }
     .driver-title .meta{
-      display:flex; flex-wrap:wrap; gap: 8px;
-      color: var(--muted); font-size: 12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
     }
-
     .kbd{
       font-family: var(--mono);
       padding: 2px 6px;
       border-radius: 8px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color:#EAF0FF;
+      border:1px solid rgba(0,0,0,.10);
+      background: rgba(255,255,255,.78);
+      color: var(--text);
     }
 
     .chip{
@@ -266,30 +278,63 @@
       justify-content:center;
       border-radius: 10px;
       padding: 6px 8px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      min-width: 66px;
+      border:1px solid rgba(0,0,0,.10);
+      background: rgba(255,255,255,.80);
+      min-width: 70px;
       cursor:pointer;
       user-select:none;
       transition: transform .06s ease, filter .15s ease;
+      max-width: 190px;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 900;
+      letter-spacing: .1px;
     }
-    .chip:hover{ filter: brightness(1.08); }
+    .chip:hover{ filter: brightness(1.01); }
     .chip:active{ transform: translateY(1px); }
-    .chip.empty{ color: rgba(167,176,198,.65); border-style:dashed; background: rgba(255,255,255,.03); }
-    .chip.plantao{ border-color: rgba(0,229,255,.28); box-shadow: 0 0 18px rgba(0,229,255,.12); }
-    .chip.cod{ border-color: rgba(177,0,255,.24); box-shadow: 0 0 18px rgba(177,0,255,.10); }
-    .chip.off{ border-color: rgba(255,206,58,.24); box-shadow: 0 0 18px rgba(255,206,58,.08); color:#FFE9A6; }
+
+    .chip.empty{
+      color: rgba(11,26,16,.40);
+      border-style:dashed;
+      background: rgba(255,255,255,.55);
+      font-weight: 800;
+    }
+    .chip.trabalho{
+      border-color: var(--chip-trabalho-bd);
+      background: var(--chip-trabalho-bg);
+      box-shadow: 0 0 16px rgba(0,214,122,.10);
+    }
+    .chip.plantao{
+      border-color: var(--chip-plantao-bd);
+      background: var(--chip-plantao-bg);
+      box-shadow: 0 0 16px rgba(0,212,255,.10);
+    }
+    .chip.ferias{
+      border-color: var(--chip-ferias-bd);
+      background: var(--chip-ferias-bg);
+      box-shadow: 0 0 16px rgba(161,0,255,.08);
+    }
+    .chip.folga{
+      border-color: var(--chip-folga-bd);
+      background: var(--chip-folga-bg);
+      box-shadow: 0 0 16px rgba(255,179,0,.10);
+    }
+    .chip.cobertura{
+      border-color: var(--chip-cobertura-bd);
+      background: var(--chip-cobertura-bg);
+      box-shadow: 0 0 16px rgba(255,47,93,.09);
+    }
 
     /* Drawer */
     .drawer{
       position: fixed;
-      top:0;
-      right:0;
-      width: min(620px, 94vw);
+      top:0; right:0;
+      width: min(660px, 96vw);
       height: 100%;
-      background: linear-gradient(180deg, rgba(10,14,24,.92), rgba(10,14,24,.86));
-      border-left: 1px solid rgba(255,255,255,.12);
-      box-shadow: -18px 0 40px rgba(0,0,0,.55);
+      background: linear-gradient(180deg, rgba(252,255,252,.98), rgba(244,255,248,.96));
+      border-left: 1px solid rgba(0,0,0,.10);
+      box-shadow: -18px 0 40px rgba(0,0,0,.18);
       backdrop-filter: blur(14px);
       transform: translateX(105%);
       transition: transform .22s ease;
@@ -299,220 +344,260 @@
     }
     .drawer.open{ transform: translateX(0); }
 
-    /* Tela cheia do calendário (drawer vira modal central grande) */
     .drawer.fullscreen{
       right: 50%;
       transform: translateX(50%);
-      width: min(1080px, 96vw);
-      border-left: 1px solid rgba(255,255,255,.12);
+      width: min(1180px, 98vw);
+      border-left: 1px solid rgba(0,0,0,.10);
       border-radius: 18px;
-      top: 18px;
-      height: calc(100% - 36px);
-      box-shadow: 0 18px 60px rgba(0,0,0,.65);
+      top: 12px;
+      height: calc(100% - 24px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.22);
     }
 
     .drawer .d-head{
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(0,0,0,.10);
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap: 12px;
       flex-wrap: wrap;
+      background: rgba(255,255,255,.65);
     }
-
     .drawer .d-title{ display:flex; flex-direction:column; gap:6px; }
-    .drawer .d-title .big{ font-weight: 900; letter-spacing:.2px; font-size: 14px; line-height: 1.2; }
-    .drawer .d-title .sub{ color: var(--muted); font-size: 12.5px; display:flex; flex-wrap:wrap; gap: 8px; }
-
-    .drawer .d-body{ padding: 14px 16px 18px; overflow:auto; flex:1; }
+    .drawer .d-title .big{ font-weight: 950; letter-spacing:.15px; font-size: 14px; line-height: 1.2; }
+    .drawer .d-title .sub{
+      color: var(--muted);
+      font-size: 12.5px;
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+    }
+    .drawer .d-body{ padding: 12px 14px 16px; overflow:auto; flex:1; }
 
     .calendar{
-      border:1px solid rgba(255,255,255,.10);
+      border:1px solid rgba(0,0,0,.10);
       border-radius: 16px;
       overflow:hidden;
-      background: rgba(0,0,0,.18);
+      background: rgba(255,255,255,.85);
     }
-
     .cal-head{
       display:grid;
       grid-template-columns: repeat(7,1fr);
-      background: rgba(255,255,255,.05);
-      border-bottom:1px solid rgba(255,255,255,.08);
+      background: rgba(0,214,122,.08);
+      border-bottom:1px solid rgba(0,0,0,.10);
     }
     .cal-head div{
       padding: 10px 10px;
-      font-weight: 800;
+      font-weight: 950;
       font-size: 12px;
-      color:#DCE6FF;
+      color: var(--text);
       text-align:center;
     }
-
-    .cal-grid{ display:grid; grid-template-columns: repeat(7,1fr); }
-
+    .cal-grid{
+      display:grid;
+      grid-template-columns: repeat(7,1fr);
+    }
     .day{
-      min-height: 92px;
-      border-right:1px solid rgba(255,255,255,.06);
-      border-bottom:1px solid rgba(255,255,255,.06);
+      min-height: 100px;
+      border-right:1px solid rgba(0,0,0,.06);
+      border-bottom:1px solid rgba(0,0,0,.06);
       padding: 10px 10px;
       display:flex;
       flex-direction:column;
       gap:10px;
       cursor:pointer;
       user-select:none;
+      background: rgba(255,255,255,.90);
     }
     .day:nth-child(7n){ border-right:none; }
-    .day .num{ font-family: var(--mono); font-size: 12px; color: var(--muted2); font-weight: 700; }
-
+    .day .num{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted2);
+      font-weight: 900;
+    }
     .day .val{
       display:inline-flex;
       align-self:flex-start;
       border-radius: 10px;
       padding: 7px 9px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
+      border:1px solid rgba(0,0,0,.10);
+      background: rgba(255,255,255,.86);
       font-size: 12.5px;
       max-width: 100%;
       overflow:hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-weight: 900;
     }
-    .day .val.empty{ border-style:dashed; background: rgba(255,255,255,.03); color: rgba(167,176,198,.65); }
-    .day:hover{ background: rgba(255,255,255,.04); }
-    .day.muted{ opacity:.35; cursor: default; }
+    .day .val.empty{
+      border-style:dashed;
+      background: rgba(255,255,255,.66);
+      color: rgba(11,26,16,.40);
+      font-weight: 800;
+    }
+    .day:hover{ background: rgba(0,214,122,.08); }
+    .day.muted{ opacity:.35; cursor: default; background: transparent; }
     .day.muted:hover{ background: transparent; }
+
+    /* Modo de captura (imagem do calendário) - bem visível */
+    .captureMode{
+      background: #ffffff !important;
+      color: #0b1a10 !important;
+    }
+    .captureMode .card{
+      box-shadow: none !important;
+      border: 1px solid rgba(0,0,0,.14) !important;
+      background: #fff !important;
+    }
+    .captureMode .cal-head{
+      background: rgba(0,214,122,.18) !important;
+    }
+    .captureMode .calendar{
+      background: #fff !important;
+      border-color: rgba(0,0,0,.16) !important;
+    }
+    .captureMode .day{
+      background: #fff !important;
+      border-color: rgba(0,0,0,.12) !important;
+    }
+    .captureMode .day:hover{ background:#fff !important; }
 
     /* Modal */
     .overlay{
       position: fixed;
       inset:0;
-      background: rgba(0,0,0,.55);
+      background: rgba(0,0,0,.45);
       backdrop-filter: blur(6px);
       display:none;
       align-items:center;
       justify-content:center;
       z-index: 100;
-      padding: 18px;
+      padding: 14px;
     }
     .overlay.show{ display:flex; }
-
     .modal{
-      width: min(520px, 96vw);
+      width: min(640px, 96vw);
       border-radius: 18px;
-      border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(12,16,30,.95), rgba(10,14,24,.90));
+      border:1px solid rgba(0,0,0,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(245,255,250,.96));
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-
     .modal .m-head{
-      padding: 14px 16px;
-      border-bottom:1px solid rgba(255,255,255,.10);
+      padding: 12px 14px;
+      border-bottom:1px solid rgba(0,0,0,.10);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap: 10px;
+      background: rgba(255,255,255,.70);
     }
-    .modal .m-head h3{ margin:0; font-size: 14px; letter-spacing:.25px; }
-    .modal .m-body{ padding: 14px 16px; }
-
+    .modal .m-head h3{ margin:0; font-size: 14px; letter-spacing:.15px; }
+    .modal .m-body{ padding: 12px 14px; }
     .modal .m-actions{
-      padding: 14px 16px;
-      border-top:1px solid rgba(255,255,255,.10);
+      padding: 12px 14px;
+      border-top:1px solid rgba(0,0,0,.10);
       display:flex;
       justify-content:flex-end;
       gap: 10px;
       flex-wrap: wrap;
+      background: rgba(255,255,255,.70);
     }
-
     .row{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-bottom: 10px;
     }
-    .row .full{ grid-column: 1 / -1; }
-
+    .row3{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .row .full, .row3 .full{ grid-column: 1 / -1; }
     label{
       display:block;
       font-size: 12px;
       color: var(--muted);
       margin: 0 0 6px;
-      letter-spacing:.15px;
-      font-weight: 650;
+      letter-spacing:.12px;
+      font-weight: 900;
     }
-
     .help{
       margin-top: 8px;
       font-size: 12px;
-      color: rgba(167,176,198,.82);
+      color: rgba(11,26,16,.70);
       line-height: 1.35;
     }
 
     /* Login */
     .login{
-      min-height: calc(100vh - 40px);
+      min-height: calc(100vh - 30px);
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: 28px 18px;
+      padding: 22px 14px;
     }
-
     .login-card{
-      width: min(520px, 96vw);
+      width: min(540px, 96vw);
       border-radius: 20px;
-      border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(0,0,0,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
       box-shadow: var(--shadow);
       backdrop-filter: blur(14px);
       overflow:hidden;
     }
-
     .login-head{
-      padding: 18px 18px 14px;
-      border-bottom:1px solid rgba(255,255,255,.10);
+      padding: 16px 16px 12px;
+      border-bottom:1px solid rgba(0,0,0,.10);
       display:flex;
       gap: 12px;
       align-items:center;
+      background: rgba(255,255,255,.65);
     }
-
     .badge{
-      width: 46px;
-      height: 46px;
+      width: 46px; height: 46px;
       border-radius: 16px;
-      border:1px solid rgba(255,255,255,.14);
+      border:1px solid rgba(0,0,0,.12);
       background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 45%),
-        linear-gradient(135deg, rgba(0,229,255,.18), rgba(177,0,255,.16));
-      box-shadow: var(--glow1), var(--glow2);
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.85), transparent 45%),
+        linear-gradient(135deg, rgba(0,212,255,.16), rgba(0,214,122,.14));
+      box-shadow: var(--glow1), var(--glow3);
     }
-
-    .login-head h2{ margin:0; font-size: 15px; letter-spacing:.25px; font-weight: 900; }
+    .login-head h2{ margin:0; font-size: 15px; letter-spacing:.15px; font-weight: 980; }
     .login-head p{ margin: 4px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.35; }
-
-    .login-body{ padding: 16px 18px 18px; }
-
+    .login-body{ padding: 14px 16px 16px; }
     .login-actions{
       display:flex;
       justify-content:flex-end;
       gap: 10px;
       flex-wrap:wrap;
-      padding: 0 18px 18px;
+      padding: 0 16px 16px;
     }
+    .err{ margin-top: 10px; color: #b0002a; font-size: 12.5px; display:none; font-weight: 900; }
 
-    .err{
-      margin-top: 10px;
-      color: #FFD6DE;
-      font-size: 12.5px;
-      display:none;
-    }
-
-    @media (max-width: 720px){
+    @media (max-width: 820px){
       .row{ grid-template-columns: 1fr; }
+      .row3{ grid-template-columns: 1fr; }
       .input{ min-width: 180px; }
-      table{ min-width: 920px; }
+      table{ min-width: 980px; }
       .drawer{ width: 96vw; }
-      .day{ min-height: 86px; }
+      .day{ min-height: 92px; }
+    }
+
+    /* Impressão (PDF via navegador) */
+    @media print{
+      body{ background:#fff !important; }
+      .neon-ring, .topbar, .help, .btn, .actions, .pill, #drawer, #loginView{ display:none !important; }
+      #appView{ display:block !important; }
+      .wrap{ max-width: 100% !important; padding: 0 !important; }
+      .card{ box-shadow:none !important; }
+      table{ min-width: auto !important; width: 100% !important; }
+      thead th{ position: static !important; }
     }
   </style>
 </head>
@@ -520,33 +605,31 @@
 <body>
   <div class="neon-ring" aria-hidden="true"></div>
 
-  <!-- LOGIN -->
+  <!-- LOGIN (Supabase Auth) -->
   <section id="loginView" class="login">
     <div class="login-card">
       <div class="login-head">
         <div class="badge" aria-hidden="true"></div>
         <div>
-          <h2>Escala Plantão • Motoristas</h2>
-          <p>Login básico para acesso interno. Dados salvos no seu navegador (LocalStorage).</p>
+          <h2>Escala Plantão • Fiscais</h2>
+          <p>Login seguro (Supabase). Dados ficam na nuvem.</p>
         </div>
       </div>
 
       <div class="login-body">
         <div class="row">
           <div class="full">
-            <label>Login</label>
-            <input id="loginUser" class="input" placeholder="ex: rafael.plantao" autocomplete="username"/>
+            <label>Email</label>
+            <input id="loginEmail" class="input" autocomplete="username" />
           </div>
           <div class="full">
             <label>Senha</label>
             <input id="loginPass" class="input" type="password" placeholder="••••••••" autocomplete="current-password"/>
           </div>
         </div>
-
-        <div id="loginErr" class="err">Usuário ou senha inválidos.</div>
-
+        <div id="loginErr" class="err">Email ou senha inválidos.</div>
         <div class="help">
-          Dica: depois que você logar, você pode <b>clicar em qualquer dia</b> na lista ou no calendário para registrar/editar a escala.
+          ✅ Somente o admin acessa os dados (RLS + Policy).
         </div>
       </div>
 
@@ -563,33 +646,35 @@
         <div class="brand">
           <div class="dot" aria-hidden="true"></div>
           <div>
-            <h1>Escala Plantão</h1>
-            <span>Cadastro + escala mensal • tema neon</span>
+            <h1>Escala • Fiscais</h1>
+            <span>Fixos + Plantonistas • Coberturas • Exportação</span>
           </div>
         </div>
 
         <div class="actions">
           <div class="pill">
-            <span class="muted" style="font-weight:750;">Mês</span>
+            <span class="muted" style="font-weight:950;">Mês</span>
             <input id="monthPicker" class="input" type="month" style="min-width:160px"/>
           </div>
 
           <div class="pill">
-            <span class="muted" style="font-weight:750;">Período</span>
-            <select id="periodFilter" class="select" style="min-width:160px">
+            <span class="muted" style="font-weight:950;">Tipo</span>
+            <select id="roleFilter" class="select" style="min-width:170px">
               <option value="todos">Todos</option>
-              <option value="manhã">manhã</option>
-              <option value="tarde">tarde</option>
-              <option value="noite">noite</option>
+              <option value="fixo">Fixos</option>
+              <option value="plantonista">Plantonistas</option>
             </select>
           </div>
 
           <div class="pill">
-            <span class="muted" style="font-weight:750;">Buscar</span>
-            <input id="searchMat" class="input" placeholder="matrícula ou nome" style="min-width:220px"/>
+            <span class="muted" style="font-weight:950;">Buscar</span>
+            <input id="searchMat" class="input" placeholder="matrícula ou nome" style="min-width:240px"/>
           </div>
 
-          <button id="btnAddDriver" class="btn green">+ Cadastrar motorista</button>
+          <button id="btnExportExcel" class="btn green">📗 Exportar Excel (CSV)</button>
+          <button id="btnExportPdf" class="btn purple">🧾 Exportar PDF</button>
+
+          <button id="btnAddDriver" class="btn green">+ Cadastrar fiscal</button>
           <button id="btnLogout" class="btn danger">Sair</button>
         </div>
       </div>
@@ -597,12 +682,11 @@
       <div class="grid">
         <section class="card">
           <div class="head">
-            <h2>Visualização 1 • Lista do mês (todos os motoristas)</h2>
+            <h2>Visualização 1 • Lista do mês (todos os fiscais)</h2>
             <div class="muted" style="font-size:12px;">
-              Clique no <b>nome</b> para abrir o calendário • clique em um <b>dia</b> para editar
+              Clique no <b>nome</b> → calendário • clique em um <b>dia</b> → editar (tipo, linha, hora, cobertura)
             </div>
           </div>
-
           <div class="body">
             <div class="table-wrap">
               <table id="monthTable">
@@ -614,8 +698,8 @@
         </section>
       </div>
 
-      <div class="muted" style="margin-top:12px;font-size:12px;">
-        ✅ Dados ficam salvos localmente neste navegador. (Compartilhar real com outra pessoa: Firebase/Supabase)
+      <div class="muted" style="margin-top:10px;font-size:12px;">
+        ✅ Dados salvos no Supabase (nuvem). Exportação: Excel (CSV) e PDF (impressão).
       </div>
     </div>
   </main>
@@ -624,13 +708,13 @@
   <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="d-head">
       <div class="d-title">
-        <div id="dName" class="big">Motorista</div>
+        <div id="dName" class="big">Fiscal</div>
         <div id="dSub" class="sub"></div>
       </div>
-
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
-        <button id="btnWhats" class="btn primary">📲 Imagem + WhatsApp</button>
+        <button id="btnWhats" class="btn primary">📲 Baixar calendário (PNG)</button>
         <button id="btnFull" class="btn purple">🖥️ Tela cheia</button>
+        <button id="btnEditDriver" class="btn green">✏️ Editar</button>
         <button id="btnRemoveDriver" class="btn danger">Remover</button>
         <button id="btnCloseDrawer" class="btn">Fechar</button>
       </div>
@@ -644,7 +728,6 @@
             <h2>Visualização 2 • Calendário do mês</h2>
             <div class="muted" style="font-size:12px;">Clique em um dia para editar</div>
           </div>
-
           <div class="body">
             <div class="calendar">
               <div class="cal-head">
@@ -654,28 +737,27 @@
             </div>
 
             <div class="help">
-              Sugestão: códigos <span class="kbd">3013-10</span> / <span class="kbd">3020-10</span> ou <span class="kbd">Plantão</span>.
-              Vazio = “Disponível”.
+              Tipos: <b>Trabalho</b>, <b>Plantão</b>, <b>Férias</b>, <b>Folga</b>, <b>Cobertura</b>.
+              <br/>Formato recomendado: linha + hora (ex: <span class="kbd">3013-10</span> • <span class="kbd">14:00</span>)
             </div>
           </div>
         </div>
       </div>
 
       <div class="help" style="margin-top:10px;">
-        ✅ Ao clicar em <b>Imagem + WhatsApp</b>: o site gera o print do mês inteiro, baixa o PNG, tenta copiar a imagem e abre o WhatsApp com a mensagem pronta.
-        <br/>👉 No WhatsApp, cole (Ctrl+V) ou anexe o PNG e envie.
+        ✅ PNG do calendário sai com cores bem visíveis e sem cortar (modo “captura”).<br/>
+        👉 Observação: no PNG <b>não aparece</b> “quem cobriu” (isso é controle interno).
       </div>
     </div>
   </aside>
 
-  <!-- MODAL: Add Driver -->
+  <!-- MODAL: Add/Edit Driver -->
   <div id="addOverlay" class="overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="m-head">
-        <h3>Cadastrar novo motorista</h3>
+        <h3 id="driverModalTitle">Cadastrar fiscal</h3>
         <button id="btnCloseAdd" class="btn">Fechar</button>
       </div>
-
       <div class="m-body">
         <div class="row">
           <div>
@@ -683,11 +765,10 @@
             <input id="inMat" class="input" placeholder="ex: 33002" />
           </div>
           <div>
-            <label>Período</label>
-            <select id="inPeriod" class="select">
-              <option value="manhã">manhã</option>
-              <option value="tarde">tarde</option>
-              <option value="noite">noite</option>
+            <label>Tipo</label>
+            <select id="inRole" class="select">
+              <option value="fixo">fixo</option>
+              <option value="plantonista">plantonista</option>
             </select>
           </div>
 
@@ -696,46 +777,96 @@
             <input id="inName" class="input" placeholder="Nome completo" />
           </div>
 
-          <div class="full">
+          <div>
             <label>Telefone (WhatsApp)</label>
             <input id="inPhone" class="input" placeholder="ex: 11 98767-4890 (ou +55 11 98767-4890)" />
           </div>
 
+          <div>
+            <label>Linha fixa (se for fixo)</label>
+            <input id="inLine" class="input" placeholder="ex: 3013-10" />
+          </div>
+
           <div class="full">
-            <label>Status (opcional)</label>
-            <input id="inStatus" class="input" placeholder="ex: Cobrindo Férias / Disponível" />
+            <label>Status (editável)</label>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <select id="inStatusPreset" class="select" style="min-width: 240px;">
+                <option value="">(selecionar)</option>
+                <option value="Disponível">Disponível</option>
+                <option value="Cobrindo Férias">Cobrindo Férias</option>
+                <option value="Afastado">Afastado</option>
+                <option value="Férias">Férias</option>
+                <option value="Ativo">Ativo</option>
+              </select>
+              <input id="inStatus" class="input" placeholder="ou digite livre (ex: cobrindo folga / treinamento)" style="min-width: 280px;" />
+            </div>
           </div>
         </div>
-      </div>
 
+        <div class="help">
+          ✅ Fixos: preencha a <b>linha fixa</b>. Plantonistas: pode deixar vazio.<br/>
+          ✅ Status você pode trocar quando quiser (Editar).
+        </div>
+      </div>
       <div class="m-actions">
         <button id="btnSaveDriver" class="btn green">Salvar</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Edit Day -->
+  <!-- MODAL: Edit Day (novo: tipo + linha + hora + cobertura) -->
   <div id="editOverlay" class="overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="m-head">
         <h3>Editar dia</h3>
         <button id="btnCloseEdit" class="btn">Fechar</button>
       </div>
-
       <div class="m-body">
-        <div class="row">
-          <div class="full">
-            <div class="muted" style="font-size:12px; margin-bottom:10px;">
-              Motorista: <b id="eDriver"></b><br/>
-              Data: <b id="eDate"></b>
-            </div>
+        <div class="muted" style="font-size:12px; margin-bottom:10px;">
+          Fiscal: <b id="eDriver"></b><br/>
+          Data: <b id="eDate"></b>
+        </div>
 
-            <label>Valor do dia</label>
-            <input id="eValue" class="input" placeholder="ex: 3013-10 / Plantão / Folga / (vazio = disponível)" />
+        <div class="row3">
+          <div>
+            <label>Tipo</label>
+            <select id="eKind" class="select">
+              <option value="trabalho">Trabalho</option>
+              <option value="plantao">Plantão</option>
+              <option value="ferias">Férias</option>
+              <option value="folga">Folga</option>
+              <option value="cobertura">Cobertura</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Linha</label>
+            <input id="eLine" class="input" placeholder="ex: 3013-10" />
+          </div>
+
+          <div>
+            <label>Hora</label>
+            <input id="eTime" class="input" placeholder="ex: 14:00" />
+          </div>
+
+          <div class="full" id="coverBox" style="display:none;">
+            <label>Quem irá cobrir (somente plantonistas)</label>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <select id="eCoverSelect" class="select" style="min-width: 330px;"></select>
+              <button id="btnClearCover" class="btn">Limpar cobertura</button>
+            </div>
+            <div class="help" style="margin-top:8px;">
+              ✅ Ao salvar uma <b>Folga</b> com cobridor: o sistema grava automaticamente no plantonista como <b>Cobertura</b> com linha e hora.<br/>
+              ✅ Dentro do dia do plantonista aparecerá: <b>matrícula + primeiro nome</b> do fixo (ex: <span class="kbd">30556 Victor</span>).
+            </div>
+          </div>
+
+          <div class="full">
+            <label>Observação (opcional)</label>
+            <input id="eNotes" class="input" placeholder="ex: troca / ajuste / motivo" />
           </div>
         </div>
       </div>
-
       <div class="m-actions">
         <button id="btnClearDay" class="btn">Limpar</button>
         <button id="btnSaveDay" class="btn primary">Salvar</button>
@@ -743,119 +874,119 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
     /***********************
-     * Config / Auth
+     * Supabase
      ***********************/
-    const AUTH_USER = "rafael.plantao";
-    const AUTH_PASS = "Ignis1212@"; // ⚠️ front-end: senha fica visível no código
-    const LS_KEY  = "escala_plantao_data_v2";
-    const LS_AUTH = "escala_plantao_auth_v1";
+    const SUPABASE_URL = "https://cwqwugdiksfodeoksofp.supabase.co";
+    const SUPABASE_ANON = "sb_publishable_XkISoiXR_cHRWdeKvtb7HA_ceYFTnPR";
+    const ADMIN_EMAIL = "darlene.plantao@pessegotransportes.com.br";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
 
     /***********************
      * State
      ***********************/
-    const state = {
+    let state = {
       drivers: [],
-      schedule: {},         // { [driverId]: { "YYYY-MM-DD": "valor" } }
-      selectedMonth: null,  // Date (primeiro dia do mês)
+      // entriesByDriver[driverId][yyyy-mm-dd] = {kind,line,time,covered_by_driver_id,notes}
+      entriesByDriver: {},
+      selectedMonth: null,
       selectedDriverId: null,
       searchText: "",
-      periodFilter: "todos"
+      roleFilter: "todos",
     };
+
+    let isBusy = false;
 
     /***********************
      * Helpers
      ***********************/
-    const pad2 = (n) => String(n).padStart(2, "0");
-    const ymd = (y, m, d) => `${y}-${pad2(m)}-${pad2(d)}`;
-    const monthKey = (y, m) => `${y}-${pad2(m)}`;
+    const pad2 = n => String(n).padStart(2,"0");
+    const ymd = (y,m,d) => `${y}-${pad2(m)}-${pad2(d)}`;
+    const monthKey = (y,m) => `${y}-${pad2(m)}`;
     const parseMonthKey = (mk) => {
-      const [y, m] = mk.split("-").map(Number);
-      return new Date(y, m - 1, 1);
+      const [y,m] = mk.split("-").map(Number);
+      return new Date(y, m-1, 1);
     };
-    const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
     const dowShort = ["DOM","SEG","TER","QUA","QUI","SEX","SAB"];
 
     function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+      return String(str || "")
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
     }
 
     function fmtNiceDate(dateStr){
-      const [y, m, d] = dateStr.split("-");
+      const [y,m,d] = dateStr.split("-");
       return `${d}/${m}/${y}`;
     }
 
-    function save(){
-      localStorage.setItem(LS_KEY, JSON.stringify({
-        drivers: state.drivers,
-        schedule: state.schedule
-      }));
+    function firstName(full){
+      const s = String(full || "").trim();
+      if(!s) return "";
+      return s.split(/\s+/)[0];
     }
 
-    function seedExample(){
-      const d1 = { id: crypto.randomUUID(), mat:"30556", name:"VICTOR HUGO TOLEDO PANUCCI", phone:"11 94853-1972", period:"manhã", status:"Cobrindo Férias" };
-      const d2 = { id: crypto.randomUUID(), mat:"32002", name:"WILLIANS DOS SANTOS MENDES", phone:"11 96034-2883", period:"tarde", status:"Cobrindo Férias" };
-      const d3 = { id: crypto.randomUUID(), mat:"33002", name:"PAULO HENRIQUE OLIVEIRA DOS ANJOS", phone:"+55 11 98767-4890", period:"manhã", status:"Disponível" };
-
-      state.drivers = [d1, d2, d3];
-      state.schedule[d1.id] = {};
-      state.schedule[d2.id] = {};
-      state.schedule[d3.id] = {};
-
-      for(let day = 1; day <= 25; day++){
-        state.schedule[d1.id][ymd(2026, 2, day)] = "3013-10";
-      }
-      state.schedule[d1.id][ymd(2026, 2, 26)] = "Plantão";
-      state.schedule[d1.id][ymd(2026, 2, 27)] = "Plantão";
-
-      for(let day = 1; day <= 28; day++){
-        state.schedule[d2.id][ymd(2026, 2, day)] = "3020-10";
-        state.schedule[d3.id][ymd(2026, 2, day)] = "plantão";
-      }
+    function shortPerson(drv){
+      if(!drv) return "";
+      return `${drv.mat} ${firstName(drv.name)}`.trim();
     }
 
-    function load(){
-      const raw = localStorage.getItem(LS_KEY);
-      if(raw){
-        try{
-          const parsed = JSON.parse(raw);
-          state.drivers = Array.isArray(parsed.drivers) ? parsed.drivers : [];
-          state.schedule = (parsed.schedule && typeof parsed.schedule === "object") ? parsed.schedule : {};
-        }catch(e){}
+    function entryToLabel(entry, hideCoverInfo=false){
+      if(!entry) return "";
+
+      const kind = entry.kind || "trabalho";
+      const line = (entry.line || "").trim();
+      const time = (entry.time_hhmm || "").trim();
+
+      // No calendário PNG: não mostrar info de quem cobriu (hideCoverInfo=true)
+      if(kind === "folga"){
+        // dá pra mostrar "Folga" ou "Folga ✓" se tiver cobertura, mas como é controle interno,
+        // vamos deixar simples e limpo:
+        return "Folga";
       }
-      if(state.drivers.length === 0){
-        seedExample();
-        save();
+
+      if(kind === "ferias") return "Férias";
+      if(kind === "plantao"){
+        const parts = [];
+        parts.push("Plantão");
+        if(line) parts.push(line);
+        if(time) parts.push(time);
+        return parts.join(" • ");
       }
+      if(kind === "cobertura"){
+        // notes aqui é "mat primeiroNome" do fixo, conforme regra
+        const parts = [];
+        parts.push("Cobertura");
+        if(line) parts.push(line);
+        if(time) parts.push(time);
+        if(entry.notes && !hideCoverInfo) parts.push(entry.notes);
+        return parts.join(" • ");
+      }
+
+      // trabalho
+      const parts = [];
+      if(line) parts.push(line);
+      if(time) parts.push(time);
+      return parts.join(" • ") || "Trabalho";
     }
 
-    function getDayValue(driverId, dateStr){
-      return (state.schedule[driverId] && state.schedule[driverId][dateStr]) ? state.schedule[driverId][dateStr] : "";
-    }
+    function chipClass(entry){
+      if(!entry) return "chip empty";
+      const k = (entry.kind || "").toLowerCase().trim();
 
-    function setDayValue(driverId, dateStr, value){
-      if(!state.schedule[driverId]) state.schedule[driverId] = {};
-      const v = (value || "").trim();
-      if(v === ""){
-        delete state.schedule[driverId][dateStr];
-      }else{
-        state.schedule[driverId][dateStr] = v;
-      }
-      save();
-    }
-
-    function chipClass(val){
-      const v = (val || "").toLowerCase().trim();
-      if(!v) return "chip empty";
-      if(v === "plantão" || v === "plantao") return "chip plantao";
-      if(v === "folga" || v === "férias" || v === "ferias") return "chip off";
-      return "chip cod";
+      if(k === "trabalho") return "chip trabalho";
+      if(k === "plantao") return "chip plantao";
+      if(k === "ferias") return "chip ferias";
+      if(k === "folga") return "chip folga";
+      if(k === "cobertura") return "chip cobertura";
+      return "chip trabalho";
     }
 
     function normalizePhoneBR(phone){
@@ -882,7 +1013,29 @@
     async function captureCalendarImage(){
       const el = document.getElementById("calCapture");
       if(!el) throw new Error("Elemento do calendário não encontrado.");
-      const canvas = await html2canvas(el, { backgroundColor: null, scale: 2, useCORS: true });
+
+      // garante fullscreen e topo
+      drawer.classList.add("fullscreen");
+      btnFull.textContent = "🧩 Voltar";
+      drawer.scrollTop = 0;
+
+      // modo de captura (cores bem visíveis + fundo branco)
+      el.classList.add("captureMode");
+
+      // pequeno delay para aplicar layout
+      await new Promise(r => setTimeout(r, 120));
+
+      const canvas = await html2canvas(el, {
+        backgroundColor: "#ffffff",
+        scale: 2.2,
+        useCORS: true,
+        windowWidth: document.documentElement.clientWidth,
+        windowHeight: document.documentElement.clientHeight
+      });
+
+      // remove modo de captura
+      el.classList.remove("captureMode");
+
       return new Promise((resolve) => {
         canvas.toBlob((blob) => resolve(blob), "image/png", 1.0);
       });
@@ -912,65 +1065,171 @@
     function show(el){ el.classList.remove("hidden"); }
     function hide(el){ el.classList.add("hidden"); }
 
+    function setBusy(v){
+      isBusy = v;
+      btnLogin.disabled = v;
+      btnAddDriver.disabled = v;
+      btnLogout.disabled = v;
+      btnSaveDriver.disabled = v;
+      btnSaveDay.disabled = v;
+      btnClearDay.disabled = v;
+      btnRemoveDriver.disabled = v;
+      btnWhats.disabled = v;
+      btnExportExcel.disabled = v;
+      btnExportPdf.disabled = v;
+      btnEditDriver.disabled = v;
+    }
+
     /***********************
      * DOM
      ***********************/
     const loginView = document.getElementById("loginView");
-    const appView   = document.getElementById("appView");
-
-    const loginUser = document.getElementById("loginUser");
+    const appView = document.getElementById("appView");
+    const loginEmail = document.getElementById("loginEmail");
     const loginPass = document.getElementById("loginPass");
-    const loginErr  = document.getElementById("loginErr");
+    const loginErr = document.getElementById("loginErr");
+    const btnLogin = document.getElementById("btnLogin");
 
-    const btnLogin  = document.getElementById("btnLogin");
     const btnLogout = document.getElementById("btnLogout");
-
-    const monthPicker  = document.getElementById("monthPicker");
-    const searchMat    = document.getElementById("searchMat");
-    const periodFilter = document.getElementById("periodFilter");
-
+    const monthPicker = document.getElementById("monthPicker");
+    const searchMat = document.getElementById("searchMat");
+    const roleFilter = document.getElementById("roleFilter");
     const btnAddDriver = document.getElementById("btnAddDriver");
-    const monthThead   = document.getElementById("monthThead");
-    const monthTbody   = document.getElementById("monthTbody");
+    const btnExportExcel = document.getElementById("btnExportExcel");
+    const btnExportPdf = document.getElementById("btnExportPdf");
 
-    const drawer          = document.getElementById("drawer");
-    const btnCloseDrawer  = document.getElementById("btnCloseDrawer");
+    const monthThead = document.getElementById("monthThead");
+    const monthTbody = document.getElementById("monthTbody");
+
+    const drawer = document.getElementById("drawer");
+    const btnCloseDrawer = document.getElementById("btnCloseDrawer");
     const btnRemoveDriver = document.getElementById("btnRemoveDriver");
-    const btnFull         = document.getElementById("btnFull");
-    const btnWhats        = document.getElementById("btnWhats");
-    const dName           = document.getElementById("dName");
-    const dSub            = document.getElementById("dSub");
-    const calGrid         = document.getElementById("calGrid");
+    const btnEditDriver = document.getElementById("btnEditDriver");
+    const btnFull = document.getElementById("btnFull");
+    const btnWhats = document.getElementById("btnWhats");
+    const dName = document.getElementById("dName");
+    const dSub = document.getElementById("dSub");
+    const calGrid = document.getElementById("calGrid");
 
-    const addOverlay   = document.getElementById("addOverlay");
-    const btnCloseAdd  = document.getElementById("btnCloseAdd");
-    const btnSaveDriver= document.getElementById("btnSaveDriver");
-    const inMat        = document.getElementById("inMat");
-    const inName       = document.getElementById("inName");
-    const inPhone      = document.getElementById("inPhone");
-    const inPeriod     = document.getElementById("inPeriod");
-    const inStatus     = document.getElementById("inStatus");
+    const addOverlay = document.getElementById("addOverlay");
+    const btnCloseAdd = document.getElementById("btnCloseAdd");
+    const btnSaveDriver = document.getElementById("btnSaveDriver");
+    const driverModalTitle = document.getElementById("driverModalTitle");
+    const inMat = document.getElementById("inMat");
+    const inName = document.getElementById("inName");
+    const inPhone = document.getElementById("inPhone");
+    const inRole = document.getElementById("inRole");
+    const inLine = document.getElementById("inLine");
+    const inStatusPreset = document.getElementById("inStatusPreset");
+    const inStatus = document.getElementById("inStatus");
 
-    const editOverlay  = document.getElementById("editOverlay");
+    const editOverlay = document.getElementById("editOverlay");
     const btnCloseEdit = document.getElementById("btnCloseEdit");
-    const btnSaveDay   = document.getElementById("btnSaveDay");
-    const btnClearDay  = document.getElementById("btnClearDay");
-    const eDriver      = document.getElementById("eDriver");
-    const eDate        = document.getElementById("eDate");
-    const eValue       = document.getElementById("eValue");
+    const btnSaveDay = document.getElementById("btnSaveDay");
+    const btnClearDay = document.getElementById("btnClearDay");
+    const eDriver = document.getElementById("eDriver");
+    const eDate = document.getElementById("eDate");
+    const eKind = document.getElementById("eKind");
+    const eLine = document.getElementById("eLine");
+    const eTime = document.getElementById("eTime");
+    const eNotes = document.getElementById("eNotes");
+    const coverBox = document.getElementById("coverBox");
+    const eCoverSelect = document.getElementById("eCoverSelect");
+    const btnClearCover = document.getElementById("btnClearCover");
 
     let editCtx = { driverId:null, dateStr:null };
+    let driverFormMode = { mode:"create", driverId:null };
+
+    /***********************
+     * DB functions
+     ***********************/
+    async function dbGetDrivers(){
+      const { data, error } = await supabase
+        .from("drivers")
+        .select("*")
+        .order("mat", { ascending: true });
+      if(error) throw error;
+      return data || [];
+    }
+
+    async function dbInsertDriver(driver){
+      const { data, error } = await supabase
+        .from("drivers")
+        .insert(driver)
+        .select("*")
+        .single();
+      if(error) throw error;
+      return data;
+    }
+
+    async function dbUpdateDriver(driverId, patch){
+      const { data, error } = await supabase
+        .from("drivers")
+        .update(patch)
+        .eq("id", driverId)
+        .select("*")
+        .single();
+      if(error) throw error;
+      return data;
+    }
+
+    async function dbDeleteDriver(driverId){
+      const { error } = await supabase
+        .from("drivers")
+        .delete()
+        .eq("id", driverId);
+      if(error) throw error;
+    }
+
+    async function dbGetEntriesForMonth(monthDate){
+      const y = monthDate.getFullYear();
+      const m = monthDate.getMonth()+1;
+      const start = `${y}-${pad2(m)}-01`;
+      const end = `${y}-${pad2(m)}-${pad2(daysInMonth(monthDate))}`;
+
+      const { data, error } = await supabase
+        .from("schedule_entries")
+        .select("id,driver_id,work_date,kind,line,time_hhmm,covered_by_driver_id,notes")
+        .gte("work_date", start)
+        .lte("work_date", end);
+
+      if(error) throw error;
+      return data || [];
+    }
+
+    async function dbGetEntry(driverId, dateStr){
+      const { data, error } = await supabase
+        .from("schedule_entries")
+        .select("id,driver_id,work_date,kind,line,time_hhmm,covered_by_driver_id,notes")
+        .eq("driver_id", driverId)
+        .eq("work_date", dateStr)
+        .maybeSingle();
+      if(error) throw error;
+      return data; // null se não existir
+    }
+
+    async function dbDeleteEntry(driverId, dateStr){
+      const { error } = await supabase
+        .from("schedule_entries")
+        .delete()
+        .eq("driver_id", driverId)
+        .eq("work_date", dateStr);
+      if(error) throw error;
+    }
+
+    async function dbUpsertEntry(payload){
+      // payload: {driver_id, work_date, kind, line, time_hhmm, covered_by_driver_id, notes}
+      const { error } = await supabase
+        .from("schedule_entries")
+        .upsert(payload, { onConflict: "driver_id,work_date" });
+      if(error) throw error;
+    }
 
     /***********************
      * Auth
      ***********************/
-    function isAuthed(){ return localStorage.getItem(LS_AUTH) === "1"; }
-    function setAuthed(v){
-      if(v) localStorage.setItem(LS_AUTH, "1");
-      else localStorage.removeItem(LS_AUTH);
-    }
-    function renderAuth(){
-      if(isAuthed()){
+    function renderAuth(isAuthed){
+      if(isAuthed){
         hide(loginView);
         show(appView);
       }else{
@@ -979,102 +1238,344 @@
       }
     }
 
-    btnLogin.addEventListener("click", () => {
-      const u = (loginUser.value || "").trim();
-      const p = (loginPass.value || "").trim();
+    async function refreshSessionAndRender(){
+      const { data } = await supabase.auth.getSession();
+      renderAuth(!!data.session);
+      return data.session;
+    }
 
-      if(u === AUTH_USER && p === AUTH_PASS){
-        loginErr.style.display = "none";
-        setAuthed(true);
-        renderAuth();
-        renderAll();
-      }else{
-        loginErr.style.display = "block";
+    btnLogin.addEventListener("click", async () => {
+      const email = (loginEmail.value || "").trim();
+      const password = (loginPass.value || "").trim();
+      loginErr.style.display = "none";
+
+      try{
+        setBusy(true);
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if(error){
+          loginErr.style.display = "block";
+          return;
+        }
+        await refreshSessionAndRender();
+        await loadFromDBAndRender();
+      }finally{
+        setBusy(false);
       }
     });
 
     loginPass.addEventListener("keydown", (e) => { if(e.key === "Enter") btnLogin.click(); });
-    loginUser.addEventListener("keydown", (e) => { if(e.key === "Enter") btnLogin.click(); });
+    loginEmail.addEventListener("keydown", (e) => { if(e.key === "Enter") btnLogin.click(); });
 
-    btnLogout.addEventListener("click", () => {
-      setAuthed(false);
-      closeDrawer();
-      renderAuth();
+    btnLogout.addEventListener("click", async () => {
+      try{
+        setBusy(true);
+        await supabase.auth.signOut();
+        closeDrawer();
+        renderAuth(false);
+      }finally{
+        setBusy(false);
+      }
     });
 
     /***********************
-     * Overlays
+     * Filters & month
      ***********************/
-    function openAdd(){
-      addOverlay.classList.add("show");
+    searchMat.addEventListener("input", () => {
+      state.searchText = (searchMat.value || "").trim().toLowerCase();
+      renderTable();
+    });
+
+    roleFilter.addEventListener("change", () => {
+      state.roleFilter = roleFilter.value;
+      renderTable();
+    });
+
+    monthPicker.addEventListener("change", async () => {
+      if(!monthPicker.value) return;
+      state.selectedMonth = parseMonthKey(monthPicker.value);
+      try{
+        setBusy(true);
+        await loadMonthEntriesIntoState();
+        renderAll();
+      }catch(err){
+        alert("Erro ao carregar mês: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
+    });
+
+    /***********************
+     * Driver modal (create/edit)
+     ***********************/
+    function openDriverModalCreate(){
+      driverFormMode = { mode:"create", driverId:null };
+      driverModalTitle.textContent = "Cadastrar fiscal";
       inMat.value = "";
       inName.value = "";
       inPhone.value = "";
+      inRole.value = "fixo";
+      inLine.value = "";
+      inStatusPreset.value = "";
       inStatus.value = "";
-      inPeriod.value = "manhã";
-      setTimeout(() => inMat.focus(), 50);
+      addOverlay.classList.add("show");
+      setTimeout(()=> inMat.focus(), 60);
     }
-    function closeAdd(){ addOverlay.classList.remove("show"); }
 
-    function openEdit(driverId, dateStr){
-      editCtx = { driverId, dateStr };
+    function openDriverModalEdit(driverId){
       const drv = state.drivers.find(d => d.id === driverId);
-      eDriver.textContent = drv ? `${drv.mat} • ${drv.name}` : "";
-      eDate.textContent   = fmtNiceDate(dateStr);
-      eValue.value        = getDayValue(driverId, dateStr);
-      editOverlay.classList.add("show");
-      setTimeout(() => eValue.focus(), 50);
-    }
-    function closeEdit(){
-      editOverlay.classList.remove("show");
-      editCtx = { driverId:null, dateStr:null };
+      if(!drv) return;
+
+      driverFormMode = { mode:"edit", driverId };
+      driverModalTitle.textContent = "Editar fiscal";
+      inMat.value = drv.mat || "";
+      inName.value = drv.name || "";
+      inPhone.value = drv.phone || "";
+      inRole.value = (drv.role || "fixo");
+      inLine.value = drv.line_default || "";
+      inStatusPreset.value = "";
+      inStatus.value = drv.status || "";
+      addOverlay.classList.add("show");
+      setTimeout(()=> inName.focus(), 60);
     }
 
-    btnAddDriver.addEventListener("click", openAdd);
+    function closeAdd(){ addOverlay.classList.remove("show"); }
+    btnAddDriver.addEventListener("click", openDriverModalCreate);
     btnCloseAdd.addEventListener("click", closeAdd);
-    addOverlay.addEventListener("click", (e) => { if(e.target === addOverlay) closeAdd(); });
+    addOverlay.addEventListener("click", (e)=>{ if(e.target === addOverlay) closeAdd(); });
 
-    btnCloseEdit.addEventListener("click", closeEdit);
-    editOverlay.addEventListener("click", (e) => { if(e.target === editOverlay) closeEdit(); });
-
-    btnSaveDay.addEventListener("click", () => {
-      if(!editCtx.driverId || !editCtx.dateStr) return;
-      setDayValue(editCtx.driverId, editCtx.dateStr, eValue.value);
-      closeEdit();
-      renderAll();
+    inStatusPreset.addEventListener("change", () => {
+      if(inStatusPreset.value) inStatus.value = inStatusPreset.value;
     });
 
-    btnClearDay.addEventListener("click", () => {
-      if(!editCtx.driverId || !editCtx.dateStr) return;
-      setDayValue(editCtx.driverId, editCtx.dateStr, "");
-      closeEdit();
-      renderAll();
-    });
-
-    btnSaveDriver.addEventListener("click", () => {
-      const mat    = (inMat.value || "").trim();
-      const name   = (inName.value || "").trim();
-      const phone  = (inPhone.value || "").trim();
-      const period = (inPeriod.value || "").trim();
-      const status = (inStatus.value || "").trim();
+    btnSaveDriver.addEventListener("click", async () => {
+      const mat = (inMat.value || "").trim();
+      const name = (inName.value || "").trim();
+      const phone = (inPhone.value || "").trim();
+      const role = (inRole.value || "fixo").trim();
+      const line_default = (inLine.value || "").trim() || null;
+      const status = (inStatus.value || "").trim() || null;
 
       if(!mat || !name){
         alert("Preencha pelo menos Matrícula e Nome.");
         return;
       }
 
-      const exists = state.drivers.some(d => d.mat === mat);
-      if(exists){
-        alert("Já existe um motorista com essa matrícula.");
-        return;
+      try{
+        setBusy(true);
+
+        if(driverFormMode.mode === "create"){
+          const exists = state.drivers.some(d => String(d.mat).trim() === mat);
+          if(exists){
+            alert("Já existe um fiscal com essa matrícula.");
+            return;
+          }
+
+          const inserted = await dbInsertDriver({
+            mat, name, phone,
+            role,
+            line_default,
+            status
+          });
+
+          state.drivers.push(inserted);
+          state.drivers.sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
+          closeAdd();
+          await loadMonthEntriesIntoState(); // para incluir id novo na estrutura
+          renderAll();
+          return;
+        }
+
+        // edit
+        const id = driverFormMode.driverId;
+        const updated = await dbUpdateDriver(id, { mat, name, phone, role, line_default, status });
+
+        state.drivers = state.drivers.map(d => d.id === id ? updated : d);
+        state.drivers.sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
+
+        // se estiver com drawer aberto nesse driver, atualizar header
+        if(state.selectedDriverId === id && drawer.classList.contains("open")){
+          dName.textContent = `${updated.mat} • ${updated.name}`;
+          const meta = [
+            updated.phone ? `📞 ${updated.phone}` : null,
+            updated.role ? `👤 ${updated.role}` : null,
+            updated.line_default ? `🚌 ${updated.line_default}` : null,
+            updated.status ? `🏷️ ${updated.status}` : null,
+          ].filter(Boolean);
+          dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
+        }
+
+        closeAdd();
+        renderTable();
+      }catch(err){
+        alert("Erro ao salvar fiscal: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
+    });
+
+    /***********************
+     * Day modal (novo)
+     ***********************/
+    function openEdit(driverId, dateStr){
+      editCtx = { driverId, dateStr };
+      const drv = state.drivers.find(d => d.id === driverId);
+
+      eDriver.textContent = drv ? `${drv.mat} • ${drv.name}` : "";
+      eDate.textContent = fmtNiceDate(dateStr);
+
+      const entry = (state.entriesByDriver[driverId] && state.entriesByDriver[driverId][dateStr]) ? state.entriesByDriver[driverId][dateStr] : null;
+
+      // defaults
+      const kind = entry?.kind || "trabalho";
+      eKind.value = kind;
+      eLine.value = entry?.line || (drv?.line_default || "");
+      eTime.value = entry?.time_hhmm || "";
+      eNotes.value = entry?.notes || "";
+
+      // cobertura
+      syncCoverBoxVisibility();
+      fillCoverSelectOptions();
+
+      const coveredBy = entry?.covered_by_driver_id || "";
+      if(coveredBy){
+        eCoverSelect.value = coveredBy;
+      }else{
+        eCoverSelect.value = "";
       }
 
-      const driver = { id: crypto.randomUUID(), mat, name, phone, period, status };
-      state.drivers.push(driver);
-      state.schedule[driver.id] = {};
-      save();
-      closeAdd();
-      renderAll();
+      editOverlay.classList.add("show");
+      setTimeout(() => eLine.focus(), 60);
+    }
+
+    function closeEdit(){
+      editOverlay.classList.remove("show");
+      editCtx = { driverId:null, dateStr:null };
+    }
+
+    btnCloseEdit.addEventListener("click", closeEdit);
+    editOverlay.addEventListener("click", (e)=>{ if(e.target === editOverlay) closeEdit(); });
+
+    function syncCoverBoxVisibility(){
+      const show = (eKind.value === "folga");
+      coverBox.style.display = show ? "block" : "none";
+    }
+
+    eKind.addEventListener("change", () => {
+      syncCoverBoxVisibility();
+      // sugestões automáticas
+      const drv = state.drivers.find(d => d.id === editCtx.driverId);
+      if(eKind.value === "trabalho" && drv?.line_default && !eLine.value.trim()){
+        eLine.value = drv.line_default;
+      }
+      if(eKind.value !== "folga"){
+        eCoverSelect.value = "";
+      }
+    });
+
+    function fillCoverSelectOptions(){
+      const plantonistas = state.drivers
+        .filter(d => (d.role || "").toLowerCase() === "plantonista")
+        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
+
+      const options = [];
+      options.push(`<option value="">(sem cobridor)</option>`);
+      for(const p of plantonistas){
+        options.push(`<option value="${p.id}">${escapeHtml(p.mat)} • ${escapeHtml(firstName(p.name))}</option>`);
+      }
+      eCoverSelect.innerHTML = options.join("");
+    }
+
+    btnClearCover.addEventListener("click", () => {
+      eCoverSelect.value = "";
+    });
+
+    btnClearDay.addEventListener("click", async () => {
+      if(!editCtx.driverId || !editCtx.dateStr) return;
+
+      try{
+        setBusy(true);
+
+        // se o dia tinha folga com cobertura, remover a cobertura do plantonista também
+        const existing = await dbGetEntry(editCtx.driverId, editCtx.dateStr);
+        if(existing?.kind === "folga" && existing?.covered_by_driver_id){
+          await dbDeleteEntry(existing.covered_by_driver_id, editCtx.dateStr);
+        }
+
+        await dbDeleteEntry(editCtx.driverId, editCtx.dateStr);
+        closeEdit();
+        await loadMonthEntriesIntoState();
+        renderAll();
+      }catch(err){
+        alert("Erro ao limpar dia: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
+    });
+
+    btnSaveDay.addEventListener("click", async () => {
+      if(!editCtx.driverId || !editCtx.dateStr) return;
+
+      try{
+        setBusy(true);
+
+        const driverId = editCtx.driverId;
+        const dateStr = editCtx.dateStr;
+
+        const drv = state.drivers.find(d => d.id === driverId);
+
+        const kind = eKind.value;
+        const line = (eLine.value || "").trim() || null;
+        const time_hhmm = (eTime.value || "").trim() || null;
+        const notes = (eNotes.value || "").trim() || null;
+
+        // antes de salvar, ver se existia um registro com cobertura antiga
+        const existing = await dbGetEntry(driverId, dateStr);
+        const previousCoveredBy = existing?.covered_by_driver_id || null;
+
+        // regra: Folga pode ter cobridor
+        let covered_by_driver_id = null;
+        if(kind === "folga"){
+          covered_by_driver_id = eCoverSelect.value || null;
+        }
+
+        // 1) Salva o dia do fiscal (fixo ou plantonista)
+        await dbUpsertEntry({
+          driver_id: driverId,
+          work_date: dateStr,
+          kind,
+          line,
+          time_hhmm,
+          covered_by_driver_id,
+          notes
+        });
+
+        // 2) Se tinha cobertura antes e agora mudou/limpou/trocou, apagar a antiga do plantonista
+        if(previousCoveredBy && previousCoveredBy !== covered_by_driver_id){
+          await dbDeleteEntry(previousCoveredBy, dateStr);
+        }
+
+        // 3) Se for Folga com cobridor: alimentar automaticamente o plantonista como Cobertura
+        if(kind === "folga" && covered_by_driver_id){
+          const coverNotes = drv ? shortPerson(drv) : null; // "mat primeiroNome"
+          await dbUpsertEntry({
+            driver_id: covered_by_driver_id,
+            work_date: dateStr,
+            kind: "cobertura",
+            line,
+            time_hhmm,
+            covered_by_driver_id: null,
+            notes: coverNotes
+          });
+        }
+
+        closeEdit();
+        await loadMonthEntriesIntoState();
+        renderAll();
+      }catch(err){
+        alert("Erro ao salvar dia: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
     });
 
     /***********************
@@ -1086,11 +1587,11 @@
       if(!drv) return;
 
       dName.textContent = `${drv.mat} • ${drv.name}`;
-
       const meta = [
-        drv.phone  ? `📞 ${drv.phone}`   : null,
-        drv.period ? `⏱️ ${drv.period}` : null,
-        drv.status ? `🏷️ ${drv.status}` : null
+        drv.phone ? `📞 ${drv.phone}` : null,
+        drv.role ? `👤 ${drv.role}` : null,
+        drv.line_default ? `🚌 ${drv.line_default}` : null,
+        drv.status ? `🏷️ ${drv.status}` : null,
       ].filter(Boolean);
 
       dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
@@ -1105,7 +1606,6 @@
       drawer.classList.remove("open");
       drawer.classList.remove("fullscreen");
       drawer.setAttribute("aria-hidden","true");
-      btnFull.textContent = "🖥️ Tela cheia";
     }
 
     btnCloseDrawer.addEventListener("click", closeDrawer);
@@ -1116,87 +1616,157 @@
       btnFull.textContent = drawer.classList.contains("fullscreen") ? "🧩 Voltar" : "🖥️ Tela cheia";
     });
 
-    btnRemoveDriver.addEventListener("click", () => {
+    btnEditDriver.addEventListener("click", () => {
+      if(!state.selectedDriverId) return;
+      openDriverModalEdit(state.selectedDriverId);
+    });
+
+    btnRemoveDriver.addEventListener("click", async () => {
       const id = state.selectedDriverId;
       if(!id) return;
       const drv = state.drivers.find(d => d.id === id);
       if(!drv) return;
 
-      const ok = confirm(`Remover o motorista ${drv.mat} • ${drv.name}?`);
+      const ok = confirm(`Remover o fiscal ${drv.mat} • ${drv.name}?\n(As escalas dele também serão removidas.)`);
       if(!ok) return;
 
-      state.drivers = state.drivers.filter(d => d.id !== id);
-      delete state.schedule[id];
-      save();
-      closeDrawer();
-      renderAll();
+      try{
+        setBusy(true);
+        await dbDeleteDriver(id);
+        state.drivers = state.drivers.filter(d => d.id !== id);
+        delete state.entriesByDriver[id];
+        closeDrawer();
+        renderAll();
+      }catch(err){
+        alert("Erro ao remover: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
     });
 
     btnWhats.addEventListener("click", async () => {
       const id = state.selectedDriverId;
       if(!id) return;
-
       const drv = state.drivers.find(d => d.id === id);
       if(!drv) return;
 
       const phoneDigits = normalizePhoneBR(drv.phone);
-      if(!phoneDigits || phoneDigits.length < 10){
-        alert("Esse motorista está sem telefone válido. Cadastre o WhatsApp no cadastro.");
-        return;
-      }
-
+      // WhatsApp opcional. Se não tiver, ainda assim baixa o PNG.
       btnWhats.disabled = true;
-      btnWhats.textContent = "⏳ Gerando imagem...";
+      btnWhats.textContent = "⏳ Gerando PNG...";
 
       try{
         const blob = await captureCalendarImage();
         const y = state.selectedMonth.getFullYear();
-        const m = pad2(state.selectedMonth.getMonth() + 1);
-        const filename = `escala-${drv.mat}-${y}-${m}.png`;
+        const m = pad2(state.selectedMonth.getMonth()+1);
+        const filename = `calendario-${drv.mat}-${y}-${m}.png`;
 
-        // baixa automático
         downloadBlob(blob, filename);
-
-        // tenta copiar a imagem (quando permitido)
         const copied = await tryCopyImageToClipboard(blob);
 
-        // abre whatsapp com texto pronto
-        const text = buildWhatsappText(drv, state.selectedMonth);
-        openWhatsApp(phoneDigits, text);
+        // Se tiver telefone válido, abre WhatsApp com mensagem pronta
+        if(phoneDigits && phoneDigits.length >= 10){
+          const text = buildWhatsappText(drv, state.selectedMonth);
+          openWhatsApp(phoneDigits, text);
+        }
 
         setTimeout(() => {
           alert(
             copied
-              ? "Imagem copiada ✅\nNo WhatsApp: cole (Ctrl+V) e envie.\n(O PNG também foi baixado.)"
-              : "PNG baixado ✅\nNo WhatsApp: anexe o PNG (ou tente colar Ctrl+V) e envie."
+              ? "PNG gerado e copiado ✅\nVocê também pode anexar o arquivo baixado."
+              : "PNG gerado ✅\nArquivo foi baixado. (Se quiser, anexe no WhatsApp.)"
           );
-        }, 300);
+        }, 250);
 
       }catch(e){
-        alert("Erro ao gerar imagem: " + (e?.message || e));
+        alert("Erro ao gerar PNG: " + (e?.message || e));
       }finally{
         btnWhats.disabled = false;
-        btnWhats.textContent = "📲 Imagem + WhatsApp";
+        btnWhats.textContent = "📲 Baixar calendário (PNG)";
       }
     });
 
     /***********************
-     * Filters & Month
+     * Exportações
      ***********************/
-    searchMat.addEventListener("input", () => {
-      state.searchText = (searchMat.value || "").trim().toLowerCase();
-      renderTable();
+    function buildCSVForMonth(){
+      const monthDate = state.selectedMonth;
+      const y = monthDate.getFullYear();
+      const m = monthDate.getMonth()+1;
+      const nDays = daysInMonth(monthDate);
+
+      const rows = [];
+      // Cabeçalho
+      rows.push([
+        "matricula","nome","tipo_fiscal","linha_fixa","status",
+        "data","dia_semana","tipo_dia","linha","hora","coberto_por","obs"
+      ]);
+
+      for(const drv of state.drivers){
+        // aplica filtros atuais
+        if(state.roleFilter !== "todos"){
+          const role = (drv.role || "").toLowerCase();
+          if(role !== state.roleFilter) continue;
+        }
+        if(state.searchText){
+          const mat = (drv.mat || "").toLowerCase();
+          const name = (drv.name || "").toLowerCase();
+          if(!mat.includes(state.searchText) && !name.includes(state.searchText)) continue;
+        }
+
+        for(let d=1; d<=nDays; d++){
+          const dateStr = ymd(y,m,d);
+          const dt = new Date(y, m-1, d);
+          const dow = dowShort[dt.getDay()];
+
+          const entry = state.entriesByDriver[drv.id]?.[dateStr] || null;
+
+          const tipo_dia = entry?.kind || "";
+          const linha = entry?.line || "";
+          const hora = entry?.time_hhmm || "";
+          const coberto_por = entry?.covered_by_driver_id ? (state.drivers.find(x=>x.id===entry.covered_by_driver_id)?.mat || "") : "";
+          const obs = entry?.notes || "";
+
+          rows.push([
+            drv.mat||"",
+            drv.name||"",
+            drv.role||"",
+            drv.line_default||"",
+            drv.status||"",
+            dateStr,
+            dow,
+            tipo_dia,
+            linha,
+            hora,
+            coberto_por,
+            obs
+          ]);
+        }
+      }
+
+      const csv = rows
+        .map(r => r.map(v => {
+          const s = String(v ?? "");
+          const escaped = s.replaceAll('"','""');
+          return `"${escaped}"`;
+        }).join(","))
+        .join("\n");
+
+      return csv;
+    }
+
+    btnExportExcel.addEventListener("click", () => {
+      const csv = buildCSVForMonth();
+      const y = state.selectedMonth.getFullYear();
+      const m = pad2(state.selectedMonth.getMonth()+1);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      downloadBlob(blob, `escala-${y}-${m}.csv`);
     });
 
-    periodFilter.addEventListener("change", () => {
-      state.periodFilter = periodFilter.value;
-      renderTable();
-    });
-
-    monthPicker.addEventListener("change", () => {
-      if(!monthPicker.value) return;
-      state.selectedMonth = parseMonthKey(monthPicker.value);
-      renderAll();
+    btnExportPdf.addEventListener("click", () => {
+      // PDF via navegador: abre a janela de impressão; usuário salva em PDF.
+      // Dica: para ficar bonito, deixe o mês filtrado e depois exporte.
+      window.print();
     });
 
     /***********************
@@ -1206,13 +1776,8 @@
       if(!state.selectedMonth){
         const now = new Date();
         state.selectedMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-        const hasFeb2026 = state.drivers.some(d =>
-          state.schedule[d.id] && Object.keys(state.schedule[d.id]).some(k => k.startsWith("2026-02-"))
-        );
-        if(hasFeb2026) state.selectedMonth = new Date(2026, 1, 1);
       }
-      monthPicker.value = monthKey(state.selectedMonth.getFullYear(), state.selectedMonth.getMonth() + 1);
+      monthPicker.value = monthKey(state.selectedMonth.getFullYear(), state.selectedMonth.getMonth()+1);
     }
 
     function renderAll(){
@@ -1226,93 +1791,81 @@
     function renderTable(){
       const monthDate = state.selectedMonth;
       const y = monthDate.getFullYear();
-      const m = monthDate.getMonth() + 1;
+      const m = monthDate.getMonth()+1;
       const nDays = daysInMonth(monthDate);
 
       // Header
-      let th = `<tr><th class="col-driver">Matrícula • Nome • Telefone • Período • Status</th>`;
-      for(let d = 1; d <= nDays; d++){
-        const dt  = new Date(y, m - 1, d);
+      const th = [];
+      th.push(`<tr>`);
+      th.push(`<th class="col-driver">Matrícula • Nome • Tipo • Linha fixa • Status</th>`);
+      for(let d=1; d<=nDays; d++){
+        const dt = new Date(y, m-1, d);
         const dow = dowShort[dt.getDay()];
-        th += `
-          <th title="${dow}">
-            ${pad2(d)}
-            <div style="color:rgba(167,176,198,.8);font-weight:700;font-size:11px;margin-top:2px;">
-              ${dow}
-            </div>
-          </th>
-        `;
+        th.push(`<th title="${dow}">${pad2(d)}<div style="color:rgba(11,26,16,.55);font-weight:900;font-size:11px;margin-top:2px;">${dow}</div></th>`);
       }
-      th += `</tr>`;
-      monthThead.innerHTML = th;
+      th.push(`</tr>`);
+      monthThead.innerHTML = th.join("");
 
       // Filtragem
       const filtered = state.drivers
         .slice()
-        .sort((a,b) => (a.mat || "").localeCompare(b.mat || "", "pt-BR", { numeric: true }))
+        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}))
         .filter(d => {
-          if(state.periodFilter !== "todos"){
-            const p = (d.period || "").toLowerCase().trim();
-            if(p !== state.periodFilter) return false;
+          if(state.roleFilter !== "todos"){
+            const r = (d.role || "").toLowerCase().trim();
+            if(r !== state.roleFilter) return false;
           }
           if(state.searchText){
-            const mat  = (d.mat  || "").toLowerCase();
+            const mat = (d.mat || "").toLowerCase();
             const name = (d.name || "").toLowerCase();
             if(!mat.includes(state.searchText) && !name.includes(state.searchText)) return false;
           }
           return true;
         });
 
+      const rows = [];
       if(filtered.length === 0){
-        monthTbody.innerHTML = `<tr>
-          <td class="col-driver"><span class="muted">Nenhum motorista encontrado.</span></td>
-          ${"<td></td>".repeat(nDays)}
-        </tr>`;
+        rows.push(`<tr><td class="col-driver"><span class="muted">Nenhum fiscal encontrado.</span></td>${"<td></td>".repeat(nDays)}</tr>`);
+        monthTbody.innerHTML = rows.join("");
         return;
       }
 
-      let rows = "";
       for(const drv of filtered){
-        const phoneTxt  = drv.phone  ? `📞 ${escapeHtml(drv.phone)}`  : "📞 (sem telefone)";
-        const periodTxt = drv.period ? `⏱️ ${escapeHtml(drv.period)}` : "⏱️ (sem período)";
-        const statusTxt = drv.status ? `🏷️ ${escapeHtml(drv.status)}` : "🏷️ (sem status)";
-
         const title = `
           <div class="driver-title">
             <div class="name">${escapeHtml(drv.mat)} • ${escapeHtml(drv.name)}</div>
             <div class="meta">
-              <span class="kbd">${phoneTxt}</span>
-              <span class="kbd">${periodTxt}</span>
-              <span class="kbd">${statusTxt}</span>
+              <span class="kbd">👤 ${escapeHtml(drv.role || "")}</span>
+              ${drv.line_default ? `<span class="kbd">🚌 ${escapeHtml(drv.line_default)}</span>` : `<span class="kbd">🚌 (sem linha fixa)</span>`}
+              ${drv.status ? `<span class="kbd">🏷️ ${escapeHtml(drv.status)}</span>` : `<span class="kbd">🏷️ (sem status)</span>`}
               <span class="kbd">Clique no nome → calendário</span>
             </div>
           </div>
         `;
 
-        rows += `<tr>
-          <td class="col-driver" style="cursor:pointer;" data-open="${drv.id}">${title}</td>
-        `;
+        rows.push(`<tr>`);
+        rows.push(`<td class="col-driver" style="cursor:pointer;" data-open="${drv.id}">${title}</td>`);
 
-        for(let d = 1; d <= nDays; d++){
-          const dateStr = ymd(y, m, d);
-          const val = getDayValue(drv.id, dateStr);
-          const cls = chipClass(val);
-          const showTxt = val ? escapeHtml(val) : "—";
-          rows += `
+        for(let d=1; d<=nDays; d++){
+          const dateStr = ymd(y,m,d);
+          const entry = state.entriesByDriver[drv.id]?.[dateStr] || null;
+
+          const cls = chipClass(entry);
+          const showTxt = entry ? escapeHtml(entryToLabel(entry, false)) : "—";
+
+          rows.push(`
             <td>
               <span class="${cls}" data-edit="${drv.id}" data-date="${dateStr}" title="Clique para editar">
                 ${showTxt}
               </span>
             </td>
-          `;
+          `);
         }
-
-        rows += `</tr>`;
+        rows.push(`</tr>`);
       }
 
-      monthTbody.innerHTML = rows;
+      monthTbody.innerHTML = rows.join("");
 
-      // binds
       monthTbody.querySelectorAll("[data-open]").forEach(el => {
         el.addEventListener("click", () => openDrawer(el.getAttribute("data-open")));
       });
@@ -1332,33 +1885,35 @@
 
       const monthDate = state.selectedMonth;
       const y = monthDate.getFullYear();
-      const m = monthDate.getMonth() + 1;
+      const m = monthDate.getMonth()+1;
       const nDays = daysInMonth(monthDate);
 
-      const firstDow = new Date(y, m - 1, 1).getDay();
+      const firstDow = new Date(y, m-1, 1).getDay();
       const cells = [];
 
-      for(let i = 0; i < firstDow; i++){
+      for(let i=0; i<firstDow; i++){
         cells.push(`<div class="day muted" aria-hidden="true"></div>`);
       }
 
-      for(let d = 1; d <= nDays; d++){
-        const dateStr = ymd(y, m, d);
-        const val = getDayValue(id, dateStr);
-        const cls = val ? "" : "empty";
-        const showTxt = val ? escapeHtml(val) : "Disponível";
+      for(let d=1; d<=nDays; d++){
+        const dateStr = ymd(y,m,d);
+        const entry = state.entriesByDriver[id]?.[dateStr] || null;
+
+        const label = entry ? entryToLabel(entry, true /* esconder info de quem cobriu */) : "Disponível";
+        const isEmpty = !entry;
+        const cls = isEmpty ? "empty" : "";
 
         cells.push(`
           <div class="day" data-editcal="${dateStr}">
             <div class="num">${pad2(d)}</div>
-            <div class="val ${cls}">${showTxt}</div>
+            <div class="val ${cls}">${escapeHtml(label)}</div>
           </div>
         `);
       }
 
       const totalCells = firstDow + nDays;
       const tail = (7 - (totalCells % 7)) % 7;
-      for(let i = 0; i < tail; i++){
+      for(let i=0; i<tail; i++){
         cells.push(`<div class="day muted" aria-hidden="true"></div>`);
       }
 
@@ -1370,20 +1925,68 @@
     }
 
     /***********************
+     * Load data from DB
+     ***********************/
+    async function loadMonthEntriesIntoState(){
+      ensureMonthInit();
+      const entries = await dbGetEntriesForMonth(state.selectedMonth);
+
+      const map = {};
+      for(const d of state.drivers){
+        map[d.id] = {};
+      }
+
+      for(const it of entries){
+        if(!map[it.driver_id]) map[it.driver_id] = {};
+        map[it.driver_id][it.work_date] = {
+          kind: it.kind || "trabalho",
+          line: it.line || "",
+          time_hhmm: it.time_hhmm || "",
+          covered_by_driver_id: it.covered_by_driver_id || null,
+          notes: it.notes || ""
+        };
+      }
+
+      state.entriesByDriver = map;
+    }
+
+    async function loadFromDBAndRender(){
+      const session = await refreshSessionAndRender();
+      if(!session) return;
+
+      setBusy(true);
+      try{
+        state.drivers = await dbGetDrivers();
+        await loadMonthEntriesIntoState();
+        renderAll();
+      }catch(err){
+        alert("Erro ao carregar dados do Supabase: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
+    }
+
+    /***********************
      * Init
      ***********************/
-    load();
-    renderAuth();
-    ensureMonthInit();
+    (async function init(){
+      loginEmail.value = ADMIN_EMAIL;
+      roleFilter.value = state.roleFilter;
 
-    periodFilter.value = state.periodFilter;
+      const session = await refreshSessionAndRender();
+      ensureMonthInit();
 
-    if(isAuthed()){
-      renderAll();
-    }else{
-      loginUser.value = AUTH_USER;
-      setTimeout(() => loginPass.focus(), 50);
-    }
+      if(session){
+        await loadFromDBAndRender();
+      }else{
+        show(loginView);
+        hide(appView);
+        setTimeout(() => loginPass.focus(), 50);
+      }
+    })();
+
+    // drawer close bind
+    btnCloseDrawer.addEventListener("click", closeDrawer);
   </script>
 </body>
 </html>
