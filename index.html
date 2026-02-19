@@ -539,6 +539,7 @@
     }
     .login-head h2{ margin:0; font-size: 15px; letter-spacing:.15px; font-weight: 1000; }
     .login-head p{ margin: 4px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.35; font-weight: 750; }
+
     .login-body{ padding: 14px 16px 16px; }
     .login-actions{
       display:flex;
@@ -547,7 +548,21 @@
       flex-wrap:wrap;
       padding: 0 16px 16px;
     }
-    .err{ margin-top: 10px; color: #b4002d; font-size: 12.5px; display:none; font-weight: 900; }
+
+    /* ✅ ERRO MAIS “BONITO” E LEGÍVEL */
+    .err{
+      margin-top: 10px;
+      display:none;
+      font-size: 12.5px;
+      font-weight: 950;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(180,0,45,.25);
+      background: rgba(180,0,45,.08);
+      color: #8f0020;
+      line-height: 1.35;
+      white-space: pre-wrap;
+    }
 
     /* Modo captura: deixa tudo “alto contraste” no PNG */
     body.capture-mode{
@@ -600,7 +615,10 @@
             <input id="loginPass" class="input" type="password" placeholder="••••••••" autocomplete="current-password"/>
           </div>
         </div>
-        <div id="loginErr" class="err">Não foi possível entrar. Verifique e-mail/senha.</div>
+
+        <!-- ✅ AGORA MOSTRA O ERRO REAL -->
+        <div id="loginErr" class="err"></div>
+
         <div class="help">
           ✅ Depois de logar: cadastre os fiscais e monte o mês. Clique no <b>nome</b> para abrir o calendário em tela cheia.
         </div>
@@ -1014,6 +1032,32 @@
     }
 
     /***********************
+     * ✅ ERRO AMIGÁVEL DO SUPABASE (LOGIN)
+     ***********************/
+    function niceAuthError(err){
+      const msg = String(err?.message || err || "").toLowerCase();
+
+      if(!msg) return "Erro desconhecido (sem mensagem).";
+
+      if(msg.includes("invalid login credentials"))
+        return "E-mail ou senha inválidos. Verifique se o usuário foi criado em Authentication → Users e se a senha está correta.";
+
+      if(msg.includes("email not confirmed"))
+        return "Este e-mail ainda não foi confirmado no Supabase. Vá em Authentication → Users e marque como Confirmed (ou desative a confirmação de e-mail).";
+
+      if(msg.includes("user not found"))
+        return "Usuário não encontrado. Crie esse e-mail em Authentication → Users.";
+
+      if(msg.includes("too many requests"))
+        return "Muitas tentativas seguidas. Aguarde um pouco e tente novamente.";
+
+      if(msg.includes("failed to fetch") || msg.includes("network"))
+        return "Falha de rede / bloqueio do navegador. Verifique sua internet e se algo está bloqueando o Supabase (VPN/Firewall).";
+
+      return err?.message || String(err);
+    }
+
+    /***********************
      * DB calls
      ***********************/
     async function dbLoadAllForMonth(){
@@ -1288,13 +1332,17 @@
       const email = (loginEmail.value||"").trim();
       const pass = (loginPass.value||"").trim();
 
+      // ✅ limpa erro anterior
       loginErr.style.display = "none";
+      loginErr.textContent = "";
+
       btnLogin.disabled = true;
       btnLogin.textContent = "Entrando…";
 
       try{
         const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
         if(error) throw error;
+
         state.authed = true;
 
         hide(loginView);
@@ -1302,8 +1350,12 @@
 
         await refreshApp();
       }catch(e){
-        loginErr.style.display = "block";
         console.error(e);
+        loginErr.style.display = "block";
+        loginErr.textContent =
+          "Não foi possível entrar.\n\n" +
+          "Motivo: " + niceAuthError(e) + "\n\n" +
+          "Dica: confira no Supabase em Authentication → Users se esse e-mail existe e se está Confirmed.";
       }finally{
         btnLogin.disabled = false;
         btnLogin.textContent = "Entrar";
@@ -1492,7 +1544,7 @@
       btnSaveDay.disabled = true;
       btnSaveDay.textContent = "Salvando…";
       try{
-        const saved = await dbUpsertEntry({
+        await dbUpsertEntry({
           driver_id: driverId,
           work_date: dateStr,
           kind,
@@ -1554,7 +1606,7 @@
 
       dSub.innerHTML = meta.map(m => `<span class="tag">${escapeHtml(m)}</span>`).join(" ");
 
-      drawer.classList.add("open");      // já é “tela cheia”
+      drawer.classList.add("open");
       drawer.setAttribute("aria-hidden","false");
       renderCalendar();
     }
@@ -1598,14 +1650,11 @@
       const el = document.getElementById("calCapture");
       if(!el) throw new Error("Calendário não encontrado.");
 
-      // modo captura (alto contraste)
       document.body.classList.add("capture-mode");
 
-      // garante que o elemento esteja visível e no topo
       drawer.scrollTop = 0;
       el.scrollIntoView({ block: "start" });
 
-      // qualidade alta e sem cortar
       const canvas = await html2canvas(el, {
         backgroundColor: "#ffffff",
         scale: 2.2,
@@ -1668,7 +1717,6 @@
         const pageW = pdf.internal.pageSize.getWidth();
         const pageH = pdf.internal.pageSize.getHeight();
 
-        // encaixa a imagem na página mantendo proporção
         const imgW = canvas.width;
         const imgH = canvas.height;
         const scale = Math.min(pageW / imgW, pageH / imgH);
@@ -1692,11 +1740,10 @@
     });
 
     /***********************
-     * Export CSV (Excel) - formato “certinho” (1 linha por dia com conteúdo)
+     * Export CSV (Excel)
      ***********************/
     function csvEscape(v){
       const s = String(v ?? "");
-      // always quote (Excel)
       return `"${s.replaceAll('"','""')}"`;
     }
 
@@ -1707,23 +1754,12 @@
       const nDays = daysInMonth(md);
 
       const header = [
-        "matricula",
-        "nome",
-        "tipo",
-        "linha_fixa",
-        "status",
-        "dia",
-        "dia_semana",
-        "tipo_dia",
-        "linha",
-        "hora",
-        "coberto_por",
-        "obs"
+        "matricula","nome","tipo","linha_fixa","status",
+        "dia","dia_semana","tipo_dia","linha","hora","coberto_por","obs"
       ];
 
       const rows = [header.map(csvEscape).join(",")];
 
-      // exporta “listagem normal”: todos (respeita filtros atuais)
       const drivers = getFilteredDrivers();
 
       for(const d of drivers){
@@ -1733,26 +1769,17 @@
           const dow = dowShort[dt.getDay()];
 
           const e = getEntry(d.id, dateStr);
-          if(!e) continue; // só exporta o que foi preenchido (fica leve e “normal”)
+          if(!e) continue;
 
           rows.push([
-            d.mat,
-            d.name,
-            d.role,
-            d.line_default || "",
-            d.status || "",
-            dateStr,
-            dow,
-            (e.kind || ""),
-            (e.line || ""),
-            (e.time_hhmm || ""),
-            (e.covered_by || ""),
-            (e.obs || "")
+            d.mat, d.name, d.role, d.line_default || "", d.status || "",
+            dateStr, dow,
+            (e.kind || ""), (e.line || ""), (e.time_hhmm || ""),
+            (e.covered_by || ""), (e.obs || "")
           ].map(csvEscape).join(","));
         }
       }
 
-      // BOM para Excel abrir acentos
       return "\uFEFF" + rows.join("\n");
     }
 
@@ -1776,17 +1803,15 @@
     });
 
     /***********************
-     * Export PDF geral (da lista do mês) - “PDF real”
+     * Export PDF geral (lista do mês)
      ***********************/
     btnExportPDF.addEventListener("click", async () => {
       btnExportPDF.disabled = true;
       btnExportPDF.textContent = "Gerando…";
       try{
-        // captura a tabela inteira (card 1)
         const el = document.querySelector(".grid .card");
         if(!el) throw new Error("Tabela não encontrada.");
 
-        // modo captura clareia o fundo (já é claro, mas garante)
         document.body.classList.add("capture-mode");
         window.scrollTo({ top: 0, behavior: "instant" });
 
@@ -1801,8 +1826,6 @@
 
         const imgData = canvas.toDataURL("image/png", 1.0);
         const { jsPDF } = window.jspdf;
-
-        // PDF A4 landscape para caber mais dias
         const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
 
         const pageW = pdf.internal.pageSize.getWidth();
@@ -1811,14 +1834,12 @@
         const imgW = canvas.width;
         const imgH = canvas.height;
 
-        // se a tabela ficar muito alta, divide em páginas
         const scale = pageW / imgW;
         const scaledH = imgH * scale;
 
         if(scaledH <= pageH){
           pdf.addImage(imgData, "PNG", 0, 0, pageW, scaledH);
         }else{
-          // paginar por “fatias”
           let yOffset = 0;
           const sliceH = pageH / scale;
 
@@ -1856,8 +1877,6 @@
     function getFilteredDrivers(){
       const txt = state.searchText;
 
-      // filtro de linha: “a escala irei fazer por linha”
-      // lógica: considera linha_fixa do fiscal OU linha do dia (no mês) quando preenchida.
       const md = state.selectedMonth;
       const y = md.getFullYear();
       const m = md.getMonth()+1;
@@ -1881,26 +1900,21 @@
         .slice()
         .sort((a,b)=> String(a.mat||"").localeCompare(String(b.mat||""), "pt-BR", {numeric:true}))
         .filter(d => {
-          // tipo
           if(state.roleFilter !== "todos"){
             if((d.role||"").toLowerCase().trim() !== state.roleFilter) return false;
           }
 
-          // busca
           if(txt){
             const mat = String(d.mat||"").toLowerCase();
             const name = String(d.name||"").toLowerCase();
             if(!mat.includes(txt) && !name.includes(txt)) return false;
           }
 
-          // linha
           if(state.lineFilter !== "todas"){
             if(!driverHasLineInMonth(d, state.lineFilter)) return false;
           }
 
-          // filtro de folgas cobertas/faltando:
           if(state.coverageFilter !== "todos"){
-            // aplica no nível do fiscal fixo (se ele tiver ao menos 1 folga naquele status)
             let hasMatch = false;
             for(let day=1; day<=nDays; day++){
               const dt = ymd(y,m,day);
@@ -1929,7 +1943,6 @@
       const m = monthDate.getMonth()+1;
       const nDays = daysInMonth(monthDate);
 
-      // Header
       const th = [];
       th.push(`<tr>`);
       th.push(`<th class="col-driver">Matrícula • Nome • Tipo • Linha fixa • Status</th>`);
@@ -2044,7 +2057,6 @@
         const main = escapeHtml(buildMainText(entry));
         const sub = escapeHtml(buildSubText(entry));
 
-        // cor do “val” conforme tipo
         const k = (entry.kind||"").toLowerCase();
         let bg = "rgba(255,255,255,.90)", br = "rgba(0,0,0,.12)";
         if(k==="trabalho"){ bg = "var(--k-trabalho-bg)"; br="rgba(0,196,106,.55)"; }
@@ -2078,7 +2090,7 @@
     }
 
     /***********************
-     * Auto-session: se já estiver logado no Supabase, entra direto
+     * Auto-session
      ***********************/
     (async function boot(){
       ensureMonthInit();
@@ -2092,7 +2104,7 @@
         show(appView);
         await refreshApp();
       }else{
-        // pré-preenche o email que você informou (facilita)
+        // pré-preenche o email (facilita)
         loginEmail.value = "darlene.plantao@pessegotransportes.com.br";
         setTimeout(()=>loginPass.focus(), 50);
       }
