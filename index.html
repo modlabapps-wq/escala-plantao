@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Escala Plantão • Motoristas</title>
+  <title>Escala Plantão • Fiscais</title>
 
   <!-- html2canvas (para gerar print do calendário) -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -135,6 +135,7 @@
     }
     .btn:hover{ border-color: rgba(255,255,255,.22); filter: brightness(1.06); }
     .btn:active{ transform: translateY(1px); }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
 
     .btn.primary{ border-color: rgba(0,229,255,.30); box-shadow: var(--shadow2), var(--glow1); }
     .btn.purple{ border-color: rgba(177,0,255,.26); box-shadow: var(--shadow2), var(--glow2); }
@@ -264,6 +265,9 @@
       cursor:pointer;
       user-select:none;
       transition: transform .06s ease, filter .15s ease;
+      max-width: 160px;
+      overflow:hidden;
+      text-overflow: ellipsis;
     }
     .chip:hover{ filter: brightness(1.08); }
     .chip:active{ transform: translateY(1px); }
@@ -291,7 +295,7 @@
     .drawer{
       position: fixed;
       top:0; right:0;
-      width: min(620px, 94vw); /* aumentei pra não cortar */
+      width: min(620px, 94vw);
       height: 100%;
       background: linear-gradient(180deg, rgba(10,14,24,.92), rgba(10,14,24,.86));
       border-left: 1px solid rgba(255,255,255,.12);
@@ -305,13 +309,12 @@
     }
     .drawer.open{ transform: translateX(0); }
 
-    /* Tela cheia do calendário (drawer vira modal central grande) */
     .drawer.fullscreen{
       right: 50%;
-      transform: translateX(50%); /* centraliza */
+      transform: translateX(50%);
       width: min(1080px, 96vw);
       border-left: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px 18px 18px 18px;
+      border-radius: 18px;
       top: 18px;
       height: calc(100% - 36px);
       box-shadow: 0 18px 60px rgba(0,0,0,.65);
@@ -361,7 +364,7 @@
       grid-template-columns: repeat(7,1fr);
     }
     .day{
-      min-height: 92px; /* maior */
+      min-height: 92px;
       border-right:1px solid rgba(255,255,255,.06);
       border-bottom:1px solid rgba(255,255,255,.06);
       padding: 10px 10px;
@@ -414,7 +417,7 @@
     }
     .overlay.show{ display:flex; }
     .modal{
-      width: min(520px, 96vw);
+      width: min(560px, 96vw);
       border-radius: 18px;
       border:1px solid rgba(255,255,255,.14);
       background: linear-gradient(180deg, rgba(12,16,30,.95), rgba(10,14,24,.90));
@@ -519,32 +522,34 @@
 <body>
   <div class="neon-ring" aria-hidden="true"></div>
 
-  <!-- LOGIN -->
+  <!-- LOGIN (Supabase Auth) -->
   <section id="loginView" class="login">
     <div class="login-card">
       <div class="login-head">
         <div class="badge" aria-hidden="true"></div>
         <div>
-          <h2>Escala Plantão • Motoristas</h2>
-          <p>Login básico para acesso interno. Dados salvos no seu navegador (LocalStorage).</p>
+          <h2>Escala Plantão • Fiscais</h2>
+          <p>Login seguro (Supabase). Dados ficam na nuvem e não dependem do seu navegador.</p>
         </div>
       </div>
+
       <div class="login-body">
         <div class="row">
           <div class="full">
-            <label>Login</label>
-            <input id="loginUser" class="input" placeholder="ex: rafael.plantao" autocomplete="username"/>
+            <label>Email</label>
+            <input id="loginEmail" class="input" autocomplete="username" />
           </div>
           <div class="full">
             <label>Senha</label>
             <input id="loginPass" class="input" type="password" placeholder="••••••••" autocomplete="current-password"/>
           </div>
         </div>
-        <div id="loginErr" class="err">Usuário ou senha inválidos.</div>
+        <div id="loginErr" class="err">Email ou senha inválidos.</div>
         <div class="help">
-          Dica: depois que você logar, você pode <b>clicar em qualquer dia</b> na lista ou no calendário para registrar/editar a escala.
+          ✅ Você está usando RLS + Policy: somente o admin acessa os dados.
         </div>
       </div>
+
       <div class="login-actions">
         <button id="btnLogin" class="btn primary">Entrar</button>
       </div>
@@ -559,7 +564,7 @@
           <div class="dot" aria-hidden="true"></div>
           <div>
             <h1>Escala Plantão</h1>
-            <span>Cadastro + escala mensal • tema neon</span>
+            <span>Cadastro + escala mensal • Supabase</span>
           </div>
         </div>
 
@@ -575,7 +580,6 @@
               <option value="todos">Todos</option>
               <option value="manhã">manhã</option>
               <option value="tarde">tarde</option>
-              <option value="noite">noite</option>
             </select>
           </div>
 
@@ -584,7 +588,7 @@
             <input id="searchMat" class="input" placeholder="matrícula ou nome" style="min-width:220px"/>
           </div>
 
-          <button id="btnAddDriver" class="btn green">+ Cadastrar motorista</button>
+          <button id="btnAddDriver" class="btn green">+ Cadastrar fiscal</button>
           <button id="btnLogout" class="btn danger">Sair</button>
         </div>
       </div>
@@ -592,7 +596,7 @@
       <div class="grid">
         <section class="card">
           <div class="head">
-            <h2>Visualização 1 • Lista do mês (todos os motoristas)</h2>
+            <h2>Visualização 1 • Lista do mês (todos os fiscais)</h2>
             <div class="muted" style="font-size:12px;">
               Clique no <b>nome</b> para abrir o calendário • clique em um <b>dia</b> para editar
             </div>
@@ -609,7 +613,7 @@
       </div>
 
       <div class="muted" style="margin-top:12px;font-size:12px;">
-        ✅ Dados ficam salvos localmente neste navegador. (Compartilhar real com outra pessoa: Firebase/Supabase)
+        ✅ Dados salvos no Supabase (nuvem). Você não perde ao trocar de PC/navegador.
       </div>
     </div>
   </main>
@@ -618,7 +622,7 @@
   <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="d-head">
       <div class="d-title">
-        <div id="dName" class="big">Motorista</div>
+        <div id="dName" class="big">Fiscal</div>
         <div id="dSub" class="sub"></div>
       </div>
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
@@ -664,7 +668,7 @@
   <div id="addOverlay" class="overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="m-head">
-        <h3>Cadastrar novo motorista</h3>
+        <h3>Cadastrar novo fiscal</h3>
         <button id="btnCloseAdd" class="btn">Fechar</button>
       </div>
       <div class="m-body">
@@ -678,7 +682,6 @@
             <select id="inPeriod" class="select">
               <option value="manhã">manhã</option>
               <option value="tarde">tarde</option>
-              <option value="noite">noite</option>
             </select>
           </div>
           <div class="full">
@@ -712,7 +715,7 @@
         <div class="row">
           <div class="full">
             <div class="muted" style="font-size:12px; margin-bottom:10px;">
-              Motorista: <b id="eDriver"></b><br/>
+              Fiscal: <b id="eDriver"></b><br/>
               Data: <b id="eDate"></b>
             </div>
             <label>Valor do dia</label>
@@ -727,26 +730,34 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
     /***********************
-     * Config / Auth
+     * Supabase
      ***********************/
-    const AUTH_USER = "rafael.plantao";
-    const AUTH_PASS = "Ignis1212@";
-    const LS_KEY = "escala_plantao_data_v2";
-    const LS_AUTH = "escala_plantao_auth_v1";
+    const SUPABASE_URL = "https://cwqwugdiksfodeoksofp.supabase.co";
+    const SUPABASE_ANON = "sb_publishable_XkISoiXR_cHRWdeKvtb7HA_ceYFTnPR";
+    const ADMIN_EMAIL = "darlene.plantao@pessegotransportes.com.br";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
 
     /***********************
      * State
      ***********************/
     let state = {
       drivers: [],
+      // schedule[driverId][yyyy-mm-dd] = string
       schedule: {},
       selectedMonth: null,
       selectedDriverId: null,
       searchText: "",
-      periodFilter: "todos"
+      periodFilter: "todos",
     };
+
+    let isBusy = false;
 
     /***********************
      * Helpers
@@ -772,65 +783,6 @@
       return `${d}/${m}/${y}`;
     }
 
-    function save(){
-      localStorage.setItem(LS_KEY, JSON.stringify({
-        drivers: state.drivers,
-        schedule: state.schedule
-      }));
-    }
-
-    function seedExample(){
-      const d1 = { id: crypto.randomUUID(), mat:"30556", name:"VICTOR HUGO TOLEDO PANUCCI", phone:"11 94853-1972", period:"manhã", status:"Cobrindo Férias" };
-      const d2 = { id: crypto.randomUUID(), mat:"32002", name:"WILLIANS DOS SANTOS MENDES", phone:"11 96034-2883", period:"tarde", status:"Cobrindo Férias" };
-      const d3 = { id: crypto.randomUUID(), mat:"33002", name:"PAULO HENRIQUE OLIVEIRA DOS ANJOS", phone:"+55 11 98767-4890", period:"manhã", status:"Disponível" };
-
-      state.drivers = [d1,d2,d3];
-      state.schedule[d1.id] = {};
-      state.schedule[d2.id] = {};
-      state.schedule[d3.id] = {};
-
-      for(let day=1; day<=25; day++){
-        state.schedule[d1.id][ymd(2026,2,day)] = "3013-10";
-      }
-      state.schedule[d1.id][ymd(2026,2,26)] = "Plantão";
-      state.schedule[d1.id][ymd(2026,2,27)] = "Plantão";
-
-      for(let day=1; day<=28; day++){
-        state.schedule[d2.id][ymd(2026,2,day)] = "3020-10";
-        state.schedule[d3.id][ymd(2026,2,day)] = "plantão";
-      }
-    }
-
-    function load(){
-      const raw = localStorage.getItem(LS_KEY);
-      if(raw){
-        try{
-          const parsed = JSON.parse(raw);
-          state.drivers = Array.isArray(parsed.drivers) ? parsed.drivers : [];
-          state.schedule = parsed.schedule && typeof parsed.schedule === "object" ? parsed.schedule : {};
-        }catch(e){}
-      }
-      if(state.drivers.length === 0){
-        seedExample();
-        save();
-      }
-    }
-
-    function getDayValue(driverId, dateStr){
-      return (state.schedule[driverId] && state.schedule[driverId][dateStr]) ? state.schedule[driverId][dateStr] : "";
-    }
-
-    function setDayValue(driverId, dateStr, value){
-      if(!state.schedule[driverId]) state.schedule[driverId] = {};
-      const v = (value || "").trim();
-      if(v === ""){
-        delete state.schedule[driverId][dateStr];
-      }else{
-        state.schedule[driverId][dateStr] = v;
-      }
-      save();
-    }
-
     function chipClass(val){
       const v = (val || "").toLowerCase().trim();
       if(!v) return "chip empty";
@@ -839,15 +791,15 @@
       return "chip cod";
     }
 
+    function getDayValue(driverId, dateStr){
+      return (state.schedule[driverId] && state.schedule[driverId][dateStr]) ? state.schedule[driverId][dateStr] : "";
+    }
+
     function normalizePhoneBR(phone){
-      // remove tudo que não for número
       const digits = String(phone || "").replace(/\D/g, "");
       if(!digits) return "";
-      // se já vier com 55...
       if(digits.startsWith("55")) return digits;
-      // se vier com 11... (DDD + número), adiciona 55
       if(digits.length >= 10) return "55" + digits;
-      // se for curto demais, retorna como está
       return digits;
     }
 
@@ -855,13 +807,11 @@
       const y = monthDate.getFullYear();
       const m = monthDate.getMonth() + 1;
       const mes = pad2(m);
-      // mensagem curta (recomendado)
       return `Olá ${driver.name}! Segue sua escala mensal do mês ${mes}/${y}. (Imagem em anexo)`;
     }
 
     function openWhatsApp(phoneDigits, text){
       const encoded = encodeURIComponent(text);
-      // Tenta abrir wa.me (funciona no mobile e geralmente no desktop também)
       const url = `https://wa.me/${phoneDigits}?text=${encoded}`;
       window.open(url, "_blank", "noopener,noreferrer");
     }
@@ -870,7 +820,6 @@
       const el = document.getElementById("calCapture");
       if(!el) throw new Error("Elemento do calendário não encontrado.");
 
-      // renderiza em maior qualidade
       const canvas = await html2canvas(el, {
         backgroundColor: null,
         scale: 2,
@@ -906,12 +855,24 @@
     function show(el){ el.classList.remove("hidden"); }
     function hide(el){ el.classList.add("hidden"); }
 
+    function setBusy(v){
+      isBusy = v;
+      btnLogin.disabled = v;
+      btnAddDriver.disabled = v;
+      btnLogout.disabled = v;
+      btnSaveDriver.disabled = v;
+      btnSaveDay.disabled = v;
+      btnClearDay.disabled = v;
+      btnRemoveDriver.disabled = v;
+      btnWhats.disabled = v;
+    }
+
     /***********************
      * DOM
      ***********************/
     const loginView = document.getElementById("loginView");
     const appView = document.getElementById("appView");
-    const loginUser = document.getElementById("loginUser");
+    const loginEmail = document.getElementById("loginEmail");
     const loginPass = document.getElementById("loginPass");
     const loginErr = document.getElementById("loginErr");
     const btnLogin = document.getElementById("btnLogin");
@@ -954,17 +915,90 @@
     let editCtx = { driverId:null, dateStr:null };
 
     /***********************
+     * Supabase DB functions
+     ***********************/
+    async function dbGetDrivers(){
+      const { data, error } = await supabase
+        .from("drivers")
+        .select("*")
+        .order("mat", { ascending: true });
+      if(error) throw error;
+      return data || [];
+    }
+
+    async function dbInsertDriver(driver){
+      // driver: {mat,name,phone,role,line_default,status}
+      const { data, error } = await supabase
+        .from("drivers")
+        .insert(driver)
+        .select("*")
+        .single();
+      if(error) throw error;
+      return data;
+    }
+
+    async function dbDeleteDriver(driverId){
+      const { error } = await supabase
+        .from("drivers")
+        .delete()
+        .eq("id", driverId);
+      if(error) throw error;
+    }
+
+    async function dbUpsertEntry(driverId, dateStr, value){
+      // guarda o "value" como um texto simples em notes (para manter seu modelo atual),
+      // e usa kind básico: se value vazio => delete
+      const v = (value || "").trim();
+      if(!v){
+        const { error } = await supabase
+          .from("schedule_entries")
+          .delete()
+          .eq("driver_id", driverId)
+          .eq("work_date", dateStr);
+        if(error) throw error;
+        return;
+      }
+
+      const kindLower = v.toLowerCase();
+      let kind = "trabalho";
+      if(kindLower === "folga" || kindLower === "férias" || kindLower === "ferias") kind = "folga";
+      if(kindLower === "plantão" || kindLower === "plantao") kind = "plantao";
+
+      const payload = {
+        driver_id: driverId,
+        work_date: dateStr,
+        kind,
+        notes: v,
+      };
+
+      // upsert pelo índice unique (driver_id, work_date)
+      const { error } = await supabase
+        .from("schedule_entries")
+        .upsert(payload, { onConflict: "driver_id,work_date" });
+      if(error) throw error;
+    }
+
+    async function dbGetEntriesForMonth(monthDate){
+      const y = monthDate.getFullYear();
+      const m = monthDate.getMonth()+1;
+      const start = `${y}-${pad2(m)}-01`;
+      const end = `${y}-${pad2(m)}-${pad2(daysInMonth(monthDate))}`;
+
+      const { data, error } = await supabase
+        .from("schedule_entries")
+        .select("driver_id, work_date, notes")
+        .gte("work_date", start)
+        .lte("work_date", end);
+
+      if(error) throw error;
+      return data || [];
+    }
+
+    /***********************
      * Auth
      ***********************/
-    function isAuthed(){
-      return localStorage.getItem(LS_AUTH) === "1";
-    }
-    function setAuthed(v){
-      if(v) localStorage.setItem(LS_AUTH,"1");
-      else localStorage.removeItem(LS_AUTH);
-    }
-    function renderAuth(){
-      if(isAuthed()){
+    function renderAuth(isAuthed){
+      if(isAuthed){
         hide(loginView);
         show(appView);
       }else{
@@ -973,26 +1007,43 @@
       }
     }
 
-    btnLogin.addEventListener("click", () => {
-      const u = (loginUser.value || "").trim();
-      const p = (loginPass.value || "").trim();
-      if(u === AUTH_USER && p === AUTH_PASS){
-        loginErr.style.display = "none";
-        setAuthed(true);
-        renderAuth();
-        renderAll();
-      }else{
-        loginErr.style.display = "block";
+    async function refreshSessionAndRender(){
+      const { data } = await supabase.auth.getSession();
+      renderAuth(!!data.session);
+      return data.session;
+    }
+
+    btnLogin.addEventListener("click", async () => {
+      const email = (loginEmail.value || "").trim();
+      const password = (loginPass.value || "").trim();
+      loginErr.style.display = "none";
+
+      try{
+        setBusy(true);
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if(error){
+          loginErr.style.display = "block";
+          return;
+        }
+        await refreshSessionAndRender();
+        await loadFromDBAndRender();
+      }finally{
+        setBusy(false);
       }
     });
 
     loginPass.addEventListener("keydown", (e) => { if(e.key === "Enter") btnLogin.click(); });
-    loginUser.addEventListener("keydown", (e) => { if(e.key === "Enter") btnLogin.click(); });
+    loginEmail.addEventListener("keydown", (e) => { if(e.key === "Enter") btnLogin.click(); });
 
-    btnLogout.addEventListener("click", () => {
-      setAuthed(false);
-      closeDrawer();
-      renderAuth();
+    btnLogout.addEventListener("click", async () => {
+      try{
+        setBusy(true);
+        await supabase.auth.signOut();
+        closeDrawer();
+        renderAuth(false);
+      }finally{
+        setBusy(false);
+      }
     });
 
     /***********************
@@ -1030,20 +1081,37 @@
     btnCloseEdit.addEventListener("click", closeEdit);
     editOverlay.addEventListener("click", (e)=>{ if(e.target === editOverlay) closeEdit(); });
 
-    btnSaveDay.addEventListener("click", () => {
+    btnSaveDay.addEventListener("click", async () => {
       if(!editCtx.driverId || !editCtx.dateStr) return;
-      setDayValue(editCtx.driverId, editCtx.dateStr, eValue.value);
-      closeEdit();
-      renderAll();
-    });
-    btnClearDay.addEventListener("click", () => {
-      if(!editCtx.driverId || !editCtx.dateStr) return;
-      setDayValue(editCtx.driverId, editCtx.dateStr, "");
-      closeEdit();
-      renderAll();
+      try{
+        setBusy(true);
+        await dbUpsertEntry(editCtx.driverId, editCtx.dateStr, eValue.value);
+        closeEdit();
+        await loadMonthEntriesIntoState();
+        renderAll();
+      }catch(err){
+        alert("Erro ao salvar dia: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
     });
 
-    btnSaveDriver.addEventListener("click", () => {
+    btnClearDay.addEventListener("click", async () => {
+      if(!editCtx.driverId || !editCtx.dateStr) return;
+      try{
+        setBusy(true);
+        await dbUpsertEntry(editCtx.driverId, editCtx.dateStr, "");
+        closeEdit();
+        await loadMonthEntriesIntoState();
+        renderAll();
+      }catch(err){
+        alert("Erro ao limpar dia: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
+    });
+
+    btnSaveDriver.addEventListener("click", async () => {
       const mat = (inMat.value || "").trim();
       const name = (inName.value || "").trim();
       const phone = (inPhone.value || "").trim();
@@ -1054,18 +1122,35 @@
         alert("Preencha pelo menos Matrícula e Nome.");
         return;
       }
-      const exists = state.drivers.some(d => d.mat === mat);
-      if(exists){
-        alert("Já existe um motorista com essa matrícula.");
-        return;
-      }
 
-      const driver = { id: crypto.randomUUID(), mat, name, phone, period, status };
-      state.drivers.push(driver);
-      state.schedule[driver.id] = {};
-      save();
-      closeAdd();
-      renderAll();
+      try{
+        setBusy(true);
+
+        // checa duplicidade local
+        const exists = state.drivers.some(d => String(d.mat).trim() === mat);
+        if(exists){
+          alert("Já existe um fiscal com essa matrícula.");
+          return;
+        }
+
+        const inserted = await dbInsertDriver({
+          mat,
+          name,
+          phone,
+          role: "fixo", // por enquanto mantemos 1 tipo (você pediu melhorias depois)
+          line_default: null,
+          status: `${period}${status ? " • " + status : ""}`.trim()
+        });
+
+        state.drivers.push(inserted);
+        state.schedule[inserted.id] = {};
+        closeAdd();
+        renderAll();
+      }catch(err){
+        alert("Erro ao cadastrar fiscal: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
     });
 
     /***********************
@@ -1079,7 +1164,6 @@
       dName.textContent = `${drv.mat} • ${drv.name}`;
       const meta = [
         drv.phone ? `📞 ${drv.phone}` : null,
-        drv.period ? `⏱️ ${drv.period}` : null,
         drv.status ? `🏷️ ${drv.status}` : null,
       ].filter(Boolean);
 
@@ -1105,20 +1189,27 @@
       btnFull.textContent = drawer.classList.contains("fullscreen") ? "🧩 Voltar" : "🖥️ Tela cheia";
     });
 
-    btnRemoveDriver.addEventListener("click", () => {
+    btnRemoveDriver.addEventListener("click", async () => {
       const id = state.selectedDriverId;
       if(!id) return;
       const drv = state.drivers.find(d => d.id === id);
       if(!drv) return;
 
-      const ok = confirm(`Remover o motorista ${drv.mat} • ${drv.name}?`);
+      const ok = confirm(`Remover o fiscal ${drv.mat} • ${drv.name}?\n(As escalas dele também serão removidas.)`);
       if(!ok) return;
 
-      state.drivers = state.drivers.filter(d => d.id !== id);
-      delete state.schedule[id];
-      save();
-      closeDrawer();
-      renderAll();
+      try{
+        setBusy(true);
+        await dbDeleteDriver(id);
+        state.drivers = state.drivers.filter(d => d.id !== id);
+        delete state.schedule[id];
+        closeDrawer();
+        renderAll();
+      }catch(err){
+        alert("Erro ao remover: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
     });
 
     btnWhats.addEventListener("click", async () => {
@@ -1129,7 +1220,7 @@
 
       const phoneDigits = normalizePhoneBR(drv.phone);
       if(!phoneDigits || phoneDigits.length < 10){
-        alert("Esse motorista está sem telefone válido. Cadastre o WhatsApp no cadastro.");
+        alert("Esse fiscal está sem telefone válido. Cadastre o WhatsApp no cadastro.");
         return;
       }
 
@@ -1142,17 +1233,12 @@
         const m = pad2(state.selectedMonth.getMonth()+1);
         const filename = `escala-${drv.mat}-${y}-${m}.png`;
 
-        // baixa automático
         downloadBlob(blob, filename);
-
-        // tenta copiar a imagem (quando permitido)
         const copied = await tryCopyImageToClipboard(blob);
 
-        // abre whatsapp com texto pronto
         const text = buildWhatsappText(drv, state.selectedMonth);
         openWhatsApp(phoneDigits, text);
 
-        // aviso
         setTimeout(() => {
           alert(
             copied
@@ -1182,10 +1268,18 @@
       renderTable();
     });
 
-    monthPicker.addEventListener("change", () => {
+    monthPicker.addEventListener("change", async () => {
       if(!monthPicker.value) return;
       state.selectedMonth = parseMonthKey(monthPicker.value);
-      renderAll();
+      try{
+        setBusy(true);
+        await loadMonthEntriesIntoState();
+        renderAll();
+      }catch(err){
+        alert("Erro ao carregar mês: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
     });
 
     /***********************
@@ -1195,8 +1289,6 @@
       if(!state.selectedMonth){
         const now = new Date();
         state.selectedMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const hasFeb2026 = state.drivers.some(d => state.schedule[d.id] && Object.keys(state.schedule[d.id]).some(k => k.startsWith("2026-02-")));
-        if(hasFeb2026) state.selectedMonth = new Date(2026, 1, 1);
       }
       monthPicker.value = monthKey(state.selectedMonth.getFullYear(), state.selectedMonth.getMonth()+1);
     }
@@ -1218,7 +1310,7 @@
       // Header
       const th = [];
       th.push(`<tr>`);
-      th.push(`<th class="col-driver">Matrícula • Nome • Telefone • Período • Status</th>`);
+      th.push(`<th class="col-driver">Matrícula • Nome • Telefone • Período/Status</th>`);
       for(let d=1; d<=nDays; d++){
         const dt = new Date(y, m-1, d);
         const dow = dowShort[dt.getDay()];
@@ -1232,12 +1324,11 @@
         .slice()
         .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}))
         .filter(d => {
-          // filtro período
           if(state.periodFilter !== "todos"){
-            const p = (d.period || "").toLowerCase().trim();
-            if(p !== state.periodFilter) return false;
+            // período está embutido no status (ex: "manhã • ...")
+            const st = (d.status || "").toLowerCase();
+            if(!st.startsWith(state.periodFilter)) return false;
           }
-          // busca por matrícula OU nome
           if(state.searchText){
             const mat = (d.mat || "").toLowerCase();
             const name = (d.name || "").toLowerCase();
@@ -1248,7 +1339,7 @@
 
       const rows = [];
       if(filtered.length === 0){
-        rows.push(`<tr><td class="col-driver"><span class="muted">Nenhum motorista encontrado.</span></td>${"<td></td>".repeat(nDays)}</tr>`);
+        rows.push(`<tr><td class="col-driver"><span class="muted">Nenhum fiscal encontrado.</span></td>${"<td></td>".repeat(nDays)}</tr>`);
         monthTbody.innerHTML = rows.join("");
         return;
       }
@@ -1259,7 +1350,6 @@
             <div class="name">${escapeHtml(drv.mat)} • ${escapeHtml(drv.name)}</div>
             <div class="meta">
               ${drv.phone ? `<span class="kbd">📞 ${escapeHtml(drv.phone)}</span>` : `<span class="kbd">📞 (sem telefone)</span>`}
-              ${drv.period ? `<span class="kbd">⏱️ ${escapeHtml(drv.period)}</span>` : `<span class="kbd">⏱️ (sem período)</span>`}
               ${drv.status ? `<span class="kbd">🏷️ ${escapeHtml(drv.status)}</span>` : `<span class="kbd">🏷️ (sem status)</span>`}
               <span class="kbd">Clique no nome → calendário</span>
             </div>
@@ -1344,25 +1434,63 @@
     }
 
     /***********************
-     * Init
+     * Load data from DB
      ***********************/
-    load();
-    renderAuth();
-    ensureMonthInit();
+    async function loadMonthEntriesIntoState(){
+      ensureMonthInit();
+      const entries = await dbGetEntriesForMonth(state.selectedMonth);
 
-    // binds
-    btnLogout.addEventListener("click", () => {});
-    periodFilter.value = state.periodFilter;
+      // reset month view schedule for all loaded drivers
+      const newSchedule = {};
+      for(const d of state.drivers){
+        newSchedule[d.id] = {};
+      }
 
-    if(isAuthed()){
-      renderAll();
-    }else{
-      loginUser.value = AUTH_USER;
-      setTimeout(() => loginPass.focus(), 50);
+      for(const it of entries){
+        if(!newSchedule[it.driver_id]) newSchedule[it.driver_id] = {};
+        newSchedule[it.driver_id][it.work_date] = it.notes || "";
+      }
+
+      state.schedule = newSchedule;
     }
 
+    async function loadFromDBAndRender(){
+      const session = await refreshSessionAndRender();
+      if(!session) return;
+
+      setBusy(true);
+      try{
+        state.drivers = await dbGetDrivers();
+        await loadMonthEntriesIntoState();
+        renderAll();
+      }catch(err){
+        alert("Erro ao carregar dados do Supabase: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
+    }
+
+    /***********************
+     * Init
+     ***********************/
+    (async function init(){
+      loginEmail.value = ADMIN_EMAIL;
+      periodFilter.value = state.periodFilter;
+
+      const session = await refreshSessionAndRender();
+      ensureMonthInit();
+
+      if(session){
+        await loadFromDBAndRender();
+      }else{
+        show(loginView);
+        hide(appView);
+        setTimeout(() => loginPass.focus(), 50);
+      }
+    })();
+
     // overlay binds
-    document.getElementById("btnCloseDrawer").addEventListener("click", closeDrawer);
+    btnCloseDrawer.addEventListener("click", closeDrawer);
   </script>
 </body>
 </html>
