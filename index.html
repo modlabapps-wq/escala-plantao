@@ -5,31 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Escala Plantão • Fiscais</title>
 
+  <!-- html2canvas (para gerar print do calendário) -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
     :root{
+      /* TEMA CLARO (verde suave) */
       --bg0:#ecfff2;
       --bg1:#dfffe9;
       --panel: rgba(255,255,255,.72);
+      --panel2: rgba(255,255,255,.84);
       --border: rgba(0,0,0,.10);
       --text: #0b1a10;
       --muted: rgba(11,26,16,.65);
       --muted2: rgba(11,26,16,.50);
 
-      --c1:#00d4ff;
-      --c2:#a100ff;
-      --c3:#00d67a;
+      /* Acentos (neon sutil) */
+      --c1:#00d4ff; /* ciano */
+      --c2:#a100ff; /* roxo */
+      --c3:#00d67a; /* verde */
+      --warn:#ffb300;
+      --danger:#ff2f5d;
 
       --radius:18px;
       --shadow: 0 14px 34px rgba(0,0,0,.12);
       --shadow2: 0 10px 26px rgba(0,0,0,.10);
       --glow1: 0 0 18px rgba(0,212,255,.26);
+      --glow2: 0 0 20px rgba(161,0,255,.20);
       --glow3: 0 0 18px rgba(0,214,122,.18);
 
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
 
+      /* Cores por tipo (chips) */
       --chip-trabalho-bg: rgba(0, 214, 122, .14);
       --chip-trabalho-bd: rgba(0, 214, 122, .55);
 
@@ -81,7 +89,7 @@
     }
 
     .wrap{
-      max-width: 1480px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 18px 14px 28px;
       min-height: 100vh;
@@ -148,8 +156,9 @@
     .btn:active{ transform: translateY(1px); }
     .btn:disabled{ opacity:.6; cursor:not-allowed; }
 
-    .btn.primary{ border-color: rgba(0,212,255,.42); box-shadow: var(--shadow2), 0 0 18px rgba(0,212,255,.26); }
-    .btn.green{ border-color: rgba(0,214,122,.36); box-shadow: var(--shadow2), 0 0 18px rgba(0,214,122,.18); }
+    .btn.primary{ border-color: rgba(0,212,255,.42); box-shadow: var(--shadow2), var(--glow1); }
+    .btn.purple{ border-color: rgba(161,0,255,.32); box-shadow: var(--shadow2), var(--glow2); }
+    .btn.green{ border-color: rgba(0,214,122,.36); box-shadow: var(--shadow2), var(--glow3); }
     .btn.danger{ border-color: rgba(255,47,93,.35); box-shadow: var(--shadow2); }
 
     .pill{
@@ -211,7 +220,7 @@
       border-collapse: separate;
       border-spacing: 0;
       width: 100%;
-      min-width: 1180px;
+      min-width: 1060px;
       font-size: 12.5px;
     }
     thead th{
@@ -230,13 +239,13 @@
     tbody td{
       border-bottom: 1px solid rgba(0,0,0,.06);
       padding: 8px 10px;
-      vertical-align: top;
-      white-space: normal;
+      vertical-align: middle;
+      white-space:nowrap;
     }
     tbody tr:hover{ background: rgba(0,214,122,.06); }
 
     .col-driver{
-      min-width: 420px;
+      min-width: 380px;
       position: sticky;
       left:0;
       z-index: 1;
@@ -263,27 +272,24 @@
       color: var(--text);
     }
 
-    /* ✅ CHIP multilinha (sem "..." e sem cortar) */
     .chip{
-      display:block;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
       border-radius: 10px;
-      padding: 7px 9px;
+      padding: 6px 8px;
       border:1px solid rgba(0,0,0,.10);
       background: rgba(255,255,255,.80);
-      min-width: 120px;
-      width: 100%;
-      max-width: 280px;
+      min-width: 70px;
       cursor:pointer;
       user-select:none;
       transition: transform .06s ease, filter .15s ease;
+      max-width: 190px;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-weight: 900;
       letter-spacing: .1px;
-
-      overflow: visible;
-      text-overflow: unset;
-      white-space: pre-line;   /* mostra \n */
-      word-break: break-word;
-      line-height: 1.15;
     }
     .chip:hover{ filter: brightness(1.01); }
     .chip:active{ transform: translateY(1px); }
@@ -293,14 +299,32 @@
       border-style:dashed;
       background: rgba(255,255,255,.55);
       font-weight: 800;
-      text-align:center;
-      padding: 10px 8px;
     }
-    .chip.trabalho{ border-color: var(--chip-trabalho-bd); background: var(--chip-trabalho-bg); box-shadow: 0 0 16px rgba(0,214,122,.10); }
-    .chip.plantao{ border-color: var(--chip-plantao-bd); background: var(--chip-plantao-bg); box-shadow: 0 0 16px rgba(0,212,255,.10); }
-    .chip.ferias{ border-color: var(--chip-ferias-bd); background: var(--chip-ferias-bg); box-shadow: 0 0 16px rgba(161,0,255,.08); }
-    .chip.folga{ border-color: var(--chip-folga-bd); background: var(--chip-folga-bg); box-shadow: 0 0 16px rgba(255,179,0,.10); }
-    .chip.cobertura{ border-color: var(--chip-cobertura-bd); background: var(--chip-cobertura-bg); box-shadow: 0 0 16px rgba(255,47,93,.09); }
+    .chip.trabalho{
+      border-color: var(--chip-trabalho-bd);
+      background: var(--chip-trabalho-bg);
+      box-shadow: 0 0 16px rgba(0,214,122,.10);
+    }
+    .chip.plantao{
+      border-color: var(--chip-plantao-bd);
+      background: var(--chip-plantao-bg);
+      box-shadow: 0 0 16px rgba(0,212,255,.10);
+    }
+    .chip.ferias{
+      border-color: var(--chip-ferias-bd);
+      background: var(--chip-ferias-bg);
+      box-shadow: 0 0 16px rgba(161,0,255,.08);
+    }
+    .chip.folga{
+      border-color: var(--chip-folga-bd);
+      background: var(--chip-folga-bg);
+      box-shadow: 0 0 16px rgba(255,179,0,.10);
+    }
+    .chip.cobertura{
+      border-color: var(--chip-cobertura-bd);
+      background: var(--chip-cobertura-bg);
+      box-shadow: 0 0 16px rgba(255,47,93,.09);
+    }
 
     /* Drawer */
     .drawer{
@@ -358,25 +382,6 @@
       overflow:hidden;
       background: rgba(255,255,255,.85);
     }
-
-    .cal-title{
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(0,0,0,.10);
-      background: rgba(255,255,255,.75);
-      font-weight: 950;
-      letter-spacing:.2px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .cal-title small{
-      color: var(--muted);
-      font-weight: 850;
-      letter-spacing:.1px;
-    }
-
     .cal-head{
       display:grid;
       grid-template-columns: repeat(7,1fr);
@@ -395,7 +400,7 @@
       grid-template-columns: repeat(7,1fr);
     }
     .day{
-      min-height: 122px;
+      min-height: 100px;
       border-right:1px solid rgba(0,0,0,.06);
       border-bottom:1px solid rgba(0,0,0,.06);
       padding: 10px 10px;
@@ -422,10 +427,10 @@
       background: rgba(255,255,255,.86);
       font-size: 12.5px;
       max-width: 100%;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-weight: 900;
-      white-space: pre-line;
-      word-break: break-word;
-      line-height: 1.15;
     }
     .day .val.empty{
       border-style:dashed;
@@ -436,6 +441,29 @@
     .day:hover{ background: rgba(0,214,122,.08); }
     .day.muted{ opacity:.35; cursor: default; background: transparent; }
     .day.muted:hover{ background: transparent; }
+
+    /* Modo de captura (imagem do calendário) - bem visível */
+    .captureMode{
+      background: #ffffff !important;
+      color: #0b1a10 !important;
+    }
+    .captureMode .card{
+      box-shadow: none !important;
+      border: 1px solid rgba(0,0,0,.14) !important;
+      background: #fff !important;
+    }
+    .captureMode .cal-head{
+      background: rgba(0,214,122,.18) !important;
+    }
+    .captureMode .calendar{
+      background: #fff !important;
+      border-color: rgba(0,0,0,.16) !important;
+    }
+    .captureMode .day{
+      background: #fff !important;
+      border-color: rgba(0,0,0,.12) !important;
+    }
+    .captureMode .day:hover{ background:#fff !important; }
 
     /* Modal */
     .overlay{
@@ -451,7 +479,7 @@
     }
     .overlay.show{ display:flex; }
     .modal{
-      width: min(820px, 96vw);
+      width: min(640px, 96vw);
       border-radius: 18px;
       border:1px solid rgba(0,0,0,.14);
       background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(245,255,250,.96));
@@ -538,7 +566,7 @@
       background:
         radial-gradient(circle at 30% 30%, rgba(255,255,255,.85), transparent 45%),
         linear-gradient(135deg, rgba(0,212,255,.16), rgba(0,214,122,.14));
-      box-shadow: 0 0 18px rgba(0,212,255,.26), 0 0 18px rgba(0,214,122,.18);
+      box-shadow: var(--glow1), var(--glow3);
     }
     .login-head h2{ margin:0; font-size: 15px; letter-spacing:.15px; font-weight: 980; }
     .login-head p{ margin: 4px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.35; }
@@ -558,8 +586,18 @@
       .input{ min-width: 180px; }
       table{ min-width: 980px; }
       .drawer{ width: 96vw; }
-      .day{ min-height: 116px; }
-      .chip{ max-width: 320px; }
+      .day{ min-height: 92px; }
+    }
+
+    /* Impressão (PDF via navegador) */
+    @media print{
+      body{ background:#fff !important; }
+      .neon-ring, .topbar, .help, .btn, .actions, .pill, #drawer, #loginView{ display:none !important; }
+      #appView{ display:block !important; }
+      .wrap{ max-width: 100% !important; padding: 0 !important; }
+      .card{ box-shadow:none !important; }
+      table{ min-width: auto !important; width: 100% !important; }
+      thead th{ position: static !important; }
     }
   </style>
 </head>
@@ -567,7 +605,7 @@
 <body>
   <div class="neon-ring" aria-hidden="true"></div>
 
-  <!-- LOGIN -->
+  <!-- LOGIN (Supabase Auth) -->
   <section id="loginView" class="login">
     <div class="login-card">
       <div class="login-head">
@@ -590,7 +628,9 @@
           </div>
         </div>
         <div id="loginErr" class="err">Email ou senha inválidos.</div>
-        <div class="help">✅ Somente o admin acessa os dados (RLS + Policy).</div>
+        <div class="help">
+          ✅ Somente o admin acessa os dados (RLS + Policy).
+        </div>
       </div>
 
       <div class="login-actions">
@@ -627,18 +667,12 @@
           </div>
 
           <div class="pill">
-            <span class="muted" style="font-weight:950;">Linha</span>
-            <select id="lineFilter" class="select" style="min-width:190px">
-              <option value="todas">Todas</option>
-            </select>
-          </div>
-
-          <div class="pill">
             <span class="muted" style="font-weight:950;">Buscar</span>
             <input id="searchMat" class="input" placeholder="matrícula ou nome" style="min-width:240px"/>
           </div>
 
           <button id="btnExportExcel" class="btn green">📗 Exportar Excel (CSV)</button>
+
           <button id="btnAddDriver" class="btn green">+ Cadastrar fiscal</button>
           <button id="btnLogout" class="btn danger">Sair</button>
         </div>
@@ -649,7 +683,7 @@
           <div class="head">
             <h2>Visualização 1 • Lista do mês (todos os fiscais)</h2>
             <div class="muted" style="font-size:12px;">
-              Clique no <b>nome</b> → calendário • clique em um <b>dia</b> → editar (dia ou período)
+              Clique no <b>nome</b> → calendário • clique em um <b>dia</b> → editar (tipo, linha, hora, cobertura)
             </div>
           </div>
           <div class="body">
@@ -678,6 +712,7 @@
       </div>
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
         <button id="btnWhats" class="btn primary">📲 Baixar calendário (PNG)</button>
+        <button id="btnFull" class="btn purple">🖥️ Tela cheia</button>
         <button id="btnEditDriver" class="btn green">✏️ Editar</button>
         <button id="btnRemoveDriver" class="btn danger">Remover</button>
         <button id="btnCloseDrawer" class="btn">Fechar</button>
@@ -685,29 +720,32 @@
     </div>
 
     <div class="d-body">
+      <!-- isso aqui é o que vira imagem -->
       <div id="calCapture">
         <div class="card" style="border-radius:16px; margin-bottom:12px;">
           <div class="head">
             <h2>Visualização 2 • Calendário do mês</h2>
-            <div class="muted" style="font-size:12px;">Clique em um dia para editar (dia ou período)</div>
+            <div class="muted" style="font-size:12px;">Clique em um dia para editar</div>
           </div>
           <div class="body">
             <div class="calendar">
-              <div class="cal-title">
-                <div id="calMonthTitle">Mês/Ano</div>
-                <small>Regra: 7 dias seguidos exige código 50001–50040 (e só no 7º dia)</small>
-              </div>
               <div class="cal-head">
                 <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SÁB</div>
               </div>
               <div id="calGrid" class="cal-grid"></div>
+            </div>
+
+            <div class="help">
+              Tipos: <b>Trabalho</b>, <b>Plantão</b>, <b>Férias</b>, <b>Folga</b>, <b>Cobertura</b>.
+              <br/>Formato recomendado: linha + hora (ex: <span class="kbd">3013-10</span> • <span class="kbd">14:00</span>) • TP/TS/Circular (se houver)
             </div>
           </div>
         </div>
       </div>
 
       <div class="help" style="margin-top:10px;">
-        ✅ PNG do calendário sai com cores bem visíveis e sem cortar.
+        ✅ PNG do calendário sai com cores bem visíveis e sem cortar (modo “captura”).<br/>
+        👉 Observação: no PNG <b>não aparece</b> “quem cobriu” (isso é controle interno).
       </div>
     </div>
   </aside>
@@ -744,22 +782,40 @@
           </div>
 
           <div>
-            <label>Linha base (ex: 3013-10)</label>
+            <label>Linha fixa (se for fixo)</label>
             <input id="inLine" class="input" placeholder="ex: 3013-10" />
           </div>
 
+          <!-- ✅ NOVO: TP/TS/Circular do FIXO -->
           <div>
-            <label>Local (TP/TS) — obrigatório para FIXO</label>
+            <label>TP / TS / Circular (local do fixo)</label>
             <select id="inPontaBase" class="select">
-              <option value="">(selecionar)</option>
+              <option value="">(vazio)</option>
               <option value="TP">TP</option>
               <option value="TS">TS</option>
+              <option value="CIRCULAR">Circular</option>
             </select>
+          </div>
+
+          <div class="full">
+            <label>Status (editável)</label>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <select id="inStatusPreset" class="select" style="min-width: 240px;">
+                <option value="">(selecionar)</option>
+                <option value="Disponível">Disponível</option>
+                <option value="Cobrindo Férias">Cobrindo Férias</option>
+                <option value="Afastado">Afastado</option>
+                <option value="Férias">Férias</option>
+                <option value="Ativo">Ativo</option>
+              </select>
+              <input id="inStatus" class="input" placeholder="ou digite livre (ex: cobrindo folga / treinamento)" style="min-width: 280px;" />
+            </div>
           </div>
         </div>
 
         <div class="help">
-          ✅ Fixos precisam de TP/TS cadastrado. Plantonista pode deixar vazio.
+          ✅ Fixos: preencha a <b>linha fixa</b> e (se quiser) <b>TP/TS/Circular</b>. Plantonistas: pode deixar vazio.<br/>
+          ✅ Status você pode trocar quando quiser (Editar).
         </div>
       </div>
       <div class="m-actions">
@@ -768,36 +824,20 @@
     </div>
   </div>
 
-  <!-- MODAL: Edit Day/Range -->
+  <!-- MODAL: Edit Day -->
   <div id="editOverlay" class="overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="m-head">
-        <h3>Editar</h3>
+        <h3>Editar dia</h3>
         <button id="btnCloseEdit" class="btn">Fechar</button>
       </div>
-
       <div class="m-body">
         <div class="muted" style="font-size:12px; margin-bottom:10px;">
           Fiscal: <b id="eDriver"></b><br/>
-          Data selecionada: <b id="eDate"></b>
+          Data: <b id="eDate"></b>
         </div>
 
         <div class="row3">
-          <div class="full" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <label style="margin:0;">Aplicar em:</label>
-            <select id="eApplyMode" class="select" style="min-width:240px;">
-              <option value="day">Somente este dia</option>
-              <option value="range">Período (data inicial/final)</option>
-            </select>
-
-            <div id="rangeBox" class="pill" style="display:none; padding:8px 10px;">
-              <span class="muted" style="font-weight:950;">De</span>
-              <input id="eStart" class="input" type="date" style="min-width:160px; padding:8px 10px;">
-              <span class="muted" style="font-weight:950;">Até</span>
-              <input id="eEnd" class="input" type="date" style="min-width:160px; padding:8px 10px;">
-            </div>
-          </div>
-
           <div>
             <label>Tipo</label>
             <select id="eKind" class="select">
@@ -819,36 +859,31 @@
             <input id="eTime" class="input" placeholder="ex: 14:00" />
           </div>
 
+          <!-- ✅ NOVO: TP/TS/Circular do DIA -->
           <div>
-            <label>Local (TP/TS)</label>
+            <label>TP / TS / Circular</label>
             <select id="ePonta" class="select">
-              <option value="">(auto / nenhum)</option>
+              <option value="">(vazio)</option>
               <option value="TP">TP</option>
               <option value="TS">TS</option>
+              <option value="CIRCULAR">Circular</option>
             </select>
           </div>
 
           <div class="full" id="coverBox" style="display:none;">
-            <label>Plantonista cobridor (para Férias/Folga)</label>
+            <label>Quem irá cobrir (somente plantonistas)</label>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
               <select id="eCoverSelect" class="select" style="min-width: 330px;"></select>
-              <button id="btnClearCover" class="btn">Limpar</button>
-            </div>
-            <div class="help" style="margin-top:8px;">
-              ✅ Ao salvar Férias/Folga com cobridor: o plantonista recebe automaticamente Cobertura no período, com TP/TS do fixo.
+              <button id="btnClearCover" class="btn">Limpar cobertura</button>
             </div>
           </div>
 
           <div class="full">
-            <label>Observação (opcional) / Código (50001-50040)</label>
-            <input id="eNotes" class="input" placeholder="ex: falta / ajuste / 50012" />
-            <div class="help">
-              ⚠️ O código 500xx <b>só pode</b> ser usado no <b>7º dia seguido</b> trabalhando. E no 7º dia ele é obrigatório.
-            </div>
+            <label>Observação (opcional)</label>
+            <input id="eNotes" class="input" placeholder="ex: troca / ajuste / motivo" />
           </div>
         </div>
       </div>
-
       <div class="m-actions">
         <button id="btnClearDay" class="btn">Limpar</button>
         <button id="btnSaveDay" class="btn primary">Salvar</button>
@@ -859,6 +894,9 @@
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+    /***********************
+     * Supabase
+     ***********************/
     const SUPABASE_URL = "https://cwqwugdiksfodeoksofp.supabase.co";
     const SUPABASE_ANON = "sb_publishable_XkISoiXR_cHRWdeKvtb7HA_ceYFTnPR";
     const ADMIN_EMAIL = "darlene.plantao@pessegotransportes.com.br";
@@ -867,18 +905,24 @@
       auth: { persistSession: true, autoRefreshToken: true }
     });
 
+    /***********************
+     * State
+     ***********************/
     let state = {
       drivers: [],
+      // entriesByDriver[driverId][yyyy-mm-dd] = {kind,line,time,ponta,covered_by_driver_id,notes}
       entriesByDriver: {},
       selectedMonth: null,
       selectedDriverId: null,
       searchText: "",
       roleFilter: "todos",
-      lineFilter: "todas",
     };
 
     let isBusy = false;
 
+    /***********************
+     * Helpers
+     ***********************/
     const pad2 = n => String(n).padStart(2,"0");
     const ymd = (y,m,d) => `${y}-${pad2(m)}-${pad2(d)}`;
     const monthKey = (y,m) => `${y}-${pad2(m)}`;
@@ -888,8 +932,6 @@
     };
     const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
     const dowShort = ["DOM","SEG","TER","QUA","QUI","SEX","SAB"];
-
-    const MONTHS_PT = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
     function escapeHtml(str){
       return String(str || "")
@@ -913,139 +955,60 @@
       return `${drv.mat} ${firstName(drv.name)}`.trim();
     }
 
-    function parseNotes(notes){
-      // notas livres; vamos extrair:
-      // - código 50001..50040
-      // - resto (observação)
-      const s = String(notes || "").trim();
-
-      const codeMatch = s.match(/\b500(0[1-9]|[1-3][0-9]|40)\b/);
-      const code = codeMatch ? codeMatch[0] : "";
-
-      // remove o código do texto (se existir) pra sobrar obs limpa
-      let rest = s;
-      if(code){
-        rest = rest.replace(code, "").replace(/^[\s•|,-]+|[\s•|,-]+$/g, "").trim();
-      }
-
-      return { code, rest };
+    // ✅ agora aceita: TP, TS, CIRCULAR (e mostra Circular)
+    function normalizePonta(p){
+      const raw = String(p || "").trim();
+      const v = raw.toUpperCase();
+      if(v === "TP" || v === "TS") return v;
+      if(v === "CIRCULAR" || v === "CIRC") return "Circular";
+      if(v === "CIRCULAR " ) return "Circular";
+      // também aceita se o banco já tiver "Circular"
+      if(raw.toLowerCase() === "circular") return "Circular";
+      return "";
     }
 
-    function isWorkingKind(kind){
-      const k = String(kind||"").toLowerCase().trim();
-      return (k === "trabalho" || k === "plantao" || k === "cobertura");
-    }
-
-    function hasValidCode(text){
-      const s = String(text || "");
-      return /\b500(0[1-9]|[1-3][0-9]|40)\b/.test(s);
-    }
-
-    function toDateObj(ymdStr){
-      const [y,m,d] = ymdStr.split("-").map(Number);
-      return new Date(y, m-1, d);
-    }
-    function addDays(dateObj, n){
-      const d = new Date(dateObj);
-      d.setDate(d.getDate()+n);
-      return d;
-    }
-
-    function getEntry(driverId, dateStr){
-      return state.entriesByDriver[driverId]?.[dateStr] || null;
-    }
-
-    function getKindForChain(driverId, dateStr, pendingMap){
-      const p = pendingMap?.[dateStr];
-      if(p) return p.kind || null;
-      const e = getEntry(driverId, dateStr);
-      return e?.kind || null;
-    }
-
-    function computeStreakCount(driverId, dateStr, newKind, pendingMap){
-      if(!isWorkingKind(newKind)) return 0;
-
-      let count = 1;
-      const cur = toDateObj(dateStr);
-
-      for(let i=1;i<=20;i++){
-        const prev = addDays(cur, -i);
-        const prevStr = ymd(prev.getFullYear(), prev.getMonth()+1, prev.getDate());
-        const k = getKindForChain(driverId, prevStr, pendingMap);
-        if(isWorkingKind(k)) count++;
-        else break;
-      }
-      return count;
-    }
-
-    function validateCodeRule(driverId, dateStr, newKind, notesText, pendingMap){
-      // regra:
-      // - no 7º dia seguido trabalhando: código obrigatório
-      // - antes do 7º dia: não pode usar código
-      // - após o 7º dia: o "streak" se mantém se continuar, e o código deve aparecer somente no 7º dia
-      if(!isWorkingKind(newKind)){
-        // se não está trabalhando e colocou código, bloquear (pra manter regra limpa)
-        if(hasValidCode(notesText)){
-          return { ok:false, msg:`⚠️ Código 500xx só pode ser usado no 7º dia de trabalho seguido (em dias trabalhados).` };
-        }
-        return { ok:true };
-      }
-
-      const streak = computeStreakCount(driverId, dateStr, newKind, pendingMap);
-
-      if(streak === 7){
-        if(!hasValidCode(notesText)){
-          return { ok:false, msg:`⚠️ Este é o 7º dia seguido trabalhando.\nInforme um código entre 50001 e 50040 na observação.` };
-        }
-        return { ok:true };
-      }
-
-      // se for diferente de 7 e tiver código, bloquear
-      if(streak !== 7 && hasValidCode(notesText)){
-        return { ok:false, msg:`⚠️ Código 500xx é permitido apenas no 7º dia seguido.\nHoje é o ${streak}º dia seguido.` };
-      }
-
-      return { ok:true };
-    }
-
-    function entryToMultilineLabel(entry){
+    function entryToLabel(entry, hideCoverInfo=false){
       if(!entry) return "";
 
-      const kind = (entry.kind || "trabalho").toLowerCase().trim();
-      const line = String(entry.line || "").trim();
-      const time = String(entry.time_hhmm || "").trim();
-
-      // ponta vem do campo entry.ponta (não da obs)
-      const ponta = String(entry.ponta || "").trim().toUpperCase();
-
-      const parsed = parseNotes(entry.notes || "");
-      const code = parsed.code;
-      const obs = parsed.rest;
+      const kind = entry.kind || "trabalho";
+      const line = (entry.line || "").trim();
+      const time = (entry.time_hhmm || "").trim();
+      const ponta = normalizePonta(entry.ponta || "");
 
       if(kind === "folga") return "Folga";
       if(kind === "ferias") return "Férias";
 
-      // Cobertura: NÃO escreve "Cobertura"
-      const out = [];
+      if(kind === "plantao"){
+        const parts = [];
+        parts.push("Plantão");
+        if(line) parts.push(line);
+        if(time) parts.push(time);
+        if(ponta) parts.push(ponta);
+        return parts.join(" • ");
+      }
 
-      if(kind === "plantao") out.push("Plantão");
+      if(kind === "cobertura"){
+        const parts = [];
+        parts.push("Cobertura");
+        if(line) parts.push(line);
+        if(time) parts.push(time);
+        if(ponta) parts.push(ponta);
+        if(entry.notes && !hideCoverInfo) parts.push(entry.notes);
+        return parts.join(" • ");
+      }
 
-      if(line) out.push(line);
-      if(time) out.push(time);
-      if(ponta) out.push(ponta);
-
-      // código sempre aparece como linha própria (se existir)
-      if(code) out.push(code);
-
-      // observação (se existir)
-      if(obs) out.push(obs);
-
-      return out.join("\n") || (kind === "plantao" ? "Plantão" : "Trabalho");
+      // trabalho
+      const parts = [];
+      if(line) parts.push(line);
+      if(time) parts.push(time);
+      if(ponta) parts.push(ponta);
+      return parts.join(" • ") || "Trabalho";
     }
 
     function chipClass(entry){
       if(!entry) return "chip empty";
       const k = (entry.kind || "").toLowerCase().trim();
+
       if(k === "trabalho") return "chip trabalho";
       if(k === "plantao") return "chip plantao";
       if(k === "ferias") return "chip ferias";
@@ -1077,8 +1040,28 @@
 
     async function captureCalendarImage(){
       const el = document.getElementById("calCapture");
-      const canvas = await html2canvas(el, { backgroundColor:"#fff", scale:2.2, useCORS:true });
-      return new Promise((resolve) => canvas.toBlob((b)=>resolve(b), "image/png", 1.0));
+      if(!el) throw new Error("Elemento do calendário não encontrado.");
+
+      drawer.classList.add("fullscreen");
+      btnFull.textContent = "🧩 Voltar";
+      drawer.scrollTop = 0;
+
+      el.classList.add("captureMode");
+      await new Promise(r => setTimeout(r, 120));
+
+      const canvas = await html2canvas(el, {
+        backgroundColor: "#ffffff",
+        scale: 2.2,
+        useCORS: true,
+        windowWidth: document.documentElement.clientWidth,
+        windowHeight: document.documentElement.clientHeight
+      });
+
+      el.classList.remove("captureMode");
+
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), "image/png", 1.0);
+      });
     }
 
     async function tryCopyImageToClipboard(blob){
@@ -1086,7 +1069,9 @@
         if(!navigator.clipboard || !window.ClipboardItem) return false;
         await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
         return true;
-      }catch{ return false; }
+      }catch(e){
+        return false;
+      }
     }
 
     function downloadBlob(blob, filename){
@@ -1097,7 +1082,7 @@
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 6000);
+      setTimeout(() => URL.revokeObjectURL(url), 6000);
     }
 
     function show(el){ el.classList.remove("hidden"); }
@@ -1117,6 +1102,9 @@
       btnEditDriver.disabled = v;
     }
 
+    /***********************
+     * DOM
+     ***********************/
     const loginView = document.getElementById("loginView");
     const appView = document.getElementById("appView");
     const loginEmail = document.getElementById("loginEmail");
@@ -1128,7 +1116,6 @@
     const monthPicker = document.getElementById("monthPicker");
     const searchMat = document.getElementById("searchMat");
     const roleFilter = document.getElementById("roleFilter");
-    const lineFilter = document.getElementById("lineFilter");
     const btnAddDriver = document.getElementById("btnAddDriver");
     const btnExportExcel = document.getElementById("btnExportExcel");
 
@@ -1139,11 +1126,11 @@
     const btnCloseDrawer = document.getElementById("btnCloseDrawer");
     const btnRemoveDriver = document.getElementById("btnRemoveDriver");
     const btnEditDriver = document.getElementById("btnEditDriver");
+    const btnFull = document.getElementById("btnFull");
     const btnWhats = document.getElementById("btnWhats");
     const dName = document.getElementById("dName");
     const dSub = document.getElementById("dSub");
     const calGrid = document.getElementById("calGrid");
-    const calMonthTitle = document.getElementById("calMonthTitle");
 
     const addOverlay = document.getElementById("addOverlay");
     const btnCloseAdd = document.getElementById("btnCloseAdd");
@@ -1155,6 +1142,8 @@
     const inRole = document.getElementById("inRole");
     const inLine = document.getElementById("inLine");
     const inPontaBase = document.getElementById("inPontaBase");
+    const inStatusPreset = document.getElementById("inStatusPreset");
+    const inStatus = document.getElementById("inStatus");
 
     const editOverlay = document.getElementById("editOverlay");
     const btnCloseEdit = document.getElementById("btnCloseEdit");
@@ -1162,10 +1151,6 @@
     const btnClearDay = document.getElementById("btnClearDay");
     const eDriver = document.getElementById("eDriver");
     const eDate = document.getElementById("eDate");
-    const eApplyMode = document.getElementById("eApplyMode");
-    const rangeBox = document.getElementById("rangeBox");
-    const eStart = document.getElementById("eStart");
-    const eEnd = document.getElementById("eEnd");
     const eKind = document.getElementById("eKind");
     const eLine = document.getElementById("eLine");
     const eTime = document.getElementById("eTime");
@@ -1179,28 +1164,43 @@
     let driverFormMode = { mode:"create", driverId:null };
 
     /***********************
-     * DB
+     * DB functions
      ***********************/
     async function dbGetDrivers(){
-      const { data, error } = await supabase.from("drivers").select("*").order("mat", { ascending: true });
+      const { data, error } = await supabase
+        .from("drivers")
+        .select("*")
+        .order("mat", { ascending: true });
       if(error) throw error;
       return data || [];
     }
 
     async function dbInsertDriver(driver){
-      const { data, error } = await supabase.from("drivers").insert(driver).select("*").single();
+      const { data, error } = await supabase
+        .from("drivers")
+        .insert(driver)
+        .select("*")
+        .single();
       if(error) throw error;
       return data;
     }
 
     async function dbUpdateDriver(driverId, patch){
-      const { data, error } = await supabase.from("drivers").update(patch).eq("id", driverId).select("*").single();
+      const { data, error } = await supabase
+        .from("drivers")
+        .update(patch)
+        .eq("id", driverId)
+        .select("*")
+        .single();
       if(error) throw error;
       return data;
     }
 
     async function dbDeleteDriver(driverId){
-      const { error } = await supabase.from("drivers").delete().eq("id", driverId);
+      const { error } = await supabase
+        .from("drivers")
+        .delete()
+        .eq("id", driverId);
       if(error) throw error;
     }
 
@@ -1241,7 +1241,9 @@
     }
 
     async function dbUpsertEntry(payload){
-      const { error } = await supabase.from("schedule_entries").upsert(payload, { onConflict: "driver_id,work_date" });
+      const { error } = await supabase
+        .from("schedule_entries")
+        .upsert(payload, { onConflict: "driver_id,work_date" });
       if(error) throw error;
     }
 
@@ -1249,8 +1251,13 @@
      * Auth
      ***********************/
     function renderAuth(isAuthed){
-      if(isAuthed){ hide(loginView); show(appView); }
-      else{ show(loginView); hide(appView); }
+      if(isAuthed){
+        hide(loginView);
+        show(appView);
+      }else{
+        show(loginView);
+        hide(appView);
+      }
     }
 
     async function refreshSessionAndRender(){
@@ -1267,7 +1274,10 @@
       try{
         setBusy(true);
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if(error){ loginErr.style.display = "block"; return; }
+        if(error){
+          loginErr.style.display = "block";
+          return;
+        }
         await refreshSessionAndRender();
         await loadFromDBAndRender();
       }finally{
@@ -1302,18 +1312,12 @@
       renderTable();
     });
 
-    lineFilter.addEventListener("change", () => {
-      state.lineFilter = lineFilter.value;
-      renderTable();
-    });
-
     monthPicker.addEventListener("change", async () => {
       if(!monthPicker.value) return;
       state.selectedMonth = parseMonthKey(monthPicker.value);
       try{
         setBusy(true);
         await loadMonthEntriesIntoState();
-        rebuildLineFilterOptions();
         renderAll();
       }catch(err){
         alert("Erro ao carregar mês: " + (err?.message || err));
@@ -1334,6 +1338,8 @@
       inRole.value = "fixo";
       inLine.value = "";
       inPontaBase.value = "";
+      inStatusPreset.value = "";
+      inStatus.value = "";
       addOverlay.classList.add("show");
       setTimeout(()=> inMat.focus(), 60);
     }
@@ -1349,7 +1355,13 @@
       inPhone.value = drv.phone || "";
       inRole.value = (drv.role || "fixo");
       inLine.value = drv.line_default || "";
-      inPontaBase.value = (drv.ponta_base || "");
+
+      // ✅ TP/TS/Circular
+      const base = normalizePonta(drv.ponta_base || "");
+      inPontaBase.value = (base === "TP" || base === "TS") ? base : (base === "Circular" ? "CIRCULAR" : "");
+
+      inStatusPreset.value = "";
+      inStatus.value = drv.status || "";
       addOverlay.classList.add("show");
       setTimeout(()=> inName.focus(), 60);
     }
@@ -1359,18 +1371,28 @@
     btnCloseAdd.addEventListener("click", closeAdd);
     addOverlay.addEventListener("click", (e)=>{ if(e.target === addOverlay) closeAdd(); });
 
+    inStatusPreset.addEventListener("change", () => {
+      if(inStatusPreset.value) inStatus.value = inStatusPreset.value;
+    });
+
     btnSaveDriver.addEventListener("click", async () => {
       const mat = (inMat.value || "").trim();
       const name = (inName.value || "").trim();
       const phone = (inPhone.value || "").trim();
       const role = (inRole.value || "fixo").trim();
       const line_default = (inLine.value || "").trim() || null;
-      const ponta_base = (inPontaBase.value || "").trim().toUpperCase() || null;
 
-      if(!mat || !name){ alert("Preencha Matrícula e Nome."); return; }
+      // ✅ ponta_base aceita: TP, TS, Circular
+      const ponta_raw = String(inPontaBase.value || "").trim();
+      let ponta_base = null;
+      if(ponta_raw === "TP" || ponta_raw === "TS") ponta_base = ponta_raw;
+      else if(ponta_raw === "CIRCULAR") ponta_base = "Circular";
+      else ponta_base = null;
 
-      if(role === "fixo" && !ponta_base){
-        alert("Fiscal FIXO precisa ter TP ou TS cadastrado.");
+      const status = (inStatus.value || "").trim() || null;
+
+      if(!mat || !name){
+        alert("Preencha pelo menos Matrícula e Nome.");
         return;
       }
 
@@ -1379,32 +1401,46 @@
 
         if(driverFormMode.mode === "create"){
           const exists = state.drivers.some(d => String(d.mat).trim() === mat);
-          if(exists){ alert("Já existe um fiscal com essa matrícula."); return; }
+          if(exists){
+            alert("Já existe um fiscal com essa matrícula.");
+            return;
+          }
 
           const inserted = await dbInsertDriver({
             mat, name, phone,
             role,
             line_default,
-            ponta_base
+            ponta_base, // ✅ aqui grava
+            status
           });
 
           state.drivers.push(inserted);
           state.drivers.sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
           closeAdd();
           await loadMonthEntriesIntoState();
-          rebuildLineFilterOptions();
           renderAll();
           return;
         }
 
         const id = driverFormMode.driverId;
-        const updated = await dbUpdateDriver(id, { mat, name, phone, role, line_default, ponta_base });
+        const updated = await dbUpdateDriver(id, { mat, name, phone, role, line_default, ponta_base, status });
 
         state.drivers = state.drivers.map(d => d.id === id ? updated : d);
         state.drivers.sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
 
+        if(state.selectedDriverId === id && drawer.classList.contains("open")){
+          dName.textContent = `${updated.mat} • ${updated.name}`;
+          const meta = [
+            updated.phone ? `📞 ${updated.phone}` : null,
+            updated.role ? `👤 ${updated.role}` : null,
+            updated.line_default ? `🚌 ${updated.line_default}` : null,
+            updated.ponta_base ? `📍 ${updated.ponta_base}` : null,
+            updated.status ? `🏷️ ${updated.status}` : null,
+          ].filter(Boolean);
+          dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
+        }
+
         closeAdd();
-        rebuildLineFilterOptions();
         renderTable();
       }catch(err){
         alert("Erro ao salvar fiscal: " + (err?.message || err));
@@ -1414,39 +1450,8 @@
     });
 
     /***********************
-     * Edit modal day/range
+     * Day modal
      ***********************/
-    function syncRangeBox(){
-      rangeBox.style.display = (eApplyMode.value === "range") ? "flex" : "none";
-    }
-    eApplyMode.addEventListener("change", syncRangeBox);
-
-    function syncCoverBoxVisibility(){
-      const k = (eKind.value || "").toLowerCase();
-      coverBox.style.display = (k === "ferias" || k === "folga") ? "block" : "none";
-    }
-
-    function fillCoverSelectOptions(){
-      const plantonistas = state.drivers
-        .filter(d => (d.role || "").toLowerCase().trim() === "plantonista")
-        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
-
-      const options = [];
-      options.push(`<option value="">(sem cobridor)</option>`);
-      for(const p of plantonistas){
-        options.push(`<option value="${p.id}">${escapeHtml(p.mat)} • ${escapeHtml(firstName(p.name))}</option>`);
-      }
-      eCoverSelect.innerHTML = options.join("");
-    }
-
-    eKind.addEventListener("change", () => {
-      syncCoverBoxVisibility();
-      fillCoverSelectOptions();
-      if(eKind.value !== "ferias" && eKind.value !== "folga") eCoverSelect.value = "";
-    });
-
-    btnClearCover.addEventListener("click", () => { eCoverSelect.value = ""; });
-
     function openEdit(driverId, dateStr){
       editCtx = { driverId, dateStr };
       const drv = state.drivers.find(d => d.id === driverId);
@@ -1454,34 +1459,26 @@
       eDriver.textContent = drv ? `${drv.mat} • ${drv.name}` : "";
       eDate.textContent = fmtNiceDate(dateStr);
 
-      eApplyMode.value = "day";
-      syncRangeBox();
-      eStart.value = dateStr;
-      eEnd.value = dateStr;
-
-      const entry = state.entriesByDriver[driverId]?.[dateStr] || null;
+      const entry = (state.entriesByDriver[driverId] && state.entriesByDriver[driverId][dateStr]) ? state.entriesByDriver[driverId][dateStr] : null;
 
       const kind = entry?.kind || "trabalho";
       eKind.value = kind;
-
-      // defaults
       eLine.value = entry?.line || (drv?.line_default || "");
       eTime.value = entry?.time_hhmm || "";
       eNotes.value = entry?.notes || "";
 
-      // Ponta:
-      // - se já existe no entry, usa
-      // - senão, se é fixo e tem ponta_base, usa
-      // - senão deixa vazio (ou usuário escolhe)
-      const basePonta = (drv?.ponta_base || "").trim().toUpperCase();
-      ePonta.value = (entry?.ponta || basePonta || "");
+      // ✅ ponta do dia: se não tiver, tenta puxar do fixo
+      const defaultPonta = normalizePonta(entry?.ponta || "") || normalizePonta(drv?.ponta_base || "");
+      ePonta.value = (defaultPonta === "TP" || defaultPonta === "TS") ? defaultPonta : (defaultPonta === "Circular" ? "CIRCULAR" : "");
 
       syncCoverBoxVisibility();
       fillCoverSelectOptions();
-      eCoverSelect.value = entry?.covered_by_driver_id || "";
+
+      const coveredBy = entry?.covered_by_driver_id || "";
+      eCoverSelect.value = coveredBy || "";
 
       editOverlay.classList.add("show");
-      setTimeout(()=> eLine.focus(), 60);
+      setTimeout(() => eLine.focus(), 60);
     }
 
     function closeEdit(){
@@ -1492,36 +1489,58 @@
     btnCloseEdit.addEventListener("click", closeEdit);
     editOverlay.addEventListener("click", (e)=>{ if(e.target === editOverlay) closeEdit(); });
 
+    function syncCoverBoxVisibility(){
+      const show = (eKind.value === "folga");
+      coverBox.style.display = show ? "block" : "none";
+    }
+
+    eKind.addEventListener("change", () => {
+      syncCoverBoxVisibility();
+      const drv = state.drivers.find(d => d.id === editCtx.driverId);
+      if(eKind.value === "trabalho" && drv?.line_default && !eLine.value.trim()){
+        eLine.value = drv.line_default;
+      }
+      if(eKind.value !== "folga"){
+        eCoverSelect.value = "";
+      }
+      if(eKind.value === "folga" && drv?.ponta_base){
+        const pb = normalizePonta(drv.ponta_base);
+        ePonta.value = (pb === "TP" || pb === "TS") ? pb : (pb === "Circular" ? "CIRCULAR" : "");
+      }
+    });
+
+    function fillCoverSelectOptions(){
+      const plantonistas = state.drivers
+        .filter(d => (d.role || "").toLowerCase() === "plantonista")
+        .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}));
+
+      const options = [];
+      options.push(`<option value="">(sem cobridor)</option>`);
+      for(const p of plantonistas){
+        options.push(`<option value="${p.id}">${escapeHtml(p.mat)} • ${escapeHtml(firstName(p.name))}</option>`);
+      }
+      eCoverSelect.innerHTML = options.join("");
+    }
+
+    btnClearCover.addEventListener("click", () => { eCoverSelect.value = ""; });
+
     btnClearDay.addEventListener("click", async () => {
       if(!editCtx.driverId || !editCtx.dateStr) return;
-
-      const mode = eApplyMode.value;
-      const startStr = (mode === "range") ? (eStart.value || "") : editCtx.dateStr;
-      const endStr = (mode === "range") ? (eEnd.value || "") : editCtx.dateStr;
-      if(!startStr || !endStr) return;
-
-      const start = toDateObj(startStr);
-      const end = toDateObj(endStr);
-      if(end < start){ alert("Data final menor que a inicial."); return; }
 
       try{
         setBusy(true);
 
-        for(let d = new Date(start); d <= end; d = addDays(d,1)){
-          const ds = ymd(d.getFullYear(), d.getMonth()+1, d.getDate());
-          const existing = await dbGetEntry(editCtx.driverId, ds);
-          if(existing?.covered_by_driver_id){
-            await dbDeleteEntry(existing.covered_by_driver_id, ds);
-          }
-          await dbDeleteEntry(editCtx.driverId, ds);
+        const existing = await dbGetEntry(editCtx.driverId, editCtx.dateStr);
+        if(existing?.kind === "folga" && existing?.covered_by_driver_id){
+          await dbDeleteEntry(existing.covered_by_driver_id, editCtx.dateStr);
         }
 
+        await dbDeleteEntry(editCtx.driverId, editCtx.dateStr);
         closeEdit();
         await loadMonthEntriesIntoState();
-        rebuildLineFilterOptions();
         renderAll();
       }catch(err){
-        alert("Erro ao limpar: " + (err?.message || err));
+        alert("Erro ao limpar dia: " + (err?.message || err));
       }finally{
         setBusy(false);
       }
@@ -1530,106 +1549,84 @@
     btnSaveDay.addEventListener("click", async () => {
       if(!editCtx.driverId || !editCtx.dateStr) return;
 
-      const mode = eApplyMode.value;
-      const startStr = (mode === "range") ? (eStart.value || "") : editCtx.dateStr;
-      const endStr = (mode === "range") ? (eEnd.value || "") : editCtx.dateStr;
-      if(!startStr || !endStr){ alert("Selecione as datas."); return; }
-
-      const start = toDateObj(startStr);
-      const end = toDateObj(endStr);
-      if(end < start){ alert("Data final menor que a inicial."); return; }
-
-      const driverId = editCtx.driverId;
-      const drv = state.drivers.find(d => d.id === driverId);
-
-      const kind = eKind.value;
-      const line = (eLine.value || "").trim() || null;
-      const time_hhmm = (eTime.value || "").trim() || null;
-
-      // ponta do dia:
-      // - se usuário selecionou TP/TS, usa
-      // - senão, se fiscal tem ponta_base, usa (principalmente fixos)
-      const pontaChosen = (ePonta.value || "").trim().toUpperCase();
-      const pontaAuto = (drv?.ponta_base || "").trim().toUpperCase();
-      const ponta = (pontaChosen || pontaAuto || null);
-
-      const notesRaw = (eNotes.value || "").trim() || "";
-      let covered_by_driver_id = null;
-
-      if(kind === "ferias" || kind === "folga"){
-        covered_by_driver_id = eCoverSelect.value || null;
-      }
-
-      // valida regra de código (somente no 7º dia)
-      const pendingMap = {};
-      for(let d = new Date(start); d <= end; d = addDays(d,1)){
-        const ds = ymd(d.getFullYear(), d.getMonth()+1, d.getDate());
-        pendingMap[ds] = { kind };
-      }
-
-      for(let d = new Date(start); d <= end; d = addDays(d,1)){
-        const ds = ymd(d.getFullYear(), d.getMonth()+1, d.getDate());
-        const v = validateCodeRule(driverId, ds, kind, notesRaw, pendingMap);
-        if(!v.ok){ alert(v.msg); return; }
-      }
-
-      // regra: fixo precisa de TP/TS (se for trabalho/plantão/folga/ferias também)
-      if((drv?.role || "").toLowerCase().trim() === "fixo" && !pontaAuto && !pontaChosen){
-        alert("Este fiscal é FIXO e precisa ter TP/TS definido no cadastro.");
-        return;
-      }
-
       try{
         setBusy(true);
 
-        for(let d = new Date(start); d <= end; d = addDays(d,1)){
-          const dateStr = ymd(d.getFullYear(), d.getMonth()+1, d.getDate());
+        const driverId = editCtx.driverId;
+        const dateStr = editCtx.dateStr;
+        const drv = state.drivers.find(d => d.id === driverId);
 
-          const existing = await dbGetEntry(driverId, dateStr);
-          const previousCoveredBy = existing?.covered_by_driver_id || null;
+        const kind = eKind.value;
+        const line = (eLine.value || "").trim() || null;
+        const time_hhmm = (eTime.value || "").trim() || null;
+        const notes = (eNotes.value || "").trim() || null;
+
+        // ✅ ponta do dia: TP / TS / Circular
+        let ponta = null;
+        const pr = String(ePonta.value || "").trim();
+        if(pr === "TP" || pr === "TS") ponta = pr;
+        else if(pr === "CIRCULAR") ponta = "Circular";
+        else ponta = null;
+
+        // se for fixo e não escolheu, usa ponta_base
+        if(!ponta && (drv?.role || "").toLowerCase() === "fixo"){
+          const pb = normalizePonta(drv?.ponta_base || "");
+          if(pb === "TP" || pb === "TS") ponta = pb;
+          else if(pb === "Circular") ponta = "Circular";
+        }
+
+        const existing = await dbGetEntry(driverId, dateStr);
+        const previousCoveredBy = existing?.covered_by_driver_id || null;
+
+        let covered_by_driver_id = null;
+        if(kind === "folga"){
+          covered_by_driver_id = eCoverSelect.value || null;
+        }
+
+        // 1) salva o dia do fiscal
+        await dbUpsertEntry({
+          driver_id: driverId,
+          work_date: dateStr,
+          kind,
+          line,
+          time_hhmm,
+          covered_by_driver_id,
+          notes,
+          ponta
+        });
+
+        // 2) remove cobertura antiga se mudou
+        if(previousCoveredBy && previousCoveredBy !== covered_by_driver_id){
+          await dbDeleteEntry(previousCoveredBy, dateStr);
+        }
+
+        // 3) folga com cobridor: plantonista herda TP/TS/Circular do fixo
+        if(kind === "folga" && covered_by_driver_id){
+          const coverNotes = drv ? shortPerson(drv) : null;
+
+          let inheritedPonta = null;
+          const pb = normalizePonta(drv?.ponta_base || "");
+          if(pb === "TP" || pb === "TS") inheritedPonta = pb;
+          else if(pb === "Circular") inheritedPonta = "Circular";
+          else inheritedPonta = ponta || null;
 
           await dbUpsertEntry({
-            driver_id: driverId,
+            driver_id: covered_by_driver_id,
             work_date: dateStr,
-            kind,
+            kind: "cobertura",
             line,
             time_hhmm,
-            covered_by_driver_id,
-            notes: notesRaw || null,
-            ponta
+            covered_by_driver_id: null,
+            notes: coverNotes,
+            ponta: inheritedPonta
           });
-
-          // se trocou cobridor, remover antiga cobertura do plantonista
-          if(previousCoveredBy && previousCoveredBy !== covered_by_driver_id){
-            await dbDeleteEntry(previousCoveredBy, dateStr);
-          }
-
-          // se for férias/folga com cobridor:
-          // - plantonista assume linha/hora e TP/TS do fixo
-          if((kind === "ferias" || kind === "folga") && covered_by_driver_id){
-            const fixoPonta = (drv?.ponta_base || ponta || "").trim().toUpperCase() || null;
-
-            await dbUpsertEntry({
-              driver_id: covered_by_driver_id,
-              work_date: dateStr,
-              kind: "cobertura",
-              line,
-              time_hhmm,
-              covered_by_driver_id: null,
-              // Observação do plantonista pode levar a matrícula/nome do fixo, se você quiser:
-              // aqui mantive simples: só replica a observação do fixo (se houver)
-              notes: notesRaw || null,
-              ponta: fixoPonta
-            });
-          }
         }
 
         closeEdit();
         await loadMonthEntriesIntoState();
-        rebuildLineFilterOptions();
         renderAll();
       }catch(err){
-        alert("Erro ao salvar: " + (err?.message || err));
+        alert("Erro ao salvar dia: " + (err?.message || err));
       }finally{
         setBusy(false);
       }
@@ -1648,15 +1645,14 @@
         drv.phone ? `📞 ${drv.phone}` : null,
         drv.role ? `👤 ${drv.role}` : null,
         drv.line_default ? `🚌 ${drv.line_default}` : null,
-        (drv.role||"").toLowerCase().trim()==="fixo" && drv.ponta_base ? `📍 ${String(drv.ponta_base).toUpperCase()}` : null,
+        drv.ponta_base ? `📍 ${drv.ponta_base}` : null,
+        drv.status ? `🏷️ ${drv.status}` : null,
       ].filter(Boolean);
+
       dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
 
       drawer.classList.add("open");
-      drawer.classList.add("fullscreen"); // abre grande automático
       drawer.setAttribute("aria-hidden","false");
-      drawer.scrollTop = 0;
-
       renderCalendar();
     }
 
@@ -1668,6 +1664,12 @@
     }
 
     btnCloseDrawer.addEventListener("click", closeDrawer);
+
+    btnFull.addEventListener("click", () => {
+      if(!drawer.classList.contains("open")) return;
+      drawer.classList.toggle("fullscreen");
+      btnFull.textContent = drawer.classList.contains("fullscreen") ? "🧩 Voltar" : "🖥️ Tela cheia";
+    });
 
     btnEditDriver.addEventListener("click", () => {
       if(!state.selectedDriverId) return;
@@ -1689,7 +1691,6 @@
         state.drivers = state.drivers.filter(d => d.id !== id);
         delete state.entriesByDriver[id];
         closeDrawer();
-        rebuildLineFilterOptions();
         renderAll();
       }catch(err){
         alert("Erro ao remover: " + (err?.message || err));
@@ -1739,50 +1740,80 @@
     });
 
     /***********************
-     * Export CSV (listagem)
+     * Exportações
      ***********************/
-    function buildCSVForMonth_Listagem(){
+    function buildCSVForMonth(){
       const monthDate = state.selectedMonth;
       const y = monthDate.getFullYear();
       const m = monthDate.getMonth()+1;
       const nDays = daysInMonth(monthDate);
 
-      const filtered = getFilteredDrivers();
+      const rows = [];
+      rows.push([
+        "matricula","nome","tipo_fiscal","linha_fixa","tp_ts_base",
+        "data","dia_semana","tipo_dia","linha","hora","tp_ts","coberto_por","obs"
+      ]);
 
-      const header = ["matricula","nome","tipo_fiscal","linha_base","tp_ts_base"];
-      for(let d=1; d<=nDays; d++){
-        const dt = new Date(y, m-1, d);
-        header.push(`${pad2(d)}_${dowShort[dt.getDay()]}`);
-      }
-
-      const rows = [header];
-
-      for(const drv of filtered){
-        const row = [
-          drv.mat||"",
-          drv.name||"",
-          drv.role||"",
-          drv.line_default||"",
-          (drv.ponta_base||"")
-        ];
+      for(const drv of state.drivers){
+        if(state.roleFilter !== "todos"){
+          const role = (drv.role || "").toLowerCase();
+          if(role !== state.roleFilter) continue;
+        }
+        if(state.searchText){
+          const mat = (drv.mat || "").toLowerCase();
+          const name = (drv.name || "").toLowerCase();
+          if(!mat.includes(state.searchText) && !name.includes(state.searchText)) continue;
+        }
 
         for(let d=1; d<=nDays; d++){
           const dateStr = ymd(y,m,d);
+          const dt = new Date(y, m-1, d);
+          const dow = dowShort[dt.getDay()];
+
           const entry = state.entriesByDriver[drv.id]?.[dateStr] || null;
-          row.push(entry ? entryToMultilineLabel(entry).replaceAll("\n"," | ") : "");
+
+          const tipo_dia = entry?.kind || "";
+          const linha = entry?.line || "";
+          const hora = entry?.time_hhmm || "";
+          const tp_ts = normalizePonta(entry?.ponta || "");
+          const coberto_por = entry?.covered_by_driver_id ? (state.drivers.find(x=>x.id===entry.covered_by_driver_id)?.mat || "") : "";
+          const obs = entry?.notes || "";
+
+          rows.push([
+            drv.mat||"",
+            drv.name||"",
+            drv.role||"",
+            drv.line_default||"",
+            normalizePonta(drv.ponta_base||""),
+            dateStr,
+            dow,
+            tipo_dia,
+            linha,
+            hora,
+            tp_ts,
+            coberto_por,
+            obs
+          ]);
         }
-        rows.push(row);
       }
 
-      return rows.map(r => r.map(v => `"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\n");
+      const csv = rows
+        .map(r => r.map(v => {
+          const s = String(v ?? "");
+          const escaped = s.replaceAll('"','""');
+          return `"${escaped}"`;
+        }).join(","))
+        .join("\n");
+
+      return csv;
     }
 
     btnExportExcel.addEventListener("click", () => {
-      const csv = buildCSVForMonth_Listagem();
+      const csv = buildCSVForMonth();
       const y = state.selectedMonth.getFullYear();
       const m = pad2(state.selectedMonth.getMonth()+1);
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      downloadBlob(blob, `escala-listagem-${y}-${m}.csv`);
+      downloadBlob(blob, `escala-${y}-${m}.csv`);
     });
 
     /***********************
@@ -1799,24 +1830,29 @@
     function renderAll(){
       ensureMonthInit();
       renderTable();
-      if(drawer.classList.contains("open")) renderCalendar();
-    }
-
-    function driverHasLineInMonth(driverId, line){
-      if(!line || line === "todas") return true;
-      const drv = state.drivers.find(d => d.id === driverId);
-      if(drv?.line_default && String(drv.line_default).trim() === line) return true;
-
-      const map = state.entriesByDriver[driverId] || {};
-      for(const k of Object.keys(map)){
-        const e = map[k];
-        if(String(e?.line || "").trim() === line) return true;
+      if(drawer.classList.contains("open")){
+        renderCalendar();
       }
-      return false;
     }
 
-    function getFilteredDrivers(){
-      return state.drivers
+    function renderTable(){
+      const monthDate = state.selectedMonth;
+      const y = monthDate.getFullYear();
+      const m = monthDate.getMonth()+1;
+      const nDays = daysInMonth(monthDate);
+
+      const th = [];
+      th.push(`<tr>`);
+      th.push(`<th class="col-driver">Matrícula • Nome • Tipo • Linha fixa • TP/TS/Circular • Status</th>`);
+      for(let d=1; d<=nDays; d++){
+        const dt = new Date(y, m-1, d);
+        const dow = dowShort[dt.getDay()];
+        th.push(`<th title="${dow}">${pad2(d)}<div style="color:rgba(11,26,16,.55);font-weight:900;font-size:11px;margin-top:2px;">${dow}</div></th>`);
+      }
+      th.push(`</tr>`);
+      monthThead.innerHTML = th.join("");
+
+      const filtered = state.drivers
         .slice()
         .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}))
         .filter(d => {
@@ -1829,64 +1865,8 @@
             const name = (d.name || "").toLowerCase();
             if(!mat.includes(state.searchText) && !name.includes(state.searchText)) return false;
           }
-          if(state.lineFilter !== "todas"){
-            if(!driverHasLineInMonth(d.id, state.lineFilter)) return false;
-          }
           return true;
         });
-    }
-
-    function rebuildLineFilterOptions(){
-      const lines = new Set();
-
-      // linhas base
-      for(const d of state.drivers){
-        const l = String(d.line_default || "").trim();
-        if(l) lines.add(l);
-      }
-
-      // linhas do mês (entries)
-      for(const driverId of Object.keys(state.entriesByDriver || {})){
-        const mp = state.entriesByDriver[driverId] || {};
-        for(const dateStr of Object.keys(mp)){
-          const l = String(mp[dateStr]?.line || "").trim();
-          if(l) lines.add(l);
-        }
-      }
-
-      const sorted = Array.from(lines).sort((a,b)=> a.localeCompare(b, "pt-BR", {numeric:true}));
-
-      const current = state.lineFilter || "todas";
-
-      const opts = [`<option value="todas">Todas</option>`]
-        .concat(sorted.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`));
-
-      lineFilter.innerHTML = opts.join("");
-      // restaura se ainda existir
-      const still = sorted.includes(current) ? current : "todas";
-      state.lineFilter = still;
-      lineFilter.value = still;
-    }
-
-    function renderTable(){
-      const monthDate = state.selectedMonth;
-      const y = monthDate.getFullYear();
-      const m = monthDate.getMonth()+1;
-      const nDays = daysInMonth(monthDate);
-
-      // Header
-      const th = [];
-      th.push(`<tr>`);
-      th.push(`<th class="col-driver">Matrícula • Nome • Tipo • Linha base • TP/TS</th>`);
-      for(let d=1; d<=nDays; d++){
-        const dt = new Date(y, m-1, d);
-        const dow = dowShort[dt.getDay()];
-        th.push(`<th title="${dow}">${pad2(d)}<div style="color:rgba(11,26,16,.55);font-weight:900;font-size:11px;margin-top:2px;">${dow}</div></th>`);
-      }
-      th.push(`</tr>`);
-      monthThead.innerHTML = th.join("");
-
-      const filtered = getFilteredDrivers();
 
       const rows = [];
       if(filtered.length === 0){
@@ -1896,14 +1876,15 @@
       }
 
       for(const drv of filtered){
-        const ponta = (drv.ponta_base || "").trim().toUpperCase();
+        const base = normalizePonta(drv.ponta_base||"") || "(sem TP/TS/Circular)";
         const title = `
           <div class="driver-title">
             <div class="name">${escapeHtml(drv.mat)} • ${escapeHtml(drv.name)}</div>
             <div class="meta">
               <span class="kbd">👤 ${escapeHtml(drv.role || "")}</span>
-              ${drv.line_default ? `<span class="kbd">🚌 ${escapeHtml(drv.line_default)}</span>` : `<span class="kbd">🚌 (sem linha base)</span>`}
-              ${(drv.role||"").toLowerCase().trim()==="fixo" ? `<span class="kbd">📍 ${escapeHtml(ponta || "(sem TP/TS)")}</span>` : `<span class="kbd">📍 (plantonista)</span>`}
+              ${drv.line_default ? `<span class="kbd">🚌 ${escapeHtml(drv.line_default)}</span>` : `<span class="kbd">🚌 (sem linha fixa)</span>`}
+              <span class="kbd">📍 ${escapeHtml(base)}</span>
+              ${drv.status ? `<span class="kbd">🏷️ ${escapeHtml(drv.status)}</span>` : `<span class="kbd">🏷️ (sem status)</span>`}
               <span class="kbd">Clique no nome → calendário</span>
             </div>
           </div>
@@ -1917,13 +1898,16 @@
           const entry = state.entriesByDriver[drv.id]?.[dateStr] || null;
 
           const cls = chipClass(entry);
-          const showTxt = entry ? escapeHtml(entryToMultilineLabel(entry)) : "—";
+          const showTxt = entry ? escapeHtml(entryToLabel(entry, false)) : "—";
 
-          rows.push(`<td style="min-width:130px;">
-<span class="${cls}" data-edit="${drv.id}" data-date="${dateStr}" title="Clique para editar">${showTxt}</span>
-</td>`);
+          rows.push(`
+            <td>
+              <span class="${cls}" data-edit="${drv.id}" data-date="${dateStr}" title="Clique para editar">
+                ${showTxt}
+              </span>
+            </td>
+          `);
         }
-
         rows.push(`</tr>`);
       }
 
@@ -1951,9 +1935,6 @@
       const m = monthDate.getMonth()+1;
       const nDays = daysInMonth(monthDate);
 
-      // título mês/ano
-      calMonthTitle.textContent = `${MONTHS_PT[m-1]} • ${y}`;
-
       const firstDow = new Date(y, m-1, 1).getDay();
       const cells = [];
 
@@ -1965,8 +1946,9 @@
         const dateStr = ymd(y,m,d);
         const entry = state.entriesByDriver[id]?.[dateStr] || null;
 
-        const label = entry ? entryToMultilineLabel(entry) : "Disponível";
-        const cls = entry ? "" : "empty";
+        const label = entry ? entryToLabel(entry, true) : "Disponível";
+        const isEmpty = !entry;
+        const cls = isEmpty ? "empty" : "";
 
         cells.push(`
           <div class="day" data-editcal="${dateStr}">
@@ -1990,24 +1972,26 @@
     }
 
     /***********************
-     * Load data from DB
+     * Load data
      ***********************/
     async function loadMonthEntriesIntoState(){
       ensureMonthInit();
       const entries = await dbGetEntriesForMonth(state.selectedMonth);
 
       const map = {};
-      for(const d of state.drivers) map[d.id] = {};
+      for(const d of state.drivers){
+        map[d.id] = {};
+      }
 
       for(const it of entries){
         if(!map[it.driver_id]) map[it.driver_id] = {};
         map[it.driver_id][it.work_date] = {
-          kind: (it.kind || "trabalho"),
+          kind: it.kind || "trabalho",
           line: it.line || "",
           time_hhmm: it.time_hhmm || "",
+          ponta: it.ponta || "",
           covered_by_driver_id: it.covered_by_driver_id || null,
-          notes: it.notes || "",
-          ponta: it.ponta || ""
+          notes: it.notes || ""
         };
       }
 
@@ -2022,7 +2006,6 @@
       try{
         state.drivers = await dbGetDrivers();
         await loadMonthEntriesIntoState();
-        rebuildLineFilterOptions();
         renderAll();
       }catch(err){
         alert("Erro ao carregar dados do Supabase: " + (err?.message || err));
@@ -2046,9 +2029,11 @@
       }else{
         show(loginView);
         hide(appView);
-        setTimeout(()=> loginPass.focus(), 50);
+        setTimeout(() => loginPass.focus(), 50);
       }
     })();
+
+    btnCloseDrawer.addEventListener("click", closeDrawer);
   </script>
 </body>
 </html>
