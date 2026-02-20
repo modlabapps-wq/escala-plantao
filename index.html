@@ -10,7 +10,6 @@
 
   <style>
     :root{
-      /* TEMA CLARO (verde suave) */
       --bg0:#ecfff2;
       --bg1:#dfffe9;
       --panel: rgba(255,255,255,.72);
@@ -20,7 +19,6 @@
       --muted: rgba(11,26,16,.65);
       --muted2: rgba(11,26,16,.50);
 
-      /* Acentos (neon sutil) */
       --c1:#00d4ff; /* ciano */
       --c2:#a100ff; /* roxo */
       --c3:#00d67a; /* verde */
@@ -37,7 +35,7 @@
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
 
-      /* Cores por tipo (chips) */
+      /* Cores por tipo */
       --chip-trabalho-bg: rgba(0, 214, 122, .14);
       --chip-trabalho-bd: rgba(0, 214, 122, .55);
 
@@ -90,7 +88,6 @@
       filter: blur(.2px);
     }
 
-    /* ✅ MAIS LARGO */
     .wrap{
       max-width: 1760px;
       margin: 0 auto;
@@ -275,7 +272,6 @@
       color: var(--text);
     }
 
-    /* ✅ CHIP MULTILINHA */
     .chip{
       display:inline-flex;
       align-items:flex-start;
@@ -305,31 +301,11 @@
       background: rgba(255,255,255,.55);
       font-weight: 800;
     }
-    .chip.trabalho{
-      border-color: var(--chip-trabalho-bd);
-      background: var(--chip-trabalho-bg);
-      box-shadow: 0 0 16px rgba(0,214,122,.10);
-    }
-    .chip.plantao{
-      border-color: var(--chip-plantao-bd);
-      background: var(--chip-plantao-bg);
-      box-shadow: 0 0 16px rgba(0,212,255,.10);
-    }
-    .chip.ferias{
-      border-color: var(--chip-ferias-bd);
-      background: var(--chip-ferias-bg);
-      box-shadow: 0 0 16px rgba(161,0,255,.08);
-    }
-    .chip.folga{
-      border-color: var(--chip-folga-bd);
-      background: var(--chip-folga-bg);
-      box-shadow: 0 0 16px rgba(255,179,0,.10);
-    }
-    .chip.cobertura{
-      border-color: var(--chip-cobertura-bd);
-      background: var(--chip-cobertura-bg);
-      box-shadow: 0 0 16px rgba(255,47,93,.09);
-    }
+    .chip.trabalho{ border-color: var(--chip-trabalho-bd); background: var(--chip-trabalho-bg); box-shadow: 0 0 16px rgba(0,214,122,.10); }
+    .chip.plantao{ border-color: var(--chip-plantao-bd); background: var(--chip-plantao-bg); box-shadow: 0 0 16px rgba(0,212,255,.10); }
+    .chip.ferias{ border-color: var(--chip-ferias-bd); background: var(--chip-ferias-bg); box-shadow: 0 0 16px rgba(161,0,255,.08); }
+    .chip.folga{ border-color: var(--chip-folga-bd); background: var(--chip-folga-bg); box-shadow: 0 0 16px rgba(255,179,0,.10); }
+    .chip.cobertura{ border-color: var(--chip-cobertura-bd); background: var(--chip-cobertura-bg); box-shadow: 0 0 16px rgba(255,47,93,.09); }
 
     /* Drawer */
     .drawer{
@@ -423,7 +399,8 @@
       color: var(--muted2);
       font-weight: 900;
     }
-    /* ✅ VAL MULTILINHA */
+
+    /* ✅ CORES NO CALENDÁRIO POR TIPO */
     .day .val{
       display:block;
       align-self:stretch;
@@ -443,11 +420,17 @@
       color: rgba(11,26,16,.40);
       font-weight: 800;
     }
+    .day .val.trabalho{ border-color: var(--chip-trabalho-bd); background: var(--chip-trabalho-bg); }
+    .day .val.plantao{ border-color: var(--chip-plantao-bd); background: var(--chip-plantao-bg); }
+    .day .val.ferias{ border-color: var(--chip-ferias-bd); background: var(--chip-ferias-bg); }
+    .day .val.folga{ border-color: var(--chip-folga-bd); background: var(--chip-folga-bg); }
+    .day .val.cobertura{ border-color: var(--chip-cobertura-bd); background: var(--chip-cobertura-bg); }
+
     .day:hover{ background: rgba(0,214,122,.08); }
     .day.muted{ opacity:.35; cursor: default; background: transparent; }
     .day.muted:hover{ background: transparent; }
 
-    /* Modo de captura (imagem do calendário) - bem visível */
+    /* Modo de captura */
     .captureMode{
       background: #ffffff !important;
       color: #0b1a10 !important;
@@ -457,17 +440,9 @@
       border: 1px solid rgba(0,0,0,.14) !important;
       background: #fff !important;
     }
-    .captureMode .cal-head{
-      background: rgba(0,214,122,.18) !important;
-    }
-    .captureMode .calendar{
-      background: #fff !important;
-      border-color: rgba(0,0,0,.16) !important;
-    }
-    .captureMode .day{
-      background: #fff !important;
-      border-color: rgba(0,0,0,.12) !important;
-    }
+    .captureMode .cal-head{ background: rgba(0,214,122,.18) !important; }
+    .captureMode .calendar{ background: #fff !important; border-color: rgba(0,0,0,.16) !important; }
+    .captureMode .day{ background: #fff !important; border-color: rgba(0,0,0,.12) !important; }
     .captureMode .day:hover{ background:#fff !important; }
 
     /* Modal */
@@ -532,14 +507,8 @@
       letter-spacing:.12px;
       font-weight: 900;
     }
-    .help{
-      margin-top: 8px;
-      font-size: 12px;
-      color: rgba(11,26,16,.70);
-      line-height: 1.35;
-    }
 
-    /* Toast simples */
+    /* Toast */
     .toast{
       position: fixed;
       left: 50%;
@@ -606,7 +575,7 @@
     }
     .err{ margin-top: 10px; color: #b0002a; font-size: 12.5px; display:none; font-weight: 900; }
 
-    @media (max-width: 820px){
+    @media (max-width: 920px){
       .row{ grid-template-columns: 1fr; }
       .row3{ grid-template-columns: 1fr; }
       .input{ min-width: 180px; }
@@ -616,10 +585,9 @@
       .col-driver{ min-width: 380px; }
     }
 
-    /* Impressão (PDF via navegador) */
     @media print{
       body{ background:#fff !important; }
-      .neon-ring, .topbar, .help, .btn, .actions, .pill, #drawer, #loginView, #toast{ display:none !important; }
+      .neon-ring, .topbar, .btn, .actions, .pill, #drawer, #loginView, #toast{ display:none !important; }
       #appView{ display:block !important; }
       .wrap{ max-width: 100% !important; padding: 0 !important; }
       .card{ box-shadow:none !important; }
@@ -634,7 +602,7 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- LOGIN (Supabase Auth) -->
+  <!-- LOGIN -->
   <section id="loginView" class="login">
     <div class="login-card">
       <div class="login-head">
@@ -692,6 +660,12 @@
             </select>
           </div>
 
+          <!-- ✅ NOVO: filtro por linha -->
+          <div class="pill">
+            <span class="muted" style="font-weight:950;">Linha</span>
+            <input id="lineFilter" class="input" placeholder="ex: 3013-10" style="min-width:190px"/>
+          </div>
+
           <div class="pill">
             <span class="muted" style="font-weight:950;">Buscar</span>
             <input id="searchMat" class="input" placeholder="matrícula ou nome" style="min-width:240px"/>
@@ -737,7 +711,6 @@
     </div>
 
     <div class="d-body">
-      <!-- isso aqui é o que vira imagem -->
       <div id="calCapture">
         <div class="card" style="border-radius:16px; margin-bottom:12px;">
           <div class="head">
@@ -823,7 +796,6 @@
           <b id="eDate"></b>
         </div>
 
-        <!-- ✅ Somente este dia OU intervalo -->
         <div class="row">
           <div class="full">
             <label>Aplicar em</label>
@@ -889,7 +861,6 @@
             </select>
           </div>
 
-          <!-- ✅ Código do 7º dia -->
           <div>
             <label>Código do 7º dia</label>
             <select id="eCode7" class="select">
@@ -913,6 +884,7 @@
       </div>
 
       <div class="m-actions">
+        <!-- ✅ agora limpa também intervalo -->
         <button id="btnClearDay" class="btn">Limpar</button>
         <button id="btnSaveDay" class="btn primary">Salvar</button>
       </div>
@@ -922,9 +894,6 @@
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    /***********************
-     * Supabase
-     ***********************/
     const SUPABASE_URL = "https://cwqwugdiksfodeoksofp.supabase.co";
     const SUPABASE_ANON = "sb_publishable_XkISoiXR_cHRWdeKvtb7HA_ceYFTnPR";
     const ADMIN_EMAIL = "darlene.plantao@pessegotransportes.com.br";
@@ -933,24 +902,18 @@
       auth: { persistSession: true, autoRefreshToken: true }
     });
 
-    /***********************
-     * State
-     ***********************/
     let state = {
       drivers: [],
-      // entriesByDriver[driverId][yyyy-mm-dd] = {kind,line,time_hhmm,ponta,covered_by_driver_id,notes,code7}
       entriesByDriver: {},
       selectedMonth: null,
       selectedDriverId: null,
       searchText: "",
       roleFilter: "todos",
+      lineFilterText: "",
     };
 
     let isBusy = false;
 
-    /***********************
-     * Helpers
-     ***********************/
     const pad2 = n => String(n).padStart(2,"0");
     const ymd = (y,m,d) => `${y}-${pad2(m)}-${pad2(d)}`;
     const monthKey = (y,m) => `${y}-${pad2(m)}`;
@@ -961,7 +924,7 @@
     const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
     const dowShort = ["DOM","SEG","TER","QUA","QUI","SEX","SAB"];
 
-    const WORK_KINDS = new Set(["trabalho","plantao","cobertura"]); // conta como "trabalhou"
+    const WORK_KINDS = new Set(["trabalho","plantao","cobertura"]);
     const CODE7_MIN = 50001;
     const CODE7_MAX = 50040;
 
@@ -987,7 +950,6 @@
       return `${drv.mat} ${firstName(drv.name)}`.trim();
     }
 
-    // aceita: TP, TS, CIRCULAR (e mostra Circular)
     function normalizePonta(p){
       const raw = String(p || "").trim();
       const v = raw.toUpperCase();
@@ -997,7 +959,6 @@
       return "";
     }
 
-    // ✅ código 7º dia armazenado dentro de notes como marcador: [C7:50002]
     function extractCode7FromNotes(notes){
       const s = String(notes || "");
       const m = s.match(/\[C7:(\d{5})\]/);
@@ -1015,7 +976,7 @@
       return `${(clean||"").trim()}${clean ? " " : ""}[C7:${code}]`.trim();
     }
 
-    function entryToLines(entry, opts={ hideCoverInfo:false }){
+    function entryToLines(entry){
       if(!entry) return [];
 
       const kind = (entry.kind || "trabalho").toLowerCase().trim();
@@ -1027,16 +988,12 @@
       if(kind === "folga") return ["Folga"];
       if(kind === "ferias") return ["Férias"];
 
-      // ✅ Cobertura NÃO aparece como texto; vira igual "trabalho" (linha/hora/TP...)
       const parts = [];
       if(line) parts.push(line);
       if(time) parts.push(time);
       if(ponta) parts.push(ponta);
-
-      // ✅ 7º dia: mostra o código
       if(code7) parts.push(code7);
 
-      // se não tem nada, mostra "Trabalho" ou "Plantão" (apenas para não ficar vazio)
       if(parts.length === 0){
         if(kind === "plantao") return ["Plantão"];
         return ["Trabalho"];
@@ -1052,13 +1009,23 @@
     function chipClass(entry){
       if(!entry) return "chip empty";
       const k = (entry.kind || "").toLowerCase().trim();
-
       if(k === "trabalho") return "chip trabalho";
       if(k === "plantao") return "chip plantao";
       if(k === "ferias") return "chip ferias";
       if(k === "folga") return "chip folga";
       if(k === "cobertura") return "chip cobertura";
       return "chip trabalho";
+    }
+
+    function calendarValClass(entry){
+      if(!entry) return "val empty";
+      const k = (entry.kind || "").toLowerCase().trim();
+      if(k === "trabalho") return "val trabalho";
+      if(k === "plantao") return "val plantao";
+      if(k === "ferias") return "val ferias";
+      if(k === "folga") return "val folga";
+      if(k === "cobertura") return "val cobertura";
+      return "val trabalho";
     }
 
     function normalizePhoneBR(phone){
@@ -1184,12 +1151,6 @@
         && dt.getMonth() === state.selectedMonth.getMonth();
     }
 
-    /***********************
-     * Regra 7º dia (crachá vs código)
-     * - Conta dias consecutivos de "trabalho/plantao/cobertura"
-     * - Quando for o 7º consecutivo: precisa ter código (50001-50040)
-     * - Após um dia com código, a contagem "zera" (dia seguinte pode ser crachá normalmente)
-     ***********************/
     async function dbGetEntriesRange(driverId, startYmd, endYmd){
       const { data, error } = await supabase
         .from("schedule_entries")
@@ -1202,11 +1163,9 @@
     }
 
     function getEntryFromState(driverId, dateStr){
-      const e = state.entriesByDriver?.[driverId]?.[dateStr] || null;
-      return e;
+      return state.entriesByDriver?.[driverId]?.[dateStr] || null;
     }
 
-    // Busca até 8 dias para trás (pega 6 + 1 código + folga)
     async function loadBackEntriesForStreak(driverId, dateStr){
       const dt = toDate(dateStr);
       const start = dateToYmd(addDays(dt, -10));
@@ -1227,7 +1186,6 @@
       return map;
     }
 
-    // streakBefore: quantos dias consecutivos de trabalho existem imediatamente antes de dateStr
     async function computeStreakBefore(driverId, dateStr){
       const backMap = await loadBackEntriesForStreak(driverId, dateStr);
 
@@ -1235,29 +1193,18 @@
       for(let i=1; i<=12; i++){
         const prev = dateToYmd(addDays(toDate(dateStr), -i));
         const entry = getEntryFromState(driverId, prev) || backMap[prev] || null;
-
         if(!entry) break;
 
         const kind = (entry.kind || "").toLowerCase().trim();
         const code7 = entry.code7 || extractCode7FromNotes(entry.notes || "");
+        if(code7) break;
 
-        // se o dia anterior tinha código do 7º, zera sequência
-        if(code7){
-          break;
-        }
-
-        if(WORK_KINDS.has(kind)){
-          streak++;
-        }else{
-          break;
-        }
+        if(WORK_KINDS.has(kind)) streak++;
+        else break;
       }
       return streak;
     }
 
-    /***********************
-     * Status automático (somente o dia de hoje)
-     ***********************/
     function todaysYmd(){
       const now = new Date();
       return ymd(now.getFullYear(), now.getMonth()+1, now.getDate());
@@ -1276,16 +1223,13 @@
       return "Disponível";
     }
 
-    /***********************
-     * Notificação: 2 fixos mesma linha em folga no mesmo dia
-     ***********************/
     function findFixedDoubleFolgaConflicts(ymdList){
       const dates = new Set(ymdList || []);
       const fixos = state.drivers.filter(d => (d.role||"").toLowerCase().trim() === "fixo");
 
-      const conflicts = []; // {date, line, mats[]}
+      const conflicts = [];
       for(const dateStr of dates){
-        const byLine = new Map(); // line -> mats[]
+        const byLine = new Map();
         for(const f of fixos){
           const line = (f.line_default || "").trim();
           if(!line) continue;
@@ -1315,9 +1259,7 @@
       toast(msg, 6500);
     }
 
-    /***********************
-     * DOM
-     ***********************/
+    /* DOM */
     const loginView = document.getElementById("loginView");
     const appView = document.getElementById("appView");
     const loginEmail = document.getElementById("loginEmail");
@@ -1329,6 +1271,7 @@
     const monthPicker = document.getElementById("monthPicker");
     const searchMat = document.getElementById("searchMat");
     const roleFilter = document.getElementById("roleFilter");
+    const lineFilter = document.getElementById("lineFilter");
     const btnAddDriver = document.getElementById("btnAddDriver");
 
     const monthThead = document.getElementById("monthThead");
@@ -1382,9 +1325,7 @@
     let editCtx = { driverId:null, dateStr:null };
     let driverFormMode = { mode:"create", driverId:null };
 
-    /***********************
-     * DB functions
-     ***********************/
+    /* DB */
     async function dbGetDrivers(){
       const { data, error } = await supabase
         .from("drivers")
@@ -1466,9 +1407,7 @@
       if(error) throw error;
     }
 
-    /***********************
-     * Auth
-     ***********************/
+    /* Auth */
     function renderAuth(isAuthed){
       if(isAuthed){
         hide(loginView);
@@ -1518,9 +1457,7 @@
       }
     });
 
-    /***********************
-     * Filters & month
-     ***********************/
+    /* Filters & month */
     searchMat.addEventListener("input", () => {
       state.searchText = (searchMat.value || "").trim().toLowerCase();
       renderTable();
@@ -1528,6 +1465,11 @@
 
     roleFilter.addEventListener("change", () => {
       state.roleFilter = roleFilter.value;
+      renderTable();
+    });
+
+    lineFilter.addEventListener("input", () => {
+      state.lineFilterText = (lineFilter.value || "").trim().toLowerCase();
       renderTable();
     });
 
@@ -1545,9 +1487,7 @@
       }
     });
 
-    /***********************
-     * Driver modal
-     ***********************/
+    /* Driver modal */
     function openDriverModalCreate(){
       driverFormMode = { mode:"create", driverId:null };
       driverModalTitle.textContent = "Cadastrar fiscal";
@@ -1655,9 +1595,7 @@
       }
     });
 
-    /***********************
-     * Day modal
-     ***********************/
+    /* Day modal */
     function fillCode7Options(){
       const opts = [];
       opts.push(`<option value="">(selecionar)</option>`);
@@ -1674,16 +1612,14 @@
       eDriver.textContent = drv ? `${drv.mat} • ${drv.name}` : "";
       eDate.textContent = fmtNiceDate(dateStr);
 
-      // modo default: somente dia
       applySingle.checked = true;
       applyRange.checked = false;
       hide(rangeBox);
 
-      // datas do range já vêm preenchidas com o dia clicado
       eStart.value = dateStr;
       eEnd.value = dateStr;
 
-      const entry = (state.entriesByDriver[driverId] && state.entriesByDriver[driverId][dateStr]) ? state.entriesByDriver[driverId][dateStr] : null;
+      const entry = state.entriesByDriver?.[driverId]?.[dateStr] || null;
 
       const kind = entry?.kind || "trabalho";
       eKind.value = kind;
@@ -1694,7 +1630,6 @@
       const defaultPonta = normalizePonta(entry?.ponta || "") || normalizePonta(drv?.ponta_base || "");
       ePonta.value = (defaultPonta === "TP" || defaultPonta === "TS") ? defaultPonta : (defaultPonta === "Circular" ? "CIRCULAR" : "");
 
-      // code7 (se existir nesse dia)
       const code7 = entry?.code7 || extractCode7FromNotes(entry?.notes || "");
       eCode7.value = code7 || "";
 
@@ -1713,7 +1648,6 @@
       editCtx = { driverId:null, dateStr:null };
     }
 
-    // ✅ NÃO FECHA AO CLICAR FORA — só no botão "Fechar"
     btnCloseEdit.addEventListener("click", closeEdit);
 
     function syncCoverBoxVisibility(){
@@ -1761,32 +1695,6 @@
 
     btnClearCover.addEventListener("click", () => { eCoverSelect.value = ""; });
 
-    btnClearDay.addEventListener("click", async () => {
-      if(!editCtx.driverId || !editCtx.dateStr) return;
-
-      try{
-        setBusy(true);
-
-        const existing = await dbGetEntry(editCtx.driverId, editCtx.dateStr);
-        if(existing?.kind === "folga" && existing?.covered_by_driver_id){
-          await dbDeleteEntry(existing.covered_by_driver_id, editCtx.dateStr);
-        }
-
-        await dbDeleteEntry(editCtx.driverId, editCtx.dateStr);
-        closeEdit();
-        await loadMonthEntriesIntoState();
-        renderAll();
-
-        // notificação de conflito (apenas dia afetado)
-        const conflicts = findFixedDoubleFolgaConflicts([editCtx.dateStr]);
-        notifyConflicts(conflicts);
-      }catch(err){
-        alert("Erro ao limpar: " + (err?.message || err));
-      }finally{
-        setBusy(false);
-      }
-    });
-
     function buildRangeDates(startStr, endStr){
       const s = toDate(startStr);
       const e = toDate(endStr);
@@ -1802,33 +1710,23 @@
 
     async function saveOneDay({driverId, dateStr, kind, line, time_hhmm, ponta, notesClean, code7Selected, covered_by_driver_id}){
       const drv = state.drivers.find(d => d.id === driverId);
-
-      // determina se esse dia é "trabalho" (conta para regra)
       const isWorkDay = WORK_KINDS.has(String(kind||"").toLowerCase().trim());
 
       let finalNotes = notesClean || "";
-      let code7ToUse = "";
-
       if(isWorkDay){
         const streakBefore = await computeStreakBefore(driverId, dateStr);
-
-        // se é o 7º (6 antes), exige código válido
         if(streakBefore === 6){
           if(!isValidCode7(code7Selected)){
             throw new Error(`No 7º dia consecutivo (${fmtNiceDate(dateStr)}) é obrigatório escolher um código (50001–50040).`);
           }
-          code7ToUse = String(code7Selected);
-          finalNotes = addCode7Marker(finalNotes, code7ToUse);
+          finalNotes = addCode7Marker(finalNotes, String(code7Selected));
         }else{
-          // não é 7º -> garante que não fica marcador perdido
           finalNotes = removeCode7Marker(finalNotes);
         }
       }else{
-        // não é trabalho -> remove marcador
         finalNotes = removeCode7Marker(finalNotes);
       }
 
-      // 1) salva o dia do fiscal
       await dbUpsertEntry({
         driver_id: driverId,
         work_date: dateStr,
@@ -1840,7 +1738,6 @@
         ponta
       });
 
-      // 2) folga com cobridor: plantonista vira "cobertura" (interno)
       if(kind === "folga" && covered_by_driver_id){
         const coverNotes = drv ? shortPerson(drv) : null;
 
@@ -1850,7 +1747,6 @@
         else if(pb === "Circular") inheritedPonta = "Circular";
         else inheritedPonta = ponta || null;
 
-        // cobertura: NÃO precisa mostrar "Cobertura", mas internamente fica kind=cobertura
         await dbUpsertEntry({
           driver_id: covered_by_driver_id,
           work_date: dateStr,
@@ -1863,6 +1759,59 @@
         });
       }
     }
+
+    /* ✅ LIMPAR: agora limpa também intervalo */
+    btnClearDay.addEventListener("click", async () => {
+      if(!editCtx.driverId || !editCtx.dateStr) return;
+
+      try{
+        setBusy(true);
+
+        const driverId = editCtx.driverId;
+        const isRange = applyRange.checked;
+
+        let datesToClear = [editCtx.dateStr];
+        if(isRange){
+          const s = (eStart.value || "").trim();
+          const e = (eEnd.value || "").trim();
+          if(!s || !e){
+            alert("Preencha Data inicial e Data final para limpar o intervalo.");
+            return;
+          }
+          datesToClear = buildRangeDates(s, e).filter(withinSelectedMonth);
+          if(datesToClear.length === 0){
+            alert("Intervalo inválido (ou fora do mês selecionado).");
+            return;
+          }
+        }
+
+        const affected = [];
+
+        for(const dateStr of datesToClear){
+          const existing = await dbGetEntry(driverId, dateStr);
+
+          // se tinha cobridor, remove a cobertura do cobridor também
+          if(existing?.kind === "folga" && existing?.covered_by_driver_id){
+            await dbDeleteEntry(existing.covered_by_driver_id, dateStr);
+          }
+
+          await dbDeleteEntry(driverId, dateStr);
+          affected.push(dateStr);
+        }
+
+        closeEdit();
+        await loadMonthEntriesIntoState();
+        renderAll();
+
+        const conflicts = findFixedDoubleFolgaConflicts(affected);
+        notifyConflicts(conflicts);
+
+      }catch(err){
+        alert("Erro ao limpar: " + (err?.message || err));
+      }finally{
+        setBusy(false);
+      }
+    });
 
     btnSaveDay.addEventListener("click", async () => {
       if(!editCtx.driverId || !editCtx.dateStr) return;
@@ -1878,14 +1827,12 @@
         const line = (eLine.value || "").trim() || null;
         const time_hhmm = (eTime.value || "").trim() || null;
 
-        // ponta do dia: TP / TS / Circular
         let ponta = null;
         const pr = String(ePonta.value || "").trim();
         if(pr === "TP" || pr === "TS") ponta = pr;
         else if(pr === "CIRCULAR") ponta = "Circular";
         else ponta = null;
 
-        // se for fixo e não escolheu, usa ponta_base
         if(!ponta && (drv?.role || "").toLowerCase() === "fixo"){
           const pb = normalizePonta(drv?.ponta_base || "");
           if(pb === "TP" || pb === "TS") ponta = pb;
@@ -1893,8 +1840,6 @@
         }
 
         const notesClean = (eNotes.value || "").trim() || "";
-
-        // código 7º dia escolhido
         const code7Selected = (eCode7.value || "").trim();
 
         let covered_by_driver_id = null;
@@ -1902,7 +1847,6 @@
           covered_by_driver_id = eCoverSelect.value || null;
         }
 
-        // validações do modo RANGE
         const isRange = applyRange.checked;
         let datesToApply = [clickedDate];
 
@@ -1913,43 +1857,26 @@
             alert("Preencha Data inicial e Data final.");
             return;
           }
-          datesToApply = buildRangeDates(s, e);
+          datesToApply = buildRangeDates(s, e).filter(withinSelectedMonth);
           if(datesToApply.length === 0){
-            alert("Intervalo inválido.");
+            alert("Intervalo inválido (ou fora do mês selecionado).");
             return;
           }
 
-          // obrigatório escolher o código quando aplicar em vários dias e for tipo de trabalho
           if(WORK_KINDS.has(String(kind||"").toLowerCase().trim())){
             if(!isValidCode7(code7Selected)){
               alert("Para aplicar em vários dias, selecione o Código do 7º dia (50001–50040).");
               return;
             }
           }
-
-          // Cobertura (folga) em range é permitido, mas cobridor fica igual para todos
-          // (se não quiser, deixa vazio)
         }
 
-        // checa cobertura antiga APENAS no dia clicado (em range, evita apagar coisas sem querer)
-        const existingClicked = await dbGetEntry(driverId, clickedDate);
-        const previousCoveredBy = existingClicked?.covered_by_driver_id || null;
-        if(previousCoveredBy && kind !== "folga"){
-          // se estava com folga+cobridor e agora vai virar outra coisa no dia clicado, remove cobertura antiga do dia clicado
-          await dbDeleteEntry(previousCoveredBy, clickedDate);
-        }
-
-        // aplica dia a dia (sem bug: só exige código no 7º dia real)
         const affectedDates = [];
-        for(const dateStr of datesToApply){
-          // só aplica dentro do mês selecionado (evita bagunçar fora)
-          if(!withinSelectedMonth(dateStr)) continue;
 
-          // se for limpar cobertura antiga em cada dia quando muda
+        for(const dateStr of datesToApply){
           const existing = await dbGetEntry(driverId, dateStr);
           const prevCov = existing?.covered_by_driver_id || null;
 
-          // salva o dia do fiscal
           await saveOneDay({
             driverId,
             dateStr,
@@ -1962,7 +1889,6 @@
             covered_by_driver_id
           });
 
-          // remove cobertura antiga se mudou (dia a dia)
           if(prevCov && prevCov !== covered_by_driver_id){
             await dbDeleteEntry(prevCov, dateStr);
           }
@@ -1974,7 +1900,6 @@
         await loadMonthEntriesIntoState();
         renderAll();
 
-        // notificação 2 fixos mesma linha em folga (somente datas afetadas)
         const conflicts = findFixedDoubleFolgaConflicts(affectedDates);
         notifyConflicts(conflicts);
 
@@ -1985,17 +1910,13 @@
       }
     });
 
-    /***********************
-     * Drawer
-     ***********************/
+    /* Drawer */
     function openDrawer(driverId){
       state.selectedDriverId = driverId;
       const drv = state.drivers.find(d => d.id === driverId);
       if(!drv) return;
 
       dName.textContent = `${drv.mat} • ${drv.name}`;
-
-      // ✅ status automático do dia de hoje
       const meta = [
         drv.phone ? `📞 ${drv.phone}` : null,
         drv.role ? `👤 ${drv.role}` : null,
@@ -2009,7 +1930,6 @@
       drawer.classList.add("open");
       drawer.setAttribute("aria-hidden","false");
 
-      // ✅ já abre em tela cheia
       drawer.classList.add("fullscreen");
       btnFull.textContent = "🧩 Voltar";
       drawer.scrollTop = 0;
@@ -2085,11 +2005,7 @@
         }
 
         setTimeout(() => {
-          alert(
-            copied
-              ? "PNG gerado e copiado ✅"
-              : "PNG gerado ✅"
-          );
+          alert(copied ? "PNG gerado e copiado ✅" : "PNG gerado ✅");
         }, 250);
 
       }catch(e){
@@ -2100,9 +2016,7 @@
       }
     });
 
-    /***********************
-     * Rendering
-     ***********************/
+    /* Rendering */
     function ensureMonthInit(){
       if(!state.selectedMonth){
         const now = new Date();
@@ -2116,7 +2030,6 @@
       renderTable();
       if(drawer.classList.contains("open")){
         renderCalendar();
-        // atualiza status no drawer em tempo real
         if(state.selectedDriverId){
           const drv = state.drivers.find(d => d.id === state.selectedDriverId);
           if(drv){
@@ -2131,6 +2044,22 @@
           }
         }
       }
+    }
+
+    function driverMatchesLineFilter(drv, filterLower){
+      if(!filterLower) return true;
+
+      const baseLine = String(drv.line_default || "").toLowerCase();
+      if(baseLine && baseLine.includes(filterLower)) return true;
+
+      // ✅ se no mês ele tiver alguma escala com essa linha, também entra
+      const entries = state.entriesByDriver?.[drv.id] || {};
+      for(const dateStr in entries){
+        const e = entries[dateStr];
+        const l = String(e?.line || "").toLowerCase();
+        if(l && l.includes(filterLower)) return true;
+      }
+      return false;
     }
 
     function renderTable(){
@@ -2150,6 +2079,8 @@
       th.push(`</tr>`);
       monthThead.innerHTML = th.join("");
 
+      const filterLineLower = (state.lineFilterText || "").trim().toLowerCase();
+
       const filtered = state.drivers
         .slice()
         .sort((a,b)=> (a.mat||"").localeCompare(b.mat||"", "pt-BR", {numeric:true}))
@@ -2163,6 +2094,7 @@
             const name = (d.name || "").toLowerCase();
             if(!mat.includes(state.searchText) && !name.includes(state.searchText)) return false;
           }
+          if(!driverMatchesLineFilter(d, filterLineLower)) return false;
           return true;
         });
 
@@ -2194,10 +2126,10 @@
 
         for(let d=1; d<=nDays; d++){
           const dateStr = ymd(y,m,d);
-          const entry = state.entriesByDriver[drv.id]?.[dateStr] || null;
+          const entry = state.entriesByDriver?.[drv.id]?.[dateStr] || null;
 
           const cls = chipClass(entry);
-          const lines = entry ? entryToLines(entry, {hideCoverInfo:false}) : ["—"];
+          const lines = entry ? entryToLines(entry) : ["—"];
           const html = entry ? linesToHtml(lines) : "—";
 
           rows.push(`
@@ -2232,10 +2164,10 @@
 
       const monthDate = state.selectedMonth;
       const y = monthDate.getFullYear();
-      const m = monthDate.getMonth()+1;
+      const mm = monthDate.getMonth()+1;
       const nDays = daysInMonth(monthDate);
 
-      const firstDow = new Date(y, m-1, 1).getDay();
+      const firstDow = new Date(y, mm-1, 1).getDay();
       const cells = [];
 
       for(let i=0; i<firstDow; i++){
@@ -2243,18 +2175,18 @@
       }
 
       for(let d=1; d<=nDays; d++){
-        const dateStr = ymd(y,m,d);
-        const entry = state.entriesByDriver[id]?.[dateStr] || null;
+        const dateStr = ymd(y,mm,d);
+        const entry = state.entriesByDriver?.[id]?.[dateStr] || null;
 
-        const lines = entry ? entryToLines(entry, {hideCoverInfo:true}) : ["Disponível"];
+        const lines = entry ? entryToLines(entry) : ["Disponível"];
         const labelHtml = linesToHtml(lines);
-        const isEmpty = !entry;
-        const cls = isEmpty ? "empty" : "";
+
+        const valCls = calendarValClass(entry);
 
         cells.push(`
           <div class="day" data-editcal="${dateStr}">
             <div class="num">${pad2(d)}</div>
-            <div class="val ${cls}">${labelHtml}</div>
+            <div class="${valCls}">${labelHtml}</div>
           </div>
         `);
       }
@@ -2272,17 +2204,13 @@
       });
     }
 
-    /***********************
-     * Load data
-     ***********************/
+    /* Load data */
     async function loadMonthEntriesIntoState(){
       ensureMonthInit();
       const entries = await dbGetEntriesForMonth(state.selectedMonth);
 
       const map = {};
-      for(const d of state.drivers){
-        map[d.id] = {};
-      }
+      for(const d of state.drivers) map[d.id] = {};
 
       for(const it of entries){
         if(!map[it.driver_id]) map[it.driver_id] = {};
@@ -2316,9 +2244,7 @@
       }
     }
 
-    /***********************
-     * Init
-     ***********************/
+    /* Init */
     (async function init(){
       loginEmail.value = ADMIN_EMAIL;
       roleFilter.value = state.roleFilter;
@@ -2337,7 +2263,9 @@
       }
     })();
 
+    /* Drawer actions */
     btnCloseDrawer.addEventListener("click", closeDrawer);
+    btnWhats.addEventListener("click", async () => {});
   </script>
 </body>
 </html>
