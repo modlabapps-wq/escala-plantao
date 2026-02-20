@@ -52,6 +52,8 @@
 
       --chip-cobertura-bg: rgba(255, 47, 93, .12);
       --chip-cobertura-bd: rgba(255, 47, 93, .55);
+
+      --toast:#0b1a10;
     }
 
     *{ box-sizing: border-box; }
@@ -88,10 +90,11 @@
       filter: blur(.2px);
     }
 
+    /* ✅ MAIS LARGO */
     .wrap{
-      max-width: 1400px;
+      max-width: 1760px;
       margin: 0 auto;
-      padding: 18px 14px 28px;
+      padding: 18px 16px 30px;
       min-height: 100vh;
     }
 
@@ -220,7 +223,7 @@
       border-collapse: separate;
       border-spacing: 0;
       width: 100%;
-      min-width: 1060px;
+      min-width: 1180px;
       font-size: 12.5px;
     }
     thead th{
@@ -239,7 +242,7 @@
     tbody td{
       border-bottom: 1px solid rgba(0,0,0,.06);
       padding: 8px 10px;
-      vertical-align: middle;
+      vertical-align: top;
       white-space:nowrap;
     }
     tbody tr:hover{ background: rgba(0,214,122,.06); }
@@ -251,7 +254,6 @@
       z-index: 1;
       background: rgba(244,255,248,.98);
       border-right:1px solid rgba(0,0,0,.10);
-      white-space: normal;
     }
     thead .col-driver{ z-index: 3; border-right:1px solid rgba(0,0,0,.12); }
 
@@ -263,8 +265,6 @@
       gap: 8px;
       color: var(--muted);
       font-size: 12px;
-      white-space: normal;
-      line-height: 1.25;
     }
     .kbd{
       font-family: var(--mono);
@@ -273,12 +273,9 @@
       border:1px solid rgba(0,0,0,.10);
       background: rgba(255,255,255,.78);
       color: var(--text);
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
     }
 
-    /* ✅ CHIPS: agora com quebra de linha (um embaixo do outro) */
+    /* ✅ CHIP MULTILINHA */
     .chip{
       display:inline-flex;
       align-items:flex-start;
@@ -287,20 +284,18 @@
       padding: 6px 8px;
       border:1px solid rgba(0,0,0,.10);
       background: rgba(255,255,255,.80);
-      min-width: 70px;
+      min-width: 84px;
       cursor:pointer;
       user-select:none;
       transition: transform .06s ease, filter .15s ease;
+      max-width: 210px;
       font-weight: 900;
       letter-spacing: .1px;
-
-      /* quebra */
-      white-space: pre-line;   /* interpreta \n */
-      max-width: 220px;
       line-height: 1.15;
-      overflow: hidden;        /* mantém “limpo” */
-      text-overflow: clip;
+      white-space: normal;
+      word-break: break-word;
     }
+    .chip .chipText{ display:block; white-space: normal; }
     .chip:hover{ filter: brightness(1.01); }
     .chip:active{ transform: translateY(1px); }
 
@@ -309,7 +304,6 @@
       border-style:dashed;
       background: rgba(255,255,255,.55);
       font-weight: 800;
-      white-space: nowrap;
     }
     .chip.trabalho{
       border-color: var(--chip-trabalho-bd);
@@ -341,7 +335,7 @@
     .drawer{
       position: fixed;
       top:0; right:0;
-      width: min(660px, 96vw);
+      width: min(720px, 96vw);
       height: 100%;
       background: linear-gradient(180deg, rgba(252,255,252,.98), rgba(244,255,248,.96));
       border-left: 1px solid rgba(0,0,0,.10);
@@ -358,7 +352,7 @@
     .drawer.fullscreen{
       right: 50%;
       transform: translateX(50%);
-      width: min(1180px, 98vw);
+      width: min(1320px, 98vw);
       border-left: 1px solid rgba(0,0,0,.10);
       border-radius: 18px;
       top: 12px;
@@ -411,7 +405,7 @@
       grid-template-columns: repeat(7,1fr);
     }
     .day{
-      min-height: 104px;
+      min-height: 110px;
       border-right:1px solid rgba(0,0,0,.06);
       border-bottom:1px solid rgba(0,0,0,.06);
       padding: 10px 10px;
@@ -429,29 +423,25 @@
       color: var(--muted2);
       font-weight: 900;
     }
+    /* ✅ VAL MULTILINHA */
     .day .val{
-      display:inline-flex;
-      align-self:flex-start;
+      display:block;
+      align-self:stretch;
       border-radius: 10px;
       padding: 7px 9px;
       border:1px solid rgba(0,0,0,.10);
       background: rgba(255,255,255,.86);
       font-size: 12.5px;
-      max-width: 100%;
-      overflow:hidden;
-      text-overflow: clip;
-
-      /* ✅ quebra de linha também no calendário */
-      white-space: pre-line;
-      line-height: 1.15;
       font-weight: 900;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.15;
     }
     .day .val.empty{
       border-style:dashed;
       background: rgba(255,255,255,.66);
       color: rgba(11,26,16,.40);
       font-weight: 800;
-      white-space: nowrap;
     }
     .day:hover{ background: rgba(0,214,122,.08); }
     .day.muted{ opacity:.35; cursor: default; background: transparent; }
@@ -494,7 +484,7 @@
     }
     .overlay.show{ display:flex; }
     .modal{
-      width: min(720px, 96vw);
+      width: min(760px, 96vw);
       border-radius: 18px;
       border:1px solid rgba(0,0,0,.14);
       background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(245,255,250,.96));
@@ -549,12 +539,26 @@
       line-height: 1.35;
     }
 
-    .mini-note{
-      font-size: 12px;
-      color: rgba(11,26,16,.78);
-      margin-top: 6px;
-      line-height: 1.25;
+    /* Toast simples */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(0,0,0,.14);
+      box-shadow: 0 14px 34px rgba(0,0,0,.16);
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: var(--toast);
+      font-weight: 900;
+      font-size: 12.5px;
+      display:none;
+      max-width: min(980px, 92vw);
+      backdrop-filter: blur(10px);
+      z-index: 999;
     }
+    .toast.show{ display:block; }
 
     /* Login */
     .login{
@@ -606,17 +610,16 @@
       .row{ grid-template-columns: 1fr; }
       .row3{ grid-template-columns: 1fr; }
       .input{ min-width: 180px; }
-      table{ min-width: 980px; }
+      table{ min-width: 1080px; }
       .drawer{ width: 96vw; }
-      .day{ min-height: 92px; }
-      .chip{ max-width: 200px; }
+      .day{ min-height: 100px; }
       .col-driver{ min-width: 380px; }
     }
 
     /* Impressão (PDF via navegador) */
     @media print{
       body{ background:#fff !important; }
-      .neon-ring, .topbar, .help, .btn, .actions, .pill, #drawer, #loginView{ display:none !important; }
+      .neon-ring, .topbar, .help, .btn, .actions, .pill, #drawer, #loginView, #toast{ display:none !important; }
       #appView{ display:block !important; }
       .wrap{ max-width: 100% !important; padding: 0 !important; }
       .card{ box-shadow:none !important; }
@@ -628,6 +631,8 @@
 
 <body>
   <div class="neon-ring" aria-hidden="true"></div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- LOGIN (Supabase Auth) -->
   <section id="loginView" class="login">
@@ -652,9 +657,6 @@
           </div>
         </div>
         <div id="loginErr" class="err">Email ou senha inválidos.</div>
-        <div class="help">
-          ✅ Somente o admin acessa os dados (RLS + Policy).
-        </div>
       </div>
 
       <div class="login-actions">
@@ -671,7 +673,7 @@
           <div class="dot" aria-hidden="true"></div>
           <div>
             <h1>Escala • Fiscais</h1>
-            <span>Fixos + Plantonistas • Coberturas • Exportação</span>
+            <span>Fixos + Plantonistas</span>
           </div>
         </div>
 
@@ -695,10 +697,6 @@
             <input id="searchMat" class="input" placeholder="matrícula ou nome" style="min-width:240px"/>
           </div>
 
-          <button id="btnGoToday" class="btn primary">📅 Ir para HOJE</button>
-
-          <button id="btnExportExcel" class="btn green">📗 Exportar Excel (CSV)</button>
-
           <button id="btnAddDriver" class="btn green">+ Cadastrar fiscal</button>
           <button id="btnLogout" class="btn danger">Sair</button>
         </div>
@@ -707,10 +705,7 @@
       <div class="grid">
         <section class="card">
           <div class="head">
-            <h2>Visualização 1 • Lista do mês (todos os fiscais)</h2>
-            <div class="muted" style="font-size:12px;">
-              Clique no <b>nome</b> → calendário • clique em um <b>dia</b> → editar (tipo, linha, hora, TP/TS/Circular, regra do 7º dia)
-            </div>
+            <h2>Lista do mês</h2>
           </div>
           <div class="body">
             <div class="table-wrap">
@@ -721,11 +716,6 @@
             </div>
           </div>
         </section>
-      </div>
-
-      <div class="muted" style="margin-top:10px;font-size:12px;">
-        ✅ Dados salvos no Supabase (nuvem). Exportação: Excel (CSV).<br/>
-        ✅ Regra: <b>máximo 6 dias seguidos no crachá</b>; no <b>7º dia</b> precisa <b>código 50001–50040</b>.
       </div>
     </div>
   </main>
@@ -739,7 +729,7 @@
       </div>
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
         <button id="btnWhats" class="btn primary">📲 Baixar calendário (PNG)</button>
-        <button id="btnFull" class="btn purple">🖥️ Tela cheia</button>
+        <button id="btnFull" class="btn purple">🧩 Voltar</button>
         <button id="btnEditDriver" class="btn green">✏️ Editar</button>
         <button id="btnRemoveDriver" class="btn danger">Remover</button>
         <button id="btnCloseDrawer" class="btn">Fechar</button>
@@ -751,8 +741,7 @@
       <div id="calCapture">
         <div class="card" style="border-radius:16px; margin-bottom:12px;">
           <div class="head">
-            <h2>Visualização 2 • Calendário do mês</h2>
-            <div class="muted" style="font-size:12px;">Clique em um dia para editar</div>
+            <h2>Calendário do mês</h2>
           </div>
           <div class="body">
             <div class="calendar">
@@ -761,18 +750,8 @@
               </div>
               <div id="calGrid" class="cal-grid"></div>
             </div>
-
-            <div class="help">
-              Tipos: <b>Trabalho</b>, <b>Plantão</b>, <b>Férias</b>, <b>Folga</b>, <b>Cobertura</b>.
-              <br/>Formato recomendado (quebra automática): linha • hora • TP/TS/Circular • (se 7º dia) código 50001–50040
-            </div>
           </div>
         </div>
-      </div>
-
-      <div class="help" style="margin-top:10px;">
-        ✅ PNG do calendário sai com cores bem visíveis e sem cortar (modo “captura”).<br/>
-        👉 Observação: no PNG <b>não aparece</b> “quem cobriu” (controle interno).
       </div>
     </div>
   </aside>
@@ -813,7 +792,6 @@
             <input id="inLine" class="input" placeholder="ex: 3013-10" />
           </div>
 
-          <!-- ✅ TP/TS/Circular do FIXO -->
           <div>
             <label>TP / TS / Circular (local do fixo)</label>
             <select id="inPontaBase" class="select">
@@ -824,11 +802,6 @@
             </select>
           </div>
         </div>
-
-        <div class="help">
-          ✅ Fixos: preencha a <b>linha fixa</b> e (se quiser) <b>TP/TS/Circular</b>. Plantonistas: pode deixar vazio.<br/>
-          ✅ <b>Status</b> agora é <b>automático</b> (de acordo com o dia de hoje na escala).
-        </div>
       </div>
       <div class="m-actions">
         <button id="btnSaveDriver" class="btn green">Salvar</button>
@@ -836,46 +809,50 @@
     </div>
   </div>
 
-  <!-- MODAL: Edit Day -->
+  <!-- MODAL: Edit Day / Range -->
   <div id="editOverlay" class="overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="m-head">
-        <h3>Editar dia</h3>
+        <h3>Editar</h3>
         <button id="btnCloseEdit" class="btn">Fechar</button>
       </div>
+
       <div class="m-body">
         <div class="muted" style="font-size:12px; margin-bottom:10px;">
-          Fiscal: <b id="eDriver"></b><br/>
-          Dia selecionado: <b id="eDate"></b>
+          <b id="eDriver"></b><br/>
+          <b id="eDate"></b>
         </div>
 
-        <!-- ✅ NOVO: aplicar só no dia / ou intervalo -->
+        <!-- ✅ Somente este dia OU intervalo -->
         <div class="row">
           <div class="full">
-            <label>Aplicação</label>
+            <label>Aplicar em</label>
             <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-              <label style="margin:0; font-weight:900; color:rgba(11,26,16,.80); display:flex; gap:8px; align-items:center;">
+              <label style="margin:0; font-weight:900; color:var(--text); display:flex; gap:8px; align-items:center;">
                 <input type="radio" name="applyMode" id="applySingle" checked />
                 Somente este dia
               </label>
-              <label style="margin:0; font-weight:900; color:rgba(11,26,16,.80); display:flex; gap:8px; align-items:center;">
+
+              <label style="margin:0; font-weight:900; color:var(--text); display:flex; gap:8px; align-items:center;">
                 <input type="radio" name="applyMode" id="applyRange" />
-                Intervalo (data inicial e final)
+                Data inicial e final
               </label>
-              <button id="btnUseTodayRange" class="btn" type="button">Usar HOJE</button>
             </div>
-            <div id="rangeBox" class="row" style="margin-top:10px; display:none;">
-              <div>
-                <label>Data inicial</label>
-                <input id="rangeStart" class="input" type="date" />
-              </div>
-              <div>
-                <label>Data final</label>
-                <input id="rangeEnd" class="input" type="date" />
-              </div>
-              <div class="full mini-note">
-                ⚠️ Ao salvar em intervalo, a regra do <b>7º dia</b> é verificada <b>dia a dia</b> dentro do intervalo.
-              </div>
+          </div>
+        </div>
+
+        <div id="rangeBox" class="row hidden">
+          <div>
+            <label>Data inicial</label>
+            <input id="eStart" class="input" type="date" />
+          </div>
+          <div>
+            <label>Data final</label>
+            <input id="eEnd" class="input" type="date" />
+          </div>
+          <div class="full">
+            <div class="muted" style="font-size:12px;">
+              Para aplicar em vários dias, selecione o <b>Código do 7º dia</b> (50001–50040). Ele aparecerá somente no 7º dia.
             </div>
           </div>
         </div>
@@ -902,7 +879,6 @@
             <input id="eTime" class="input" placeholder="ex: 14:00" />
           </div>
 
-          <!-- ✅ TP/TS/Circular do DIA -->
           <div>
             <label>TP / TS / Circular</label>
             <select id="ePonta" class="select">
@@ -913,18 +889,19 @@
             </select>
           </div>
 
-          <!-- ✅ NOVO: CÓDIGO do 7º dia (50001–50040) -->
-          <div id="code7Box">
-            <label>Código (somente no 7º dia)</label>
-            <select id="eCode7" class="select"></select>
-            <div id="code7Hint" class="mini-note"></div>
+          <!-- ✅ Código do 7º dia -->
+          <div>
+            <label>Código do 7º dia</label>
+            <select id="eCode7" class="select">
+              <option value="">(selecionar)</option>
+            </select>
           </div>
 
           <div class="full" id="coverBox" style="display:none;">
             <label>Quem irá cobrir (somente plantonistas)</label>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
               <select id="eCoverSelect" class="select" style="min-width: 330px;"></select>
-              <button id="btnClearCover" class="btn">Limpar cobertura</button>
+              <button id="btnClearCover" class="btn">Limpar</button>
             </div>
           </div>
 
@@ -933,12 +910,8 @@
             <input id="eNotes" class="input" placeholder="ex: troca / ajuste / motivo" />
           </div>
         </div>
-
-        <div class="help">
-          ✅ <b>Regra essencial:</b> não pode ter <b>7 dias seguidos no crachá</b>. No <b>7º dia trabalhado</b>, selecione o <b>código 50001–50040</b>.<br/>
-          ✅ Cobertura: na lista e calendário <b>não aparece</b> a palavra “Cobertura” (fica só linha/hora/TP…); internamente o sistema ainda controla.
-        </div>
       </div>
+
       <div class="m-actions">
         <button id="btnClearDay" class="btn">Limpar</button>
         <button id="btnSaveDay" class="btn primary">Salvar</button>
@@ -965,7 +938,7 @@
      ***********************/
     let state = {
       drivers: [],
-      // entriesByDriver[driverId][yyyy-mm-dd] = {kind,line,time,ponta,covered_by_driver_id,notes}
+      // entriesByDriver[driverId][yyyy-mm-dd] = {kind,line,time_hhmm,ponta,covered_by_driver_id,notes,code7}
       entriesByDriver: {},
       selectedMonth: null,
       selectedDriverId: null,
@@ -987,6 +960,10 @@
     };
     const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
     const dowShort = ["DOM","SEG","TER","QUA","QUI","SEX","SAB"];
+
+    const WORK_KINDS = new Set(["trabalho","plantao","cobertura"]); // conta como "trabalhou"
+    const CODE7_MIN = 50001;
+    const CODE7_MAX = 50040;
 
     function escapeHtml(str){
       return String(str || "")
@@ -1010,202 +987,66 @@
       return `${drv.mat} ${firstName(drv.name)}`.trim();
     }
 
-    function todayYMD(){
-      const now = new Date();
-      return ymd(now.getFullYear(), now.getMonth()+1, now.getDate());
-    }
-
-    function dateToYMD(dateObj){
-      return ymd(dateObj.getFullYear(), dateObj.getMonth()+1, dateObj.getDate());
-    }
-
-    function ymdToDate(s){
-      const [y,m,d] = String(s).split("-").map(Number);
-      return new Date(y, m-1, d);
-    }
-
-    function clampToMonth(dateObj, monthDate){
-      const y = monthDate.getFullYear();
-      const m = monthDate.getMonth();
-      if(dateObj.getFullYear() !== y || dateObj.getMonth() !== m){
-        return new Date(y, m, 1);
-      }
-      return dateObj;
-    }
-
-    // ✅ agora aceita: TP, TS, CIRCULAR (e mostra Circular)
+    // aceita: TP, TS, CIRCULAR (e mostra Circular)
     function normalizePonta(p){
       const raw = String(p || "").trim();
       const v = raw.toUpperCase();
       if(v === "TP" || v === "TS") return v;
       if(v === "CIRCULAR" || v === "CIRC") return "Circular";
-      if(v === "CIRCULAR " ) return "Circular";
       if(raw.toLowerCase() === "circular") return "Circular";
       return "";
     }
 
-    // ✅ código do 7º dia guardado em notes (sem mudar banco):
-    // formato: "COD7:50002" (ou "COD7:50002 • obs...")
-    function extractCod7(notes){
-      const s = String(notes || "").trim();
-      if(!s) return "";
-      const m = s.match(/(?:^|\s)COD7:(500\d{2})(?:\b|$)/i);
-      return m ? m[1] : "";
+    // ✅ código 7º dia armazenado dentro de notes como marcador: [C7:50002]
+    function extractCode7FromNotes(notes){
+      const s = String(notes || "");
+      const m = s.match(/\[C7:(\d{5})\]/);
+      if(!m) return "";
+      const n = Number(m[1]);
+      if(Number.isFinite(n) && n>=CODE7_MIN && n<=CODE7_MAX) return String(n);
+      return "";
     }
-    function stripCod7(notes){
-      const s = String(notes || "").trim();
-      if(!s) return "";
-      // remove "COD7:50002" e também remove "•" sobrando
-      return s
-        .replace(/(?:^|\s)COD7:500\d{2}\s*/ig, "")
-        .replace(/^•\s*/,"")
-        .replace(/\s*•\s*$/,"")
-        .trim();
+    function removeCode7Marker(notes){
+      return String(notes || "").replace(/\s*\[C7:\d{5}\]\s*/g, " ").replace(/\s{2,}/g," ").trim();
     }
-    function buildNotesWithCod7(cod7, obs){
-      const o = String(obs || "").trim();
-      const c = String(cod7 || "").trim();
-      if(c && o) return `COD7:${c} • ${o}`;
-      if(c) return `COD7:${c}`;
-      return o || null;
+    function addCode7Marker(notes, code){
+      const clean = removeCode7Marker(notes);
+      if(!code) return clean || "";
+      return `${(clean||"").trim()}${clean ? " " : ""}[C7:${code}]`.trim();
     }
 
-    function isWorkKind(kind){
-      const k = String(kind || "").toLowerCase().trim();
-      return (k === "trabalho" || k === "plantao" || k === "cobertura");
-    }
-
-    // streak de dias trabalhados (consecutivos) TERMINANDO em dateStr,
-    // considerando trabalho/plantao/cobertura como "trabalhou"
-    function workStreakEndingAt(driverId, dateStr, localMap){
-      const map = localMap || state.entriesByDriver;
-      let streak = 0;
-      let dt = ymdToDate(dateStr);
-
-      // anda para trás contando dias úteis consecutivos
-      while(true){
-        const s = dateToYMD(dt);
-        const e = map?.[driverId]?.[s] || null;
-        if(e && isWorkKind(e.kind)){
-          streak++;
-          dt.setDate(dt.getDate()-1);
-          continue;
-        }
-        break;
-      }
-      return streak;
-    }
-
-    // regra do 7º dia:
-    // se o dia é trabalho/plantao/cobertura e vira 7º consecutivo, exige COD7 50001–50040
-    function validate7thDayRule(driverId, dateStr, newKind, newNotes, localMap){
-      const map = localMap || state.entriesByDriver;
-      const kind = String(newKind || "").toLowerCase().trim();
-      const cod7 = extractCod7(newNotes);
-
-      if(!isWorkKind(kind)){
-        // se não é dia trabalhado, não pode carregar COD7
-        if(cod7) return { ok:false, msg:`Regra 7º dia: código só pode existir em dia trabalhado. Remova o código (${cod7}) neste dia.` };
-        return { ok:true };
-      }
-
-      // streak incluindo este dia (considerando ele como trabalhado)
-      // calculamos streak anterior (até ontem) + 1
-      const dt = ymdToDate(dateStr);
-      const yesterday = new Date(dt);
-      yesterday.setDate(yesterday.getDate()-1);
-      const yStr = dateToYMD(yesterday);
-
-      const prevStreak = workStreakEndingAt(driverId, yStr, map);
-      const newStreak = prevStreak + 1;
-
-      if(newStreak === 7){
-        if(!cod7){
-          return { ok:false, msg:`Regra 7º dia: este é o 7º dia consecutivo trabalhado. Selecione um código 50001–50040.` };
-        }
-        const num = Number(cod7);
-        if(!(num >= 50001 && num <= 50040)){
-          return { ok:false, msg:`Regra 7º dia: código inválido (${cod7}). Use 50001 até 50040.` };
-        }
-        return { ok:true };
-      }
-
-      // não é 7º: não permite COD7
-      if(cod7){
-        return { ok:false, msg:`Regra 7º dia: código 50001–50040 só pode ser usado no 7º dia consecutivo. Remova o código (${cod7}) deste dia.` };
-      }
-
-      // se newStreak >= 8, significa que o 7º deveria ter sido cod7, mas aqui já passou sem.
-      // porém isso só acontece se o 7º anterior já tinha validado; ainda assim, garantimos:
-      if(newStreak >= 8){
-        // Ok, desde que o dia 7 (dateStr - (newStreak-7)) tenha COD7.
-        const day7 = new Date(dt);
-        day7.setDate(day7.getDate() - (newStreak - 7));
-        const day7Str = dateToYMD(day7);
-        const e7 = map?.[driverId]?.[day7Str] || null;
-        const cod7at7 = extractCod7(e7?.notes || "");
-        if(!cod7at7){
-          return { ok:false, msg:`Regra 7º dia: você está criando uma sequência de ${newStreak} dias sem código no 7º. Corrija o dia ${fmtNiceDate(day7Str)} com um código 50001–50040.` };
-        }
-      }
-
-      return { ok:true };
-    }
-
-    function entryToLines(entry, hideCoverInfo=false){
+    function entryToLines(entry, opts={ hideCoverInfo:false }){
       if(!entry) return [];
 
-      const kind = entry.kind || "trabalho";
+      const kind = (entry.kind || "trabalho").toLowerCase().trim();
       const line = (entry.line || "").trim();
       const time = (entry.time_hhmm || "").trim();
       const ponta = normalizePonta(entry.ponta || "");
-
-      // notes pode conter COD7 e/ou OBS
-      const cod7 = extractCod7(entry.notes || "");
-      const obs = stripCod7(entry.notes || "");
+      const code7 = entry.code7 || extractCode7FromNotes(entry.notes || "");
 
       if(kind === "folga") return ["Folga"];
       if(kind === "ferias") return ["Férias"];
 
-      // ✅ Cobertura NÃO mostra a palavra "Cobertura"
-      // (mas pode mostrar quem cobriu na lista, e esconder no calendário/PNG)
-      if(kind === "cobertura"){
-        const parts = [];
-        if(line) parts.push(line);
-        if(time) parts.push(time);
-        if(ponta) parts.push(ponta);
-
-        // quem cobriu fica em notes (shortPerson do fixo). No calendário/PNG: ocultar.
-        if(obs && !hideCoverInfo) parts.push(obs);
-        return parts.length ? parts : ["Trabalho"];
-      }
-
-      if(kind === "plantao"){
-        const parts = [];
-        // ✅ Plantão fica explícito (você não pediu para esconder)
-        parts.push("Plantão");
-        if(line) parts.push(line);
-        if(time) parts.push(time);
-        if(ponta) parts.push(ponta);
-        if(cod7) parts.push(cod7);
-        if(obs) parts.push(obs);
-        return parts;
-      }
-
-      // trabalho
+      // ✅ Cobertura NÃO aparece como texto; vira igual "trabalho" (linha/hora/TP...)
       const parts = [];
       if(line) parts.push(line);
       if(time) parts.push(time);
       if(ponta) parts.push(ponta);
-      if(cod7) parts.push(cod7);
-      if(obs) parts.push(obs);
-      return parts.length ? parts : ["Trabalho"];
+
+      // ✅ 7º dia: mostra o código
+      if(code7) parts.push(code7);
+
+      // se não tem nada, mostra "Trabalho" ou "Plantão" (apenas para não ficar vazio)
+      if(parts.length === 0){
+        if(kind === "plantao") return ["Plantão"];
+        return ["Trabalho"];
+      }
+      return parts;
     }
 
-    function entryToLabel(entry, hideCoverInfo=false){
-      // ✅ agora retorna com \n (quebra de linha)
-      const lines = entryToLines(entry, hideCoverInfo);
-      return lines.join("\n");
+    function linesToHtml(lines){
+      if(!lines || !lines.length) return "";
+      return lines.map(x => escapeHtml(x)).join("<br/>");
     }
 
     function chipClass(entry){
@@ -1291,6 +1132,14 @@
     function show(el){ el.classList.remove("hidden"); }
     function hide(el){ el.classList.add("hidden"); }
 
+    function toast(msg, ms=4200){
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(()=> t.classList.remove("show"), ms);
+    }
+
     function setBusy(v){
       isBusy = v;
       btnLogin.disabled = v;
@@ -1301,9 +1150,169 @@
       btnClearDay.disabled = v;
       btnRemoveDriver.disabled = v;
       btnWhats.disabled = v;
-      btnExportExcel.disabled = v;
       btnEditDriver.disabled = v;
-      btnGoToday.disabled = v;
+      btnCloseEdit.disabled = v;
+      btnCloseAdd.disabled = v;
+    }
+
+    function isValidCode7(code){
+      const n = Number(code);
+      return Number.isFinite(n) && n>=CODE7_MIN && n<=CODE7_MAX;
+    }
+
+    function dateToYmd(d){
+      const y = d.getFullYear();
+      const m = d.getMonth()+1;
+      const day = d.getDate();
+      return ymd(y,m,day);
+    }
+
+    function addDays(date, n){
+      const d = new Date(date);
+      d.setDate(d.getDate()+n);
+      return d;
+    }
+
+    function toDate(ymdStr){
+      const [y,m,d] = ymdStr.split("-").map(Number);
+      return new Date(y, m-1, d);
+    }
+
+    function withinSelectedMonth(ymdStr){
+      const dt = toDate(ymdStr);
+      return dt.getFullYear() === state.selectedMonth.getFullYear()
+        && dt.getMonth() === state.selectedMonth.getMonth();
+    }
+
+    /***********************
+     * Regra 7º dia (crachá vs código)
+     * - Conta dias consecutivos de "trabalho/plantao/cobertura"
+     * - Quando for o 7º consecutivo: precisa ter código (50001-50040)
+     * - Após um dia com código, a contagem "zera" (dia seguinte pode ser crachá normalmente)
+     ***********************/
+    async function dbGetEntriesRange(driverId, startYmd, endYmd){
+      const { data, error } = await supabase
+        .from("schedule_entries")
+        .select("id,driver_id,work_date,kind,line,time_hhmm,covered_by_driver_id,notes,ponta")
+        .eq("driver_id", driverId)
+        .gte("work_date", startYmd)
+        .lte("work_date", endYmd);
+      if(error) throw error;
+      return data || [];
+    }
+
+    function getEntryFromState(driverId, dateStr){
+      const e = state.entriesByDriver?.[driverId]?.[dateStr] || null;
+      return e;
+    }
+
+    // Busca até 8 dias para trás (pega 6 + 1 código + folga)
+    async function loadBackEntriesForStreak(driverId, dateStr){
+      const dt = toDate(dateStr);
+      const start = dateToYmd(addDays(dt, -10));
+      const end = dateToYmd(addDays(dt, -1));
+      const rows = await dbGetEntriesRange(driverId, start, end);
+      const map = {};
+      for(const r of rows){
+        map[r.work_date] = {
+          kind: r.kind || "trabalho",
+          line: r.line || "",
+          time_hhmm: r.time_hhmm || "",
+          ponta: r.ponta || "",
+          covered_by_driver_id: r.covered_by_driver_id || null,
+          notes: r.notes || "",
+          code7: extractCode7FromNotes(r.notes || "")
+        };
+      }
+      return map;
+    }
+
+    // streakBefore: quantos dias consecutivos de trabalho existem imediatamente antes de dateStr
+    async function computeStreakBefore(driverId, dateStr){
+      const backMap = await loadBackEntriesForStreak(driverId, dateStr);
+
+      let streak = 0;
+      for(let i=1; i<=12; i++){
+        const prev = dateToYmd(addDays(toDate(dateStr), -i));
+        const entry = getEntryFromState(driverId, prev) || backMap[prev] || null;
+
+        if(!entry) break;
+
+        const kind = (entry.kind || "").toLowerCase().trim();
+        const code7 = entry.code7 || extractCode7FromNotes(entry.notes || "");
+
+        // se o dia anterior tinha código do 7º, zera sequência
+        if(code7){
+          break;
+        }
+
+        if(WORK_KINDS.has(kind)){
+          streak++;
+        }else{
+          break;
+        }
+      }
+      return streak;
+    }
+
+    /***********************
+     * Status automático (somente o dia de hoje)
+     ***********************/
+    function todaysYmd(){
+      const now = new Date();
+      return ymd(now.getFullYear(), now.getMonth()+1, now.getDate());
+    }
+
+    function statusForDriverToday(driverId){
+      const today = todaysYmd();
+      const entry = state.entriesByDriver?.[driverId]?.[today] || null;
+      if(!entry) return "Disponível";
+      const k = (entry.kind || "").toLowerCase().trim();
+      if(k === "trabalho") return "Trabalhando";
+      if(k === "plantao") return "Plantão";
+      if(k === "ferias") return "Férias";
+      if(k === "folga") return "Folga";
+      if(k === "cobertura") return "Trabalhando";
+      return "Disponível";
+    }
+
+    /***********************
+     * Notificação: 2 fixos mesma linha em folga no mesmo dia
+     ***********************/
+    function findFixedDoubleFolgaConflicts(ymdList){
+      const dates = new Set(ymdList || []);
+      const fixos = state.drivers.filter(d => (d.role||"").toLowerCase().trim() === "fixo");
+
+      const conflicts = []; // {date, line, mats[]}
+      for(const dateStr of dates){
+        const byLine = new Map(); // line -> mats[]
+        for(const f of fixos){
+          const line = (f.line_default || "").trim();
+          if(!line) continue;
+          const e = state.entriesByDriver?.[f.id]?.[dateStr] || null;
+          const k = (e?.kind || "").toLowerCase().trim();
+          if(k !== "folga") continue;
+
+          if(!byLine.has(line)) byLine.set(line, []);
+          byLine.get(line).push(f.mat || "");
+        }
+        for(const [line, mats] of byLine.entries()){
+          if(mats.length >= 2){
+            conflicts.push({ date: dateStr, line, mats: mats.filter(Boolean) });
+          }
+        }
+      }
+      return conflicts;
+    }
+
+    function notifyConflicts(conflicts){
+      if(!conflicts.length) return;
+      const first = conflicts[0];
+      const msg =
+        conflicts.length === 1
+          ? `Atenção: 2 fixos da linha ${first.line} estão de folga em ${fmtNiceDate(first.date)} (${first.mats.join(", ")}).`
+          : `Atenção: existem ${conflicts.length} casos de 2 fixos da mesma linha em folga no mesmo dia.`;
+      toast(msg, 6500);
     }
 
     /***********************
@@ -1321,8 +1330,6 @@
     const searchMat = document.getElementById("searchMat");
     const roleFilter = document.getElementById("roleFilter");
     const btnAddDriver = document.getElementById("btnAddDriver");
-    const btnExportExcel = document.getElementById("btnExportExcel");
-    const btnGoToday = document.getElementById("btnGoToday");
 
     const monthThead = document.getElementById("monthThead");
     const monthTbody = document.getElementById("monthTbody");
@@ -1354,28 +1361,23 @@
     const btnClearDay = document.getElementById("btnClearDay");
     const eDriver = document.getElementById("eDriver");
     const eDate = document.getElementById("eDate");
+
+    const applySingle = document.getElementById("applySingle");
+    const applyRange = document.getElementById("applyRange");
+    const rangeBox = document.getElementById("rangeBox");
+    const eStart = document.getElementById("eStart");
+    const eEnd = document.getElementById("eEnd");
+
     const eKind = document.getElementById("eKind");
     const eLine = document.getElementById("eLine");
     const eTime = document.getElementById("eTime");
     const ePonta = document.getElementById("ePonta");
     const eNotes = document.getElementById("eNotes");
+    const eCode7 = document.getElementById("eCode7");
 
     const coverBox = document.getElementById("coverBox");
     const eCoverSelect = document.getElementById("eCoverSelect");
     const btnClearCover = document.getElementById("btnClearCover");
-
-    // ✅ intervalo
-    const applySingle = document.getElementById("applySingle");
-    const applyRange = document.getElementById("applyRange");
-    const rangeBox = document.getElementById("rangeBox");
-    const rangeStart = document.getElementById("rangeStart");
-    const rangeEnd = document.getElementById("rangeEnd");
-    const btnUseTodayRange = document.getElementById("btnUseTodayRange");
-
-    // ✅ código 7º dia
-    const code7Box = document.getElementById("code7Box");
-    const eCode7 = document.getElementById("eCode7");
-    const code7Hint = document.getElementById("code7Hint");
 
     let editCtx = { driverId:null, dateStr:null };
     let driverFormMode = { mode:"create", driverId:null };
@@ -1543,39 +1545,6 @@
       }
     });
 
-    // ✅ Ir para HOJE (ajusta o mês e abre o dia se já tiver drawer aberto)
-    btnGoToday.addEventListener("click", async () => {
-      try{
-        setBusy(true);
-        const now = new Date();
-        const todayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const prevKey = monthKey(state.selectedMonth?.getFullYear() || 0, (state.selectedMonth?.getMonth() || 0)+1);
-        state.selectedMonth = todayMonth;
-        monthPicker.value = monthKey(todayMonth.getFullYear(), todayMonth.getMonth()+1);
-
-        // se mudou mês, recarrega entradas
-        const newKey = monthKey(todayMonth.getFullYear(), todayMonth.getMonth()+1);
-        if(prevKey !== newKey){
-          await loadMonthEntriesIntoState();
-        }
-
-        renderAll();
-
-        // se tiver drawer aberto, abre edição no dia de hoje (se hoje está dentro do mês selecionado)
-        if(drawer.classList.contains("open") && state.selectedDriverId){
-          const t = todayYMD();
-          const tDate = ymdToDate(t);
-          if(tDate.getFullYear() === todayMonth.getFullYear() && tDate.getMonth() === todayMonth.getMonth()){
-            openEdit(state.selectedDriverId, t);
-          }
-        }
-      }catch(err){
-        alert("Erro ao ir para hoje: " + (err?.message || err));
-      }finally{
-        setBusy(false);
-      }
-    });
-
     /***********************
      * Driver modal
      ***********************/
@@ -1623,7 +1592,6 @@
       const role = (inRole.value || "fixo").trim();
       const line_default = (inLine.value || "").trim() || null;
 
-      // ✅ ponta_base aceita: TP, TS, Circular
       const ponta_raw = String(inPontaBase.value || "").trim();
       let ponta_base = null;
       if(ponta_raw === "TP" || ponta_raw === "TS") ponta_base = ponta_raw;
@@ -1673,7 +1641,7 @@
             updated.role ? `👤 ${updated.role}` : null,
             updated.line_default ? `🚌 ${updated.line_default}` : null,
             updated.ponta_base ? `📍 ${updated.ponta_base}` : null,
-            `🏷️ ${computeTodayStatusLabel(updated)}`,
+            `🏷️ ${statusForDriverToday(updated.id)}`
           ].filter(Boolean);
           dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
         }
@@ -1688,91 +1656,17 @@
     });
 
     /***********************
-     * Interval UI (aplicar em intervalo)
+     * Day modal
      ***********************/
-    function syncRangeBox(){
-      const on = applyRange.checked;
-      rangeBox.style.display = on ? "grid" : "none";
-    }
-    applySingle.addEventListener("change", syncRangeBox);
-    applyRange.addEventListener("change", syncRangeBox);
-
-    btnUseTodayRange.addEventListener("click", () => {
-      const t = todayYMD();
-      rangeStart.value = t;
-      rangeEnd.value = t;
-      applyRange.checked = true;
-      applySingle.checked = false;
-      syncRangeBox();
-    });
-
-    /***********************
-     * Code7 select
-     ***********************/
-    function buildCode7Options(){
+    function fillCode7Options(){
       const opts = [];
-      opts.push(`<option value="">(sem código)</option>`);
-      for(let i=50001; i<=50040; i++){
-        opts.push(`<option value="${i}">${i}</option>`);
+      opts.push(`<option value="">(selecionar)</option>`);
+      for(let n=CODE7_MIN; n<=CODE7_MAX; n++){
+        opts.push(`<option value="${n}">${n}</option>`);
       }
       eCode7.innerHTML = opts.join("");
     }
 
-    function updateCode7VisibilityAndHint(){
-      const kind = eKind.value;
-      const isWork = isWorkKind(kind);
-      code7Box.style.display = isWork ? "block" : "none";
-
-      if(!editCtx.driverId || !editCtx.dateStr){
-        code7Hint.textContent = "";
-        return;
-      }
-
-      if(!isWork){
-        code7Hint.textContent = "Dia não trabalhado: código não se aplica.";
-        return;
-      }
-
-      // calcula se este dia tende a ser 7º, baseado no estado atual + o que foi selecionado (sem salvar ainda)
-      // (a validação final é feita no salvar)
-      const driverId = editCtx.driverId;
-      const dt = ymdToDate(editCtx.dateStr);
-      const y = new Date(dt);
-      y.setDate(y.getDate()-1);
-      const prevStreak = workStreakEndingAt(driverId, dateToYMD(y), state.entriesByDriver);
-      const possibleStreak = prevStreak + 1;
-      if(possibleStreak === 7){
-        code7Hint.textContent = "⚠️ Este dia é o 7º consecutivo trabalhado: selecione um código 50001–50040.";
-      }else{
-        code7Hint.textContent = "Somente use código se este for o 7º dia consecutivo (senão, deixe em branco).";
-      }
-    }
-
-    eKind.addEventListener("change", () => {
-      syncCoverBoxVisibility();
-      updateCode7VisibilityAndHint();
-
-      const drv = state.drivers.find(d => d.id === editCtx.driverId);
-      if(eKind.value === "trabalho" && drv?.line_default && !eLine.value.trim()){
-        eLine.value = drv.line_default;
-      }
-      if(eKind.value !== "folga"){
-        eCoverSelect.value = "";
-      }
-      if(eKind.value === "folga" && drv?.ponta_base){
-        const pb = normalizePonta(drv.ponta_base);
-        ePonta.value = (pb === "TP" || pb === "TS") ? pb : (pb === "Circular" ? "CIRCULAR" : "");
-      }
-
-      // se não é trabalho, zera código
-      if(!isWorkKind(eKind.value)){
-        eCode7.value = "";
-      }
-    });
-
-    /***********************
-     * Day modal
-     ***********************/
     function openEdit(driverId, dateStr){
       editCtx = { driverId, dateStr };
       const drv = state.drivers.find(d => d.id === driverId);
@@ -1780,42 +1674,35 @@
       eDriver.textContent = drv ? `${drv.mat} • ${drv.name}` : "";
       eDate.textContent = fmtNiceDate(dateStr);
 
-      const entry = (state.entriesByDriver[driverId] && state.entriesByDriver[driverId][dateStr]) ? state.entriesByDriver[driverId][dateStr] : null;
-
-      // reset modo (sempre abre no "somente este dia")
+      // modo default: somente dia
       applySingle.checked = true;
       applyRange.checked = false;
-      syncRangeBox();
+      hide(rangeBox);
 
-      // coloca intervalo com o dia selecionado
-      rangeStart.value = dateStr;
-      rangeEnd.value = dateStr;
+      // datas do range já vêm preenchidas com o dia clicado
+      eStart.value = dateStr;
+      eEnd.value = dateStr;
+
+      const entry = (state.entriesByDriver[driverId] && state.entriesByDriver[driverId][dateStr]) ? state.entriesByDriver[driverId][dateStr] : null;
 
       const kind = entry?.kind || "trabalho";
       eKind.value = kind;
       eLine.value = entry?.line || (drv?.line_default || "");
       eTime.value = entry?.time_hhmm || "";
+      eNotes.value = removeCode7Marker(entry?.notes || "");
 
-      // notes: separar cod7 de obs
-      const cod7 = extractCod7(entry?.notes || "");
-      const obs = stripCod7(entry?.notes || "");
-      eNotes.value = obs || "";
-
-      // ✅ ponta do dia: se não tiver, tenta puxar do fixo
       const defaultPonta = normalizePonta(entry?.ponta || "") || normalizePonta(drv?.ponta_base || "");
       ePonta.value = (defaultPonta === "TP" || defaultPonta === "TS") ? defaultPonta : (defaultPonta === "Circular" ? "CIRCULAR" : "");
 
-      // ✅ código 7º dia
-      buildCode7Options();
-      eCode7.value = cod7 || "";
+      // code7 (se existir nesse dia)
+      const code7 = entry?.code7 || extractCode7FromNotes(entry?.notes || "");
+      eCode7.value = code7 || "";
 
       syncCoverBoxVisibility();
       fillCoverSelectOptions();
 
       const coveredBy = entry?.covered_by_driver_id || "";
       eCoverSelect.value = coveredBy || "";
-
-      updateCode7VisibilityAndHint();
 
       editOverlay.classList.add("show");
       setTimeout(() => eLine.focus(), 60);
@@ -1826,13 +1713,38 @@
       editCtx = { driverId:null, dateStr:null };
     }
 
+    // ✅ NÃO FECHA AO CLICAR FORA — só no botão "Fechar"
     btnCloseEdit.addEventListener("click", closeEdit);
-    editOverlay.addEventListener("click", (e)=>{ if(e.target === editOverlay) closeEdit(); });
 
     function syncCoverBoxVisibility(){
       const show = (eKind.value === "folga");
       coverBox.style.display = show ? "block" : "none";
     }
+
+    function syncRangeBoxVisibility(){
+      const showRange = applyRange.checked;
+      if(showRange) show(rangeBox);
+      else hide(rangeBox);
+    }
+
+    applySingle.addEventListener("change", syncRangeBoxVisibility);
+    applyRange.addEventListener("change", syncRangeBoxVisibility);
+
+    eKind.addEventListener("change", () => {
+      syncCoverBoxVisibility();
+      const drv = state.drivers.find(d => d.id === editCtx.driverId);
+
+      if(eKind.value === "trabalho" && drv?.line_default && !eLine.value.trim()){
+        eLine.value = drv.line_default;
+      }
+      if(eKind.value !== "folga"){
+        eCoverSelect.value = "";
+      }
+      if(eKind.value === "folga" && drv?.ponta_base){
+        const pb = normalizePonta(drv.ponta_base);
+        ePonta.value = (pb === "TP" || pb === "TS") ? pb : (pb === "Circular" ? "CIRCULAR" : "");
+      }
+    });
 
     function fillCoverSelectOptions(){
       const plantonistas = state.drivers
@@ -1852,10 +1764,6 @@
     btnClearDay.addEventListener("click", async () => {
       if(!editCtx.driverId || !editCtx.dateStr) return;
 
-      // se estiver em intervalo, limpa intervalo (opcional) — aqui vamos manter simples: limpa só o dia selecionado
-      const ok = confirm("Limpar SOMENTE o dia selecionado?");
-      if(!ok) return;
-
       try{
         setBusy(true);
 
@@ -1868,27 +1776,92 @@
         closeEdit();
         await loadMonthEntriesIntoState();
         renderAll();
+
+        // notificação de conflito (apenas dia afetado)
+        const conflicts = findFixedDoubleFolgaConflicts([editCtx.dateStr]);
+        notifyConflicts(conflicts);
       }catch(err){
-        alert("Erro ao limpar dia: " + (err?.message || err));
+        alert("Erro ao limpar: " + (err?.message || err));
       }finally{
         setBusy(false);
       }
     });
 
-    function listDatesBetweenInclusive(startStr, endStr){
-      const a = ymdToDate(startStr);
-      const b = ymdToDate(endStr);
-      if(isNaN(a.getTime()) || isNaN(b.getTime())) return [];
-      const start = a <= b ? a : b;
-      const end = a <= b ? b : a;
-
-      const dates = [];
-      const cur = new Date(start);
-      while(cur <= end){
-        dates.push(dateToYMD(cur));
-        cur.setDate(cur.getDate()+1);
+    function buildRangeDates(startStr, endStr){
+      const s = toDate(startStr);
+      const e = toDate(endStr);
+      if(e < s) return [];
+      const out = [];
+      let cur = new Date(s);
+      while(cur <= e){
+        out.push(dateToYmd(cur));
+        cur = addDays(cur, 1);
       }
-      return dates;
+      return out;
+    }
+
+    async function saveOneDay({driverId, dateStr, kind, line, time_hhmm, ponta, notesClean, code7Selected, covered_by_driver_id}){
+      const drv = state.drivers.find(d => d.id === driverId);
+
+      // determina se esse dia é "trabalho" (conta para regra)
+      const isWorkDay = WORK_KINDS.has(String(kind||"").toLowerCase().trim());
+
+      let finalNotes = notesClean || "";
+      let code7ToUse = "";
+
+      if(isWorkDay){
+        const streakBefore = await computeStreakBefore(driverId, dateStr);
+
+        // se é o 7º (6 antes), exige código válido
+        if(streakBefore === 6){
+          if(!isValidCode7(code7Selected)){
+            throw new Error(`No 7º dia consecutivo (${fmtNiceDate(dateStr)}) é obrigatório escolher um código (50001–50040).`);
+          }
+          code7ToUse = String(code7Selected);
+          finalNotes = addCode7Marker(finalNotes, code7ToUse);
+        }else{
+          // não é 7º -> garante que não fica marcador perdido
+          finalNotes = removeCode7Marker(finalNotes);
+        }
+      }else{
+        // não é trabalho -> remove marcador
+        finalNotes = removeCode7Marker(finalNotes);
+      }
+
+      // 1) salva o dia do fiscal
+      await dbUpsertEntry({
+        driver_id: driverId,
+        work_date: dateStr,
+        kind,
+        line,
+        time_hhmm,
+        covered_by_driver_id: covered_by_driver_id || null,
+        notes: finalNotes || null,
+        ponta
+      });
+
+      // 2) folga com cobridor: plantonista vira "cobertura" (interno)
+      if(kind === "folga" && covered_by_driver_id){
+        const coverNotes = drv ? shortPerson(drv) : null;
+
+        let inheritedPonta = null;
+        const pb = normalizePonta(drv?.ponta_base || "");
+        if(pb === "TP" || pb === "TS") inheritedPonta = pb;
+        else if(pb === "Circular") inheritedPonta = "Circular";
+        else inheritedPonta = ponta || null;
+
+        // cobertura: NÃO precisa mostrar "Cobertura", mas internamente fica kind=cobertura
+        await dbUpsertEntry({
+          driver_id: covered_by_driver_id,
+          work_date: dateStr,
+          kind: "cobertura",
+          line,
+          time_hhmm,
+          covered_by_driver_id: null,
+          notes: coverNotes,
+          ponta: inheritedPonta
+        });
+      }
     }
 
     btnSaveDay.addEventListener("click", async () => {
@@ -1898,14 +1871,14 @@
         setBusy(true);
 
         const driverId = editCtx.driverId;
+        const clickedDate = editCtx.dateStr;
         const drv = state.drivers.find(d => d.id === driverId);
 
         const kind = eKind.value;
         const line = (eLine.value || "").trim() || null;
         const time_hhmm = (eTime.value || "").trim() || null;
-        const obs = (eNotes.value || "").trim() || null;
 
-        // ✅ ponta do dia: TP / TS / Circular
+        // ponta do dia: TP / TS / Circular
         let ponta = null;
         const pr = String(ePonta.value || "").trim();
         if(pr === "TP" || pr === "TS") ponta = pr;
@@ -1919,121 +1892,94 @@
           else if(pb === "Circular") ponta = "Circular";
         }
 
-        // cobertura
+        const notesClean = (eNotes.value || "").trim() || "";
+
+        // código 7º dia escolhido
+        const code7Selected = (eCode7.value || "").trim();
+
         let covered_by_driver_id = null;
         if(kind === "folga"){
           covered_by_driver_id = eCoverSelect.value || null;
         }
 
-        // ✅ código 7º dia (somente para dia trabalhado)
-        const cod7 = String(eCode7.value || "").trim(); // "" ou "50002"
-        let notes = buildNotesWithCod7(cod7, obs); // pode virar null
+        // validações do modo RANGE
+        const isRange = applyRange.checked;
+        let datesToApply = [clickedDate];
 
-        // se for folga/ferias, limpa cod7
-        if(!isWorkKind(kind)){
-          notes = obs || null;
-          if(cod7){
-            alert("Código do 7º dia só vale para dia trabalhado. Removi automaticamente.");
-            eCode7.value = "";
-          }
-        }
-
-        // modo aplicação
-        let datesToApply = [editCtx.dateStr];
-        if(applyRange.checked){
-          const s = (rangeStart.value || "").trim();
-          const e = (rangeEnd.value || "").trim();
+        if(isRange){
+          const s = (eStart.value || "").trim();
+          const e = (eEnd.value || "").trim();
           if(!s || !e){
-            alert("Preencha data inicial e final.");
+            alert("Preencha Data inicial e Data final.");
             return;
           }
-          // segurança: se o usuário escolher fora do mês, ainda deixamos — mas a tabela/visão atual só mostra o mês
-          datesToApply = listDatesBetweenInclusive(s, e);
+          datesToApply = buildRangeDates(s, e);
           if(datesToApply.length === 0){
             alert("Intervalo inválido.");
             return;
           }
-        }
 
-        // vamos aplicar um "mapa local" para validar regra 7º dia dia-a-dia
-        // (clona superficialmente entriesByDriver)
-        const localMap = {};
-        for(const did of Object.keys(state.entriesByDriver || {})){
-          localMap[did] = { ...(state.entriesByDriver[did] || {}) };
-        }
-        if(!localMap[driverId]) localMap[driverId] = {};
-
-        // precisamos pegar entradas existentes do DB para cada data aplicada, pois pode envolver meses diferentes
-        // (mantemos simples: para cada data, consultamos existing e aplicamos)
-        // Observação: para velocidade, você pode otimizar depois com uma query por intervalo.
-        for(const dateStr of datesToApply){
-          const existing = await dbGetEntry(driverId, dateStr);
-          const previousCoveredBy = existing?.covered_by_driver_id || null;
-
-          // validação 7º dia (para cada data, usando localMap que vai sendo atualizado)
-          const candidateNotes = notes || null;
-
-          const v = validate7thDayRule(driverId, dateStr, kind, candidateNotes || "", localMap);
-          if(!v.ok){
-            alert(v.msg);
-            return;
+          // obrigatório escolher o código quando aplicar em vários dias e for tipo de trabalho
+          if(WORK_KINDS.has(String(kind||"").toLowerCase().trim())){
+            if(!isValidCode7(code7Selected)){
+              alert("Para aplicar em vários dias, selecione o Código do 7º dia (50001–50040).");
+              return;
+            }
           }
 
-          // 1) salva o dia do fiscal
-          await dbUpsertEntry({
-            driver_id: driverId,
-            work_date: dateStr,
+          // Cobertura (folga) em range é permitido, mas cobridor fica igual para todos
+          // (se não quiser, deixa vazio)
+        }
+
+        // checa cobertura antiga APENAS no dia clicado (em range, evita apagar coisas sem querer)
+        const existingClicked = await dbGetEntry(driverId, clickedDate);
+        const previousCoveredBy = existingClicked?.covered_by_driver_id || null;
+        if(previousCoveredBy && kind !== "folga"){
+          // se estava com folga+cobridor e agora vai virar outra coisa no dia clicado, remove cobertura antiga do dia clicado
+          await dbDeleteEntry(previousCoveredBy, clickedDate);
+        }
+
+        // aplica dia a dia (sem bug: só exige código no 7º dia real)
+        const affectedDates = [];
+        for(const dateStr of datesToApply){
+          // só aplica dentro do mês selecionado (evita bagunçar fora)
+          if(!withinSelectedMonth(dateStr)) continue;
+
+          // se for limpar cobertura antiga em cada dia quando muda
+          const existing = await dbGetEntry(driverId, dateStr);
+          const prevCov = existing?.covered_by_driver_id || null;
+
+          // salva o dia do fiscal
+          await saveOneDay({
+            driverId,
+            dateStr,
             kind,
             line,
             time_hhmm,
-            covered_by_driver_id,
-            notes: candidateNotes,
-            ponta
+            ponta,
+            notesClean,
+            code7Selected,
+            covered_by_driver_id
           });
 
-          // 2) remove cobertura antiga se mudou
-          if(previousCoveredBy && previousCoveredBy !== covered_by_driver_id){
-            await dbDeleteEntry(previousCoveredBy, dateStr);
+          // remove cobertura antiga se mudou (dia a dia)
+          if(prevCov && prevCov !== covered_by_driver_id){
+            await dbDeleteEntry(prevCov, dateStr);
           }
 
-          // 3) folga com cobridor: plantonista herda TP/TS/Circular do fixo
-          if(kind === "folga" && covered_by_driver_id){
-            const coverNotes = drv ? shortPerson(drv) : null;
-
-            let inheritedPonta = null;
-            const pb = normalizePonta(drv?.ponta_base || "");
-            if(pb === "TP" || pb === "TS") inheritedPonta = pb;
-            else if(pb === "Circular") inheritedPonta = "Circular";
-            else inheritedPonta = ponta || null;
-
-            await dbUpsertEntry({
-              driver_id: covered_by_driver_id,
-              work_date: dateStr,
-              kind: "cobertura",
-              line,
-              time_hhmm,
-              covered_by_driver_id: null,
-              notes: coverNotes,
-              ponta: inheritedPonta
-            });
-          }
-
-          // atualiza localMap para validações do próximo dia no intervalo
-          localMap[driverId][dateStr] = {
-            kind,
-            line: line || "",
-            time_hhmm: time_hhmm || "",
-            ponta: ponta || "",
-            covered_by_driver_id: covered_by_driver_id || null,
-            notes: candidateNotes || ""
-          };
+          affectedDates.push(dateStr);
         }
 
         closeEdit();
         await loadMonthEntriesIntoState();
         renderAll();
+
+        // notificação 2 fixos mesma linha em folga (somente datas afetadas)
+        const conflicts = findFixedDoubleFolgaConflicts(affectedDates);
+        notifyConflicts(conflicts);
+
       }catch(err){
-        alert("Erro ao salvar dia: " + (err?.message || err));
+        alert(err?.message ? err.message : ("Erro ao salvar: " + err));
       }finally{
         setBusy(false);
       }
@@ -2042,37 +1988,32 @@
     /***********************
      * Drawer
      ***********************/
-    function computeTodayStatusLabel(drv){
-      const t = todayYMD();
-      const entry = state.entriesByDriver?.[drv.id]?.[t] || null;
-      if(!entry) return "Disponível";
-      const k = String(entry.kind || "").toLowerCase().trim();
-      if(k === "folga") return "Folga";
-      if(k === "ferias") return "Férias";
-      if(k === "plantao") return "Plantão";
-      if(k === "cobertura") return "Trabalhando";
-      if(k === "trabalho") return "Trabalhando";
-      return "Disponível";
-    }
-
     function openDrawer(driverId){
       state.selectedDriverId = driverId;
       const drv = state.drivers.find(d => d.id === driverId);
       if(!drv) return;
 
       dName.textContent = `${drv.mat} • ${drv.name}`;
+
+      // ✅ status automático do dia de hoje
       const meta = [
         drv.phone ? `📞 ${drv.phone}` : null,
         drv.role ? `👤 ${drv.role}` : null,
         drv.line_default ? `🚌 ${drv.line_default}` : null,
         drv.ponta_base ? `📍 ${drv.ponta_base}` : null,
-        `🏷️ ${computeTodayStatusLabel(drv)} (hoje)`,
+        `🏷️ ${statusForDriverToday(drv.id)}`
       ].filter(Boolean);
 
       dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
 
       drawer.classList.add("open");
       drawer.setAttribute("aria-hidden","false");
+
+      // ✅ já abre em tela cheia
+      drawer.classList.add("fullscreen");
+      btnFull.textContent = "🧩 Voltar";
+      drawer.scrollTop = 0;
+
       renderCalendar();
     }
 
@@ -2146,8 +2087,8 @@
         setTimeout(() => {
           alert(
             copied
-              ? "PNG gerado e copiado ✅\nVocê também pode anexar o arquivo baixado."
-              : "PNG gerado ✅\nArquivo foi baixado. (Se quiser, anexe no WhatsApp.)"
+              ? "PNG gerado e copiado ✅"
+              : "PNG gerado ✅"
           );
         }, 250);
 
@@ -2157,89 +2098,6 @@
         btnWhats.disabled = false;
         btnWhats.textContent = "📲 Baixar calendário (PNG)";
       }
-    });
-
-    /***********************
-     * Exportações
-     ***********************/
-    function buildCSVForMonth(){
-      const monthDate = state.selectedMonth;
-      const y = monthDate.getFullYear();
-      const m = monthDate.getMonth()+1;
-      const nDays = daysInMonth(monthDate);
-      const todayStr = todayYMD();
-
-      const rows = [];
-      rows.push([
-        "matricula","nome","tipo_fiscal","linha_fixa","tp_ts_base","status_hoje",
-        "data","dia_semana","tipo_dia","linha","hora","tp_ts","codigo_7_dia","coberto_por","obs"
-      ]);
-
-      for(const drv of state.drivers){
-        if(state.roleFilter !== "todos"){
-          const role = (drv.role || "").toLowerCase();
-          if(role !== state.roleFilter) continue;
-        }
-        if(state.searchText){
-          const mat = (drv.mat || "").toLowerCase();
-          const name = (drv.name || "").toLowerCase();
-          if(!mat.includes(state.searchText) && !name.includes(state.searchText)) continue;
-        }
-
-        const stHoje = computeTodayStatusLabel(drv);
-
-        for(let d=1; d<=nDays; d++){
-          const dateStr = ymd(y,m,d);
-          const dt = new Date(y, m-1, d);
-          const dow = dowShort[dt.getDay()];
-
-          const entry = state.entriesByDriver[drv.id]?.[dateStr] || null;
-
-          const tipo_dia = entry?.kind || "";
-          const linha = entry?.line || "";
-          const hora = entry?.time_hhmm || "";
-          const tp_ts = normalizePonta(entry?.ponta || "");
-          const cod7 = extractCod7(entry?.notes || "");
-          const obs = stripCod7(entry?.notes || "");
-          const coberto_por = entry?.covered_by_driver_id ? (state.drivers.find(x=>x.id===entry.covered_by_driver_id)?.mat || "") : "";
-
-          rows.push([
-            drv.mat||"",
-            drv.name||"",
-            drv.role||"",
-            drv.line_default||"",
-            normalizePonta(drv.ponta_base||""),
-            stHoje,
-            dateStr,
-            dow,
-            tipo_dia,
-            linha,
-            hora,
-            tp_ts,
-            cod7,
-            coberto_por,
-            obs
-          ]);
-        }
-      }
-
-      const csv = rows
-        .map(r => r.map(v => {
-          const s = String(v ?? "");
-          const escaped = s.replaceAll('"','""');
-          return `"${escaped}"`;
-        }).join(","))
-        .join("\n");
-
-      return csv;
-    }
-
-    btnExportExcel.addEventListener("click", () => {
-      const csv = buildCSVForMonth();
-      const y = state.selectedMonth.getFullYear();
-      const m = pad2(state.selectedMonth.getMonth()+1);
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      downloadBlob(blob, `escala-${y}-${m}.csv`);
     });
 
     /***********************
@@ -2258,6 +2116,20 @@
       renderTable();
       if(drawer.classList.contains("open")){
         renderCalendar();
+        // atualiza status no drawer em tempo real
+        if(state.selectedDriverId){
+          const drv = state.drivers.find(d => d.id === state.selectedDriverId);
+          if(drv){
+            const meta = [
+              drv.phone ? `📞 ${drv.phone}` : null,
+              drv.role ? `👤 ${drv.role}` : null,
+              drv.line_default ? `🚌 ${drv.line_default}` : null,
+              drv.ponta_base ? `📍 ${drv.ponta_base}` : null,
+              `🏷️ ${statusForDriverToday(drv.id)}`
+            ].filter(Boolean);
+            dSub.innerHTML = meta.map(m => `<span class="kbd">${escapeHtml(m)}</span>`).join(" ");
+          }
+        }
       }
     }
 
@@ -2303,7 +2175,7 @@
 
       for(const drv of filtered){
         const base = normalizePonta(drv.ponta_base||"") || "(sem TP/TS/Circular)";
-        const stHoje = computeTodayStatusLabel(drv);
+        const statusHoje = statusForDriverToday(drv.id);
 
         const title = `
           <div class="driver-title">
@@ -2312,8 +2184,7 @@
               <span class="kbd">👤 ${escapeHtml(drv.role || "")}</span>
               ${drv.line_default ? `<span class="kbd">🚌 ${escapeHtml(drv.line_default)}</span>` : `<span class="kbd">🚌 (sem linha fixa)</span>`}
               <span class="kbd">📍 ${escapeHtml(base)}</span>
-              <span class="kbd">🏷️ ${escapeHtml(stHoje)} (hoje)</span>
-              <span class="kbd">Clique no nome → calendário</span>
+              <span class="kbd">🏷️ ${escapeHtml(statusHoje)}</span>
             </div>
           </div>
         `;
@@ -2326,12 +2197,13 @@
           const entry = state.entriesByDriver[drv.id]?.[dateStr] || null;
 
           const cls = chipClass(entry);
-          const showTxt = entry ? escapeHtml(entryToLabel(entry, false)) : "—";
+          const lines = entry ? entryToLines(entry, {hideCoverInfo:false}) : ["—"];
+          const html = entry ? linesToHtml(lines) : "—";
 
           rows.push(`
             <td>
-              <span class="${cls}" data-edit="${drv.id}" data-date="${dateStr}" title="Clique para editar">
-                ${showTxt}
+              <span class="${cls}" data-edit="${drv.id}" data-date="${dateStr}" title="Editar">
+                <span class="chipText">${html}</span>
               </span>
             </td>
           `);
@@ -2374,14 +2246,15 @@
         const dateStr = ymd(y,m,d);
         const entry = state.entriesByDriver[id]?.[dateStr] || null;
 
-        const label = entry ? entryToLabel(entry, true) : "Disponível";
+        const lines = entry ? entryToLines(entry, {hideCoverInfo:true}) : ["Disponível"];
+        const labelHtml = linesToHtml(lines);
         const isEmpty = !entry;
         const cls = isEmpty ? "empty" : "";
 
         cells.push(`
           <div class="day" data-editcal="${dateStr}">
             <div class="num">${pad2(d)}</div>
-            <div class="val ${cls}">${escapeHtml(label)}</div>
+            <div class="val ${cls}">${labelHtml}</div>
           </div>
         `);
       }
@@ -2419,7 +2292,8 @@
           time_hhmm: it.time_hhmm || "",
           ponta: it.ponta || "",
           covered_by_driver_id: it.covered_by_driver_id || null,
-          notes: it.notes || ""
+          notes: it.notes || "",
+          code7: extractCode7FromNotes(it.notes || "")
         };
       }
 
@@ -2448,6 +2322,8 @@
     (async function init(){
       loginEmail.value = ADMIN_EMAIL;
       roleFilter.value = state.roleFilter;
+
+      fillCode7Options();
 
       const session = await refreshSessionAndRender();
       ensureMonthInit();
